@@ -1,58 +1,46 @@
-from typing import List
+from typing import List, Union
 from uuid import UUID
-
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel, Field
+import models
+from database import engine, SessionLocal
+from sqlalchemy.orm import Session
+
+from schema import Manga
 
 app = FastAPI()
 
-
-class Manga(BaseModel):
-    id: UUID
-    title: str = Field(min_length=1)
-    author: str
-    description: str
-    genres: List[str]
+models.Base.metadata.create_all(bind=engine)
 
 
-MANGAS = []
+def get_db():
+    try:
+        db = SessionLocal()
+        yield db
+    finally:
+        db.close()
+
+
+
+
 
 
 @app.get("/")
-def read_api():
-    return MANGAS
+def read_api(db: Session = Depends(get_db)):
+    return db.query(models.Manga).all()
 
 
 @app.post("/")
-def create_manga(manga: Manga):
-    MANGAS.append(manga)
+def create_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
+    manga_model = models.Manga()
+    manga_model.title = manga.title
+    manga_model.description = manga.description
+    for genre in manga.genres:
+        models.Genre = genre
+    manga_model.author = manga.author
+
+    db.add(manga_model)
+    db.commit()
+
     return manga
 
-
-@app.put("/{manga_id}")
-def update_manga(manga_id: UUID, manga: Manga):
-    counter = 0
-
-    for x in MANGAS:
-        counter += 1
-        if x.ID == manga_id:
-            MANGAS[counter - 1] = manga
-            return MANGAS[counter - 1]
-    raise HTTPException(
-        status_code=404,
-        detail=f"ID {manga_id}: Does not exist"
-    )
-
-@app.delete("/{manga_id}")
-def delete_manga(manga_id: UUID):
-    counter = 0
-
-    for x in MANGAS:
-        counter += 1
-        if x.ID == manga_id:
-            del MANGAS[counter - 1]
-            return f"ID: {manga_id} deleted"
-    raise HTTPException(
-        status_code=404,
-        detail=f"ID {manga_id}: Does not exist"
-    )
