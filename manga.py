@@ -35,9 +35,18 @@ def create_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
     manga_model = models.Manga()
     manga_model.title = manga.title
     manga_model.description = manga.description
+    manga_model.totalVolumes = manga.total_volumes
+
+    db.add(manga_model)
+    db.commit()
+    db.refresh(manga_model)
+
     for genre in manga.genres:
-        models.Genre = genre
-    manga_model.author = manga.author
+        result_genre = crud.genre.get_genre(db, genre)
+        if result_genre is None:
+            result_genre = crud.genre.create_genre(db, genre)
+        # when creating manga there can be not relations, so we just have to create it.
+        crud.genre.create_relation(db, result_genre.id, manga_model.id)
 
     db.add(manga_model)
     db.commit()
