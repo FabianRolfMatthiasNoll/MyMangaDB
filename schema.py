@@ -17,6 +17,5 @@ class Manga(BaseModel):
     title: str = Field(min_length=1)
     description: str
     total_volumes: int
-    volume: int
     authors: List[Author]
     genres: List[str]
