@@ -12,6 +12,14 @@ def get_author(db: Session, author_name: str):
     return result
 
 
+def get_author_by_id(db: Session, author_id: int):
+    result: Union[models.Author, None] = db.query(models.Author).filter(models.Author.id == author_id).one_or_none()
+    return result
+
+
+def get_author_by_manga_id(db: Session, manga_id: int):
+    pass
+
 def create_author(db: Session, author_name: str) -> Author:
     author = models.Author()
     author.name = author_name
@@ -27,6 +35,10 @@ def get_role(db: Session, role_name: str) -> Role:
     result: Union[models.Role, None] = db.query(models.Role).filter(models.Role.role == role_name).one_or_none()
     return result
 
+
+def get_role_by_id(db: Session, role_id: int):
+    result: Union[models.Role, None] = db.query(models.Role).filter(models.Role.id == role_id).one_or_none()
+    return result
 
 def create_role(db: Session, role_name: str) -> Role:
     role = models.Role()
@@ -47,11 +59,3 @@ def create_relation(db: Session, author_id: int, manga_id: int, role_id: int):
 
     db.add(relation)
     db.commit()
-
-
-def delete_author(db: Session):
-    pass
-
-
-def get_authors(db: Session):
-    pass
