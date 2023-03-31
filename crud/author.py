@@ -1,9 +1,10 @@
-from typing import Union
+from typing import Union, List
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 import models
+import schema
 from models import Author, Role
 
 
@@ -17,8 +18,20 @@ def get_author_by_id(db: Session, author_id: int):
     return result
 
 
-def get_author_by_manga_id(db: Session, manga_id: int):
+def get_authors_by_manga_id(db: Session, manga_id: int) -> List[schema.Author]:
+    relations = get_relations_by_manga_id(db, manga_id)
+    authors: List[schema.Author] = []
+    for relation in relations:
+        author = get_author_by_id(db, relation.authorID)
+        if author is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Related Author not found"
+            )
+        role = get_role_by_id(db, relation.roleID)
+
     pass
+
 
 def create_author(db: Session, author_name: str) -> Author:
     author = models.Author()
@@ -40,6 +53,7 @@ def get_role_by_id(db: Session, role_id: int):
     result: Union[models.Role, None] = db.query(models.Role).filter(models.Role.id == role_id).one_or_none()
     return result
 
+
 def create_role(db: Session, role_name: str) -> Role:
     role = models.Role()
     role.role = role_name
@@ -49,6 +63,12 @@ def create_role(db: Session, role_name: str) -> Role:
     db.refresh(role)
 
     return role
+
+
+def get_relations_by_manga_id(db: Session, manga_id: int):
+    result: List[models.RelationMangaAuthorRole, None] = db.query(models.RelationMangaAuthorRole)\
+        .filter(models.RelationMangaAuthorRole.mangaID == manga_id).all()
+    return result
 
 
 def create_relation(db: Session, author_id: int, manga_id: int, role_id: int):
