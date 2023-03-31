@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field
 
 
 class Genre(BaseModel):
-    id: int
     name: str
 
 
@@ -18,4 +17,4 @@ class Manga(BaseModel):
     description: str
     total_volumes: int
     authors: List[Author]
-    genres: List[str]
+    genres: List[Genre]

@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 import crud.genre
 import crud.author
 import models
+import schema
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
 
@@ -25,8 +26,16 @@ def get_db():
 
 
 @app.get("/")
-def read_api(db: Session = Depends(get_db)):
-    return db.query(models.Manga).all()
+def get_all_mangas(db: Session = Depends(get_db)):
+    db_mangas = db.query(models.Manga).all()
+    mangas = []
+    for db_manga in db_mangas:
+        manga_data = {"id": db_manga.id, "title": db_manga.title, "description": db_manga.description,
+                      "total_volumes": db_manga.totalVolumes, "authors": [],
+                      "genres": [g.__dict__ for g in crud.genre.get_genres_by_manga_id(db, db_manga.id)]}
+        manga = schema.Manga(**manga_data)
+        mangas.append(manga)
+    return mangas
 
 
 @app.post("/")
@@ -57,4 +66,5 @@ def create_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
         crud.author.create_relation(db, result_author.id, manga_model.id, result_role.id)
 
     return manga
+
 
