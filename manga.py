@@ -2,6 +2,9 @@ from typing import List, Union
 from uuid import UUID
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel, Field
+
+import crud.genre
+import crud.author
 import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
@@ -19,10 +22,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-
-
-
 
 
 @app.get("/")
@@ -48,8 +47,14 @@ def create_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
         # when creating manga there can be not relations, so we just have to create it.
         crud.genre.create_relation(db, result_genre.id, manga_model.id)
 
-    db.add(manga_model)
-    db.commit()
+    for author in manga.authors:
+        result_author = crud.author.get_author(db, author.name)
+        if result_author is None:
+            result_author = crud.author.create_author(db, author.name)
+        result_role = crud.author.get_role(db, author.role)
+        if result_role is None:
+            result_role = crud.author.create_role(db, author.role)
+        crud.author.create_relation(db, result_author.id, manga_model.id, result_role.id)
 
     return manga
 
