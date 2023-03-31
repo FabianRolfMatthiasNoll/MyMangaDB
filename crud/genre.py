@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List, Type
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
@@ -43,3 +43,17 @@ def get_relations_by_genre(db: Session, genre_id: int):
         status_code=501,
         detail="The Developer needed some coffee"
     )
+
+
+def get_genre_by_id(db: Session, genre_id: int) -> Genre:
+    result: Union[models.Genre, None] = db.query(models.Genre).filter(models.Genre.id == genre_id).one_or_none()
+    return result
+
+
+def get_genres_by_manga_id(db: Session, manga_id: int) -> List[Genre]:
+    genres: List[Genre] = []
+    result: List[Type[models.RelationMangaGenre]] = db.query(models.RelationMangaGenre).filter(models.RelationMangaGenre.mangaID == manga_id).all()
+    for relation in result:
+        genre = get_genre_by_id(db, relation.genreID)
+        genres.append(genre)
+    return genres
