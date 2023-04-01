@@ -29,8 +29,15 @@ def get_authors_by_manga_id(db: Session, manga_id: int) -> List[schema.Author]:
                 detail="Related Author not found"
             )
         role = get_role_by_id(db, relation.roleID)
-
-    pass
+        if role is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Related Role not found"
+            )
+        author_data = {"name": author.name, "role": role.role}
+        author_model = schema.Author(**author_data)
+        authors.append(author_model)
+    return authors
 
 
 def create_author(db: Session, author_name: str) -> Author:
