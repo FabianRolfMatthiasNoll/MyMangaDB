@@ -39,6 +39,16 @@ def get_all_mangas(db: Session = Depends(get_db)):
     return mangas
 
 
+@app.get("/manga/{manga_id}")
+def get_manga_by_id(manga_id: int, db: Session = Depends(get_db)):
+    db_manga = db.query(models.Manga).filter(models.Manga.id == manga_id).one_or_none()
+    if db_manga is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Manga id not found"
+        )
+    # TODO: construct complete manga model
+    return db_manga
 @app.post("/")
 def create_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
     manga_model = models.Manga()
