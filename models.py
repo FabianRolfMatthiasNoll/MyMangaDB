@@ -35,6 +35,7 @@ class Author(Base):
 class Role(Base):
     __tablename__ = "role"
 
+    # TODO: Rename to name on next datadrop
     id = Column(Integer, primary_key=True, index=True)
     role = Column(String)
 

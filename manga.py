@@ -31,7 +31,8 @@ def get_all_mangas(db: Session = Depends(get_db)):
     mangas = []
     for db_manga in db_mangas:
         manga_data = {"id": db_manga.id, "title": db_manga.title, "description": db_manga.description,
-                      "total_volumes": db_manga.totalVolumes, "authors": [],
+                      "total_volumes": db_manga.totalVolumes,
+                      "authors": crud.author.get_authors_by_manga_id(db, db_manga.id),
                       "genres": [g.__dict__ for g in crud.genre.get_genres_by_manga_id(db, db_manga.id)]}
         manga = schema.Manga(**manga_data)
         mangas.append(manga)
