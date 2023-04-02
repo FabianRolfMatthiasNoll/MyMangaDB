@@ -55,3 +55,11 @@ class RelationMangaAuthorRole(Base):
     mangaID = Column(Integer, ForeignKey(Manga.__table__.c.id))
     authorID = Column(Integer, ForeignKey(Author.__table__.c.id))
     roleID = Column(Integer, ForeignKey(Role.__table__.c.id))
+
+
+class RelationMangaVolume(Base):
+    __tablename__ = "relationMangaVolume"
+
+    id = Column(Integer, primary_key=True, index=True)
+    mangaID = Column(Integer, ForeignKey(Manga.__table__.c.id))
+    volumeID = Column(Integer, ForeignKey(Volume.__table__.c.id))
