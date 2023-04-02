@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 
 import crud.genre
 import crud.author
+import crud.volume
 import models
 import schema
 from database import engine, SessionLocal
@@ -78,4 +79,12 @@ def create_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
 
     return manga
 
+
+@app.put("/manga/{manga_id}/{volume_num}")
+def add_volume_to_manga(manga_id: int, volume_num: int, db: Session = Depends(get_db)):
+    volume = crud.volume.get_volume(db, volume_num)
+    if volume is None:
+        volume = crud.volume.create_volume(db, volume_num)
+    crud.volume.create_relation_manga_volume(db, manga_id, volume.id)
+    return get_manga_by_id(manga_id, db)
 
