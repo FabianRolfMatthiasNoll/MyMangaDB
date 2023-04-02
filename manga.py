@@ -31,16 +31,11 @@ def get_all_mangas(db: Session = Depends(get_db)):
     db_mangas = db.query(models.Manga).all()
     mangas = []
     for db_manga in db_mangas:
-        manga_data = {"id": db_manga.id, "title": db_manga.title, "description": db_manga.description,
-                      "total_volumes": db_manga.totalVolumes,
-                      "authors": crud.author.get_authors_by_manga_id(db, db_manga.id),
-                      "genres": [g.__dict__ for g in crud.genre.get_genres_by_manga_id(db, db_manga.id)]}
-        manga = schema.Manga(**manga_data)
-        mangas.append(manga)
+        mangas.append(create_manga_model(db, db_manga))
     return mangas
 
 
-@app.get("/manga/{manga_id}")
+@app.get("/manga/id/{manga_id}")
 def get_manga_by_id(manga_id: int, db: Session = Depends(get_db)):
     db_manga = db.query(models.Manga).filter(models.Manga.id == manga_id).one_or_none()
     if db_manga is None:
@@ -48,8 +43,9 @@ def get_manga_by_id(manga_id: int, db: Session = Depends(get_db)):
             status_code=404,
             detail="Manga id not found"
         )
-    # TODO: construct complete manga model
-    return db_manga
+    return create_manga_model(db, db_manga)
+
+
 @app.post("/")
 def create_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
     manga_model = models.Manga()
@@ -88,3 +84,14 @@ def add_volume_to_manga(manga_id: int, volume_num: int, db: Session = Depends(ge
     crud.volume.create_relation_manga_volume(db, manga_id, volume.id)
     return get_manga_by_id(manga_id, db)
 
+
+def create_manga_model(db: Session, db_manga: models.Manga) -> schema.Manga:
+    manga_data = {"id": db_manga.id, "title": db_manga.title, "description": db_manga.description,
+                  "volumes": crud.volume.get_volumes_by_manga_id(db, db_manga.id),
+                  "total_volumes": db_manga.totalVolumes,
+                  "authors": crud.author.get_authors_by_manga_id(db, db_manga.id),
+                  "genres": [g.__dict__ for g in crud.genre.get_genres_by_manga_id(db, db_manga.id)]}
+    manga = schema.Manga(**manga_data)
+    return manga
+
+# TODO: Endpoints to be added: Get Manga by title, Get manga by genre
