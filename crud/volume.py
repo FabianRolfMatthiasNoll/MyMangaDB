@@ -14,7 +14,7 @@ def get_volume(db: Session, volume_num: int) -> models.Volume:
 
 
 def get_volumes_by_manga_id(db: Session, manga_id: int) -> List:
-    relations = get_volume_relations(db, manga_id)
+    relations = get_volume_relations_by_manga(db, manga_id)
     volumes: List[int] = []
     for relation in relations:
         volume: Union[models.Volume, None] = db.query(models.Volume)\
@@ -29,7 +29,7 @@ def get_volumes_by_manga_id(db: Session, manga_id: int) -> List:
     return volumes
 
 
-def get_volume_relations(db: Session, manga_id: int) -> List[models.RelationMangaVolume]:
+def get_volume_relations_by_manga(db: Session, manga_id: int) -> List[models.RelationMangaVolume]:
     relations: List[models.RelationMangaVolume] = db.query(models.RelationMangaVolume)\
         .filter(models.RelationMangaVolume.mangaID == manga_id).all()
     return relations
@@ -46,7 +46,13 @@ def create_volume(db: Session, volume_num: int) -> models.Volume:
 
 
 def create_relation_manga_volume(db: Session, manga_id: int, volume_id: int):
-    # TODO: add check for existing relation and then throwing an error
+    existing_relations = get_volume_relations_by_manga(db, manga_id)
+    for existing_relation in existing_relations:
+        if existing_relation.volumeID == volume_id:
+            raise HTTPException(
+                status_code=400,
+                detail="Volume Relation already exists"
+            )
     relation = models.RelationMangaVolume()
     relation.mangaID = manga_id
     relation.volumeID = volume_id
