@@ -46,6 +46,38 @@ def get_manga_by_id(manga_id: int, db: Session = Depends(get_db)):
     return create_manga_model(db, db_manga)
 
 
+@app.get("/manga/title/{manga_title}")
+def get_manga_by_id(manga_title: str, db: Session = Depends(get_db)):
+    db_manga = db.query(models.Manga).filter(models.Manga.title == manga_title).one_or_none()
+    if db_manga is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Manga title not found"
+        )
+    return create_manga_model(db, db_manga)
+
+
+@app.get("/manga/genre/{genre_name}")
+def get_mangas_by_genres(genre_name: str, db: Session = Depends(get_db)):
+    genre = crud.genre.get_genre(db, genre_name)
+    if genre is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Genre not found"
+        )
+    relations = crud.genre.get_relations_by_genre_id(db, genre.id)
+    mangas = []
+    for relation in relations:
+        db_manga = db.query(models.Manga).filter(models.Manga.id == relation.mangaID).one_or_none()
+        if db_manga is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Manga id not found"
+            )
+        mangas.append(create_manga_model(db, db_manga))
+    return mangas
+
+
 @app.post("/")
 def create_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
     manga_model = models.Manga()
@@ -93,5 +125,3 @@ def create_manga_model(db: Session, db_manga: models.Manga) -> schema.Manga:
                   "genres": [g.__dict__ for g in crud.genre.get_genres_by_manga_id(db, db_manga.id)]}
     manga = schema.Manga(**manga_data)
     return manga
-
-# TODO: Endpoints to be added: Get Manga by title, Get manga by genre
