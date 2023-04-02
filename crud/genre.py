@@ -19,7 +19,7 @@ def get_genre_by_id(db: Session, genre_id: int) -> Genre:
 
 def get_genres_by_manga_id(db: Session, manga_id: int) -> List[Genre]:
     genres: List[Genre] = []
-    result: List[Type[models.RelationMangaGenre]] = db.query(models.RelationMangaGenre).filter(models.RelationMangaGenre.mangaID == manga_id).all()
+    result: List[models.RelationMangaGenre] = get_relations_by_manga_id(db, manga_id)
     for relation in result:
         genre = get_genre_by_id(db, relation.genreID)
         genres.append(genre)
@@ -43,3 +43,13 @@ def create_relation(db: Session, genre_id: int, manga_id: int):
 
     db.add(relation)
     db.commit()
+
+
+def get_relations_by_genre_id(db: Session, genre_id: int) -> List[models.RelationMangaGenre]:
+    result: List[models.RelationMangaGenre] = db.query(models.RelationMangaGenre).filter(models.RelationMangaGenre.genreID == genre_id).all()
+    return result
+
+
+def get_relations_by_manga_id(db: Session, manga_id: int) -> List[models.RelationMangaGenre]:
+    result: List[models.RelationMangaGenre] = db.query(models.RelationMangaGenre).filter(models.RelationMangaGenre.mangaID == manga_id).all()
+    return result
