@@ -17,3 +17,7 @@ For getting Information like Authors and their roles, genres, description etc i 
 MyAnimeList API. Because the api doesnt support isbn search the title will be fetched from the 
 Google Books API if its available. In the future further data sources will be added for the bookcovers
 of specific volumes etc.
+
+# Planned Features
+
+- Export your mangas to excel
