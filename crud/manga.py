@@ -21,6 +21,14 @@ def create_manga_model(db: Session, db_manga: models.Manga) -> schema.Manga:
 
 
 def create_manga(db: Session, manga: schema.Manga):
+    exists = db.query(
+        db.query(models.Manga).filter_by(title=manga.title).exists()
+    ).scalar()
+    if exists:
+        raise HTTPException(
+            status_code=400,
+            detail="Manga already exists"
+        )
     manga_model = models.Manga()
     manga_model.title = manga.title
     manga_model.description = manga.description
