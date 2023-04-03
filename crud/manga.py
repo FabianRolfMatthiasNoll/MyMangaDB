@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 import crud.author
@@ -40,3 +41,16 @@ def create_manga(db, manga: schema.Manga):
             result_role = crud.author.create_role(db, author.role)
         crud.author.create_relation(db, result_author.id, manga_model.id, result_role.id)
     return manga
+
+
+def get_mangas_by_relations(db, relations):
+    mangas = []
+    for relation in relations:
+        db_manga = db.query(models.Manga).filter(models.Manga.id == relation.mangaID).one_or_none()
+        if db_manga is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Manga id not found"
+            )
+        mangas.append(create_manga_model(db, db_manga))
+    return mangas

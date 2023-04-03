@@ -78,6 +78,12 @@ def get_relations_by_manga_id(db: Session, manga_id: int):
     return result
 
 
+def get_relations_by_author_id(db: Session, author_id: int):
+    result: List[models.RelationMangaAuthorRole, None] = db.query(models.RelationMangaAuthorRole)\
+        .filter(models.RelationMangaAuthorRole.authorID == author_id).all()
+    return result
+
+
 def create_relation(db: Session, author_id: int, manga_id: int, role_id: int):
     relation = models.RelationMangaAuthorRole()
     relation.mangaID = manga_id

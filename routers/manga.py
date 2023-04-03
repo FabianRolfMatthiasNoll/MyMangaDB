@@ -12,7 +12,7 @@ from schema import Manga
 router = APIRouter(prefix="/manga", tags=["Manga"])
 
 
-# TODO: get manga by author, add volume by title
+# TODO: add volume by title
 
 
 @router.get("/")
@@ -55,16 +55,19 @@ def get_mangas_by_genres(genre_name: str, db: Session = Depends(get_db)):
             detail="Genre not found"
         )
     relations = crud.genre.get_relations_by_genre_id(db, genre.id)
-    mangas = []
-    for relation in relations:
-        db_manga = db.query(models.Manga).filter(models.Manga.id == relation.mangaID).one_or_none()
-        if db_manga is None:
-            raise HTTPException(
-                status_code=404,
-                detail="Manga id not found"
-            )
-        mangas.append(create_manga_model(db, db_manga))
-    return mangas
+    return crud.manga.get_mangas_by_relations(db, relations)
+
+
+@router.get("/author/{author_name}")
+def get_mangas_by_author(author_name: str, db: Session = Depends(get_db)):
+    author = crud.author.get_author(db, author_name)
+    if author is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Author not found"
+        )
+    relations = crud.author.get_relations_by_author_id(db, author.id)
+    return crud.manga.get_mangas_by_relations(db, relations)
 
 
 @router.post("/")
