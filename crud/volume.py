@@ -9,7 +9,8 @@ from models import Author, Role
 
 
 def get_volume(db: Session, volume_num: int) -> models.Volume:
-    volume: Union[models.Volume, None] = db.query(models.Volume).filter(models.Volume.volume == volume_num).one_or_none()
+    volume: Union[models.Volume, None] = db.query(models.Volume).filter(
+        models.Volume.volume == volume_num).one_or_none()
     return volume
 
 
@@ -17,7 +18,7 @@ def get_volumes_by_manga_id(db: Session, manga_id: int) -> List:
     relations = get_volume_relations_by_manga(db, manga_id)
     volumes: List[int] = []
     for relation in relations:
-        volume: Union[models.Volume, None] = db.query(models.Volume)\
+        volume: Union[models.Volume, None] = db.query(models.Volume) \
             .filter(models.Volume.id == relation.volumeID).one_or_none()
         if volume is None:
             raise HTTPException(
@@ -30,7 +31,7 @@ def get_volumes_by_manga_id(db: Session, manga_id: int) -> List:
 
 
 def get_volume_relations_by_manga(db: Session, manga_id: int) -> List[models.RelationMangaVolume]:
-    relations: List[models.RelationMangaVolume] = db.query(models.RelationMangaVolume)\
+    relations: List[models.RelationMangaVolume] = db.query(models.RelationMangaVolume) \
         .filter(models.RelationMangaVolume.mangaID == manga_id).all()
     return relations
 

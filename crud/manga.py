@@ -1,3 +1,5 @@
+from typing import Union
+
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
@@ -18,7 +20,7 @@ def create_manga_model(db: Session, db_manga: models.Manga) -> schema.Manga:
     return manga
 
 
-def create_manga(db, manga: schema.Manga):
+def create_manga(db: Session, manga: schema.Manga):
     manga_model = models.Manga()
     manga_model.title = manga.title
     manga_model.description = manga.description
@@ -43,7 +45,7 @@ def create_manga(db, manga: schema.Manga):
     return manga
 
 
-def get_mangas_by_relations(db, relations):
+def get_mangas_by_relations(db: Session, relations):
     mangas = []
     for relation in relations:
         db_manga = db.query(models.Manga).filter(models.Manga.id == relation.mangaID).one_or_none()
@@ -54,3 +56,8 @@ def get_mangas_by_relations(db, relations):
             )
         mangas.append(create_manga_model(db, db_manga))
     return mangas
+
+
+def get_manga_by_title(db: Session, manga_title: str) -> models.Manga:
+    manga: Union[models.Manga, None] = db.query(models.Manga).filter(models.Manga.title == manga_title).one_or_none()
+    return manga

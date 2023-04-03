@@ -37,13 +37,13 @@ def get_manga_by_id(manga_id: int, db: Session = Depends(get_db)):
 
 @router.get("/title/{manga_title}")
 def get_manga_by_title(manga_title: str, db: Session = Depends(get_db)):
-    db_manga = db.query(models.Manga).filter(models.Manga.title == manga_title).one_or_none()
-    if db_manga is None:
+    manga = crud.manga.get_manga_by_title(db, manga_title)
+    if manga is None:
         raise HTTPException(
             status_code=404,
             detail="Manga title not found"
         )
-    return create_manga_model(db, db_manga)
+    return create_manga_model(db, manga)
 
 
 @router.get("/genre/{genre_name}")
@@ -75,10 +75,25 @@ def create_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
     return crud.manga.create_manga(db, manga)
 
 
-@router.put("/{manga_id}/{volume_num}")
-def add_volume_to_manga(manga_id: int, volume_num: int, db: Session = Depends(get_db)):
+@router.put("/id/add_vol/{manga_id}/{volume_num}")
+def add_volume_to_manga_by_id(manga_id: int, volume_num: int, db: Session = Depends(get_db)):
     volume = crud.volume.get_volume(db, volume_num)
     if volume is None:
         volume = crud.volume.create_volume(db, volume_num)
     crud.volume.create_relation_manga_volume(db, manga_id, volume.id)
     return get_manga_by_id(manga_id, db)
+
+
+@router.put("/title/add_vol/{manga_title}/{volume_num}")
+def add_volume_to_manga_by_title(manga_title: str, volume_num: int, db: Session = Depends(get_db)):
+    manga = crud.manga.get_manga_by_title(db, manga_title)
+    if manga is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Manga title not found"
+        )
+    volume = crud.volume.get_volume(db, volume_num)
+    if volume is None:
+        volume = crud.volume.create_volume(db, volume_num)
+    crud.volume.create_relation_manga_volume(db, manga.id, volume.id)
+    return get_manga_by_title(manga_title, db)
