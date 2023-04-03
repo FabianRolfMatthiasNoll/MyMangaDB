@@ -34,7 +34,7 @@ def get_authors_by_manga_id(db: Session, manga_id: int) -> List[schema.Author]:
                 status_code=404,
                 detail="Related Role not found"
             )
-        author_data = {"name": author.name, "role": role.role}
+        author_data = {"name": author.name, "role": role.name}
         author_model = schema.Author(**author_data)
         authors.append(author_model)
     return authors
@@ -52,7 +52,7 @@ def create_author(db: Session, author_name: str) -> Author:
 
 
 def get_role(db: Session, role_name: str) -> Role:
-    result: Union[models.Role, None] = db.query(models.Role).filter(models.Role.role == role_name).one_or_none()
+    result: Union[models.Role, None] = db.query(models.Role).filter(models.Role.name == role_name).one_or_none()
     return result
 
 
@@ -63,7 +63,7 @@ def get_role_by_id(db: Session, role_id: int):
 
 def create_role(db: Session, role_name: str) -> Role:
     role = models.Role()
-    role.role = role_name
+    role.name = role_name
 
     db.add(role)
     db.commit()
@@ -73,13 +73,13 @@ def create_role(db: Session, role_name: str) -> Role:
 
 
 def get_relations_by_manga_id(db: Session, manga_id: int):
-    result: List[models.RelationMangaAuthorRole, None] = db.query(models.RelationMangaAuthorRole)\
+    result: List[models.RelationMangaAuthorRole, None] = db.query(models.RelationMangaAuthorRole) \
         .filter(models.RelationMangaAuthorRole.mangaID == manga_id).all()
     return result
 
 
 def get_relations_by_author_id(db: Session, author_id: int):
-    result: List[models.RelationMangaAuthorRole, None] = db.query(models.RelationMangaAuthorRole)\
+    result: List[models.RelationMangaAuthorRole, None] = db.query(models.RelationMangaAuthorRole) \
         .filter(models.RelationMangaAuthorRole.authorID == author_id).all()
     return result
 

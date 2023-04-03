@@ -37,7 +37,7 @@ class Role(Base):
 
     # TODO: Rename to name on next datadrop
     id = Column(Integer, primary_key=True, index=True)
-    role = Column(String)
+    name = Column(String)
 
 
 class RelationMangaGenre(Base):
