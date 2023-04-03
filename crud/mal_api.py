@@ -19,6 +19,7 @@ def get_manga_from_mal(manga_title: str) -> schema.Manga:
         "limit": 10,
         "fields": "title,authors{first_name,last_name},synopsis,main_picture,num_volumes,genres"
     }
+    # TODO: Return list of results and choose which one to send to create manga.
     response = requests.get(url, headers=headers, params=params)
     results = response.json().get("data", [])
 
