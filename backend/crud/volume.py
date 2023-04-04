@@ -4,8 +4,6 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 import models
-import schema
-from models import Author, Role
 
 
 def get_volume(db: Session, volume_num: int) -> models.Volume:

@@ -6,7 +6,7 @@ import requests
 
 import config
 import models
-import schema
+from backend import schema
 
 
 def get_manga_from_mal(manga_title: str) -> schema.Manga:

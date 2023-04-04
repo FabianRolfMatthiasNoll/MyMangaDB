@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-import crud.author
+import backend.crud.author
 import crud.genre
-import crud.volume
+import backend.crud.volume
 import models
-from crud.manga import create_manga_model, create_manga
-from database import get_db
-from schema import Manga
+from crud.manga import create_manga_model
+from backend.database import get_db
+from backend.schema import Manga
 
 router = APIRouter(prefix="/manga", tags=["Manga"])
 
@@ -60,13 +60,13 @@ def get_mangas_by_genres(genre_name: str, db: Session = Depends(get_db)):
 
 @router.get("/author/{author_name}")
 def get_mangas_by_author(author_name: str, db: Session = Depends(get_db)):
-    author = crud.author.get_author(db, author_name)
+    author = backend.crud.author.get_author(db, author_name)
     if author is None:
         raise HTTPException(
             status_code=404,
             detail="Author not found"
         )
-    relations = crud.author.get_relations_by_author_id(db, author.id)
+    relations = backend.crud.author.get_relations_by_author_id(db, author.id)
     return crud.manga.get_mangas_by_relations(db, relations)
 
 
@@ -77,10 +77,10 @@ def create_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
 
 @router.put("/id/add_vol/{manga_id}/{volume_num}")
 def add_volume_to_manga_by_id(manga_id: int, volume_num: int, db: Session = Depends(get_db)):
-    volume = crud.volume.get_volume(db, volume_num)
+    volume = backend.crud.volume.get_volume(db, volume_num)
     if volume is None:
-        volume = crud.volume.create_volume(db, volume_num)
-    crud.volume.create_relation_manga_volume(db, manga_id, volume.id)
+        volume = backend.crud.volume.create_volume(db, volume_num)
+    backend.crud.volume.create_relation_manga_volume(db, manga_id, volume.id)
     return get_manga_by_id(manga_id, db)
 
 
@@ -92,8 +92,8 @@ def add_volume_to_manga_by_title(manga_title: str, volume_num: int, db: Session 
             status_code=404,
             detail="Manga title not found"
         )
-    volume = crud.volume.get_volume(db, volume_num)
+    volume = backend.crud.volume.get_volume(db, volume_num)
     if volume is None:
-        volume = crud.volume.create_volume(db, volume_num)
-    crud.volume.create_relation_manga_volume(db, manga.id, volume.id)
+        volume = backend.crud.volume.create_volume(db, volume_num)
+    backend.crud.volume.create_relation_manga_volume(db, manga.id, volume.id)
     return get_manga_by_title(manga_title, db)
