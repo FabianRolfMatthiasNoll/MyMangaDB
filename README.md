@@ -18,6 +18,20 @@ MyAnimeList API. Because the api doesnt support isbn search the title will be fe
 Google Books API if its available. In the future further data sources will be added for the bookcovers
 of specific volumes etc.
 
+The Manga Provider Sites are sadly all extremly different thats why the main aspect will be a good UI
+where on can mostly manually manage their mangas. Things like Book Covers should be something thats always 
+fetchable. Also sadly really good manga provider arent ready to cooperate for this project maybe in the 
+future that will change. And maybe in the future we can create a database that catalogs standarized alle the Mangas
+
 # Planned Features
 
 - Export your mangas to excel
+- Get MetaData like Author, Genres, Total Volumes, Description completely automized if wanted
+- sort, manage and share your manga collection
+- and many more
+
+# Disclaimer
+
+The Project will have downtimes but please dont worry i really want to create a working product but i am student and
+cant always work on it.
+
