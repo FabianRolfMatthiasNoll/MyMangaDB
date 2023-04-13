@@ -5,8 +5,7 @@ from sqlalchemy.orm import Session
 import requests
 
 import config
-import models
-from backend import schema
+import schema
 
 
 def get_manga_from_mal(manga_title: str) -> schema.Manga:
@@ -25,7 +24,8 @@ def get_manga_from_mal(manga_title: str) -> schema.Manga:
 
     # Filter search results based on title
     # TODO: check for light novel vs manga
-    results = [r for r in results if r["node"]["title"].lower() == manga_title.lower()]
+    results = [r for r in results if r["node"]
+               ["title"].lower() == manga_title.lower()]
     if len(results) == 0:
         raise HTTPException(
             status_code=404,

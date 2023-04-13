@@ -4,17 +4,19 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 import models
-from backend import schema
+import schema
 from models import Author, Role
 
 
 def get_author(db: Session, author_name: str):
-    result: Union[models.Author, None] = db.query(models.Author).filter(models.Author.name == author_name).one_or_none()
+    result: Union[models.Author, None] = db.query(models.Author).filter(
+        models.Author.name == author_name).one_or_none()
     return result
 
 
 def get_author_by_id(db: Session, author_id: int):
-    result: Union[models.Author, None] = db.query(models.Author).filter(models.Author.id == author_id).one_or_none()
+    result: Union[models.Author, None] = db.query(models.Author).filter(
+        models.Author.id == author_id).one_or_none()
     return result
 
 
@@ -52,12 +54,14 @@ def create_author(db: Session, author_name: str) -> Author:
 
 
 def get_role(db: Session, role_name: str) -> Role:
-    result: Union[models.Role, None] = db.query(models.Role).filter(models.Role.name == role_name).one_or_none()
+    result: Union[models.Role, None] = db.query(models.Role).filter(
+        models.Role.name == role_name).one_or_none()
     return result
 
 
 def get_role_by_id(db: Session, role_id: int):
-    result: Union[models.Role, None] = db.query(models.Role).filter(models.Role.id == role_id).one_or_none()
+    result: Union[models.Role, None] = db.query(
+        models.Role).filter(models.Role.id == role_id).one_or_none()
     return result
 
 

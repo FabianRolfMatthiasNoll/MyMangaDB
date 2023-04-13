@@ -3,18 +3,18 @@ from typing import Union
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-import backend.crud.author
+import crud.author
 import crud.genre
-import backend.crud.volume
+import crud.volume
 import models
-from backend import schema
+import schema
 
 
 def create_manga_model(db: Session, db_manga: models.Manga) -> schema.Manga:
     manga_data = {"id": db_manga.id, "title": db_manga.title, "description": db_manga.description,
-                  "volumes": backend.crud.volume.get_volumes_by_manga_id(db, db_manga.id),
+                  "volumes": crud.volume.get_volumes_by_manga_id(db, db_manga.id),
                   "total_volumes": db_manga.totalVolumes,
-                  "authors": backend.crud.author.get_authors_by_manga_id(db, db_manga.id),
+                  "authors": crud.author.get_authors_by_manga_id(db, db_manga.id),
                   "genres": [g.__dict__ for g in crud.genre.get_genres_by_manga_id(db, db_manga.id)]}
     manga = schema.Manga(**manga_data)
     return manga
@@ -43,20 +43,22 @@ def create_manga(db: Session, manga: schema.Manga):
         # when creating manga there can be not relations, so we just have to create it.
         crud.genre.create_relation(db, result_genre.id, manga_model.id)
     for author in manga.authors:
-        result_author = backend.crud.author.get_author(db, author.name)
+        result_author = crud.author.get_author(db, author.name)
         if result_author is None:
-            result_author = backend.crud.author.create_author(db, author.name)
-        result_role = backend.crud.author.get_role(db, author.role)
+            result_author = crud.author.create_author(db, author.name)
+        result_role = crud.author.get_role(db, author.role)
         if result_role is None:
-            result_role = backend.crud.author.create_role(db, author.role)
-        backend.crud.author.create_relation(db, result_author.id, manga_model.id, result_role.id)
+            result_role = crud.author.create_role(db, author.role)
+        crud.author.create_relation(
+            db, result_author.id, manga_model.id, result_role.id)
     return manga
 
 
 def get_mangas_by_relations(db: Session, relations):
     mangas = []
     for relation in relations:
-        db_manga = db.query(models.Manga).filter(models.Manga.id == relation.mangaID).one_or_none()
+        db_manga = db.query(models.Manga).filter(
+            models.Manga.id == relation.mangaID).one_or_none()
         if db_manga is None:
             raise HTTPException(
                 status_code=404,
@@ -67,5 +69,6 @@ def get_mangas_by_relations(db: Session, relations):
 
 
 def get_manga_by_title(db: Session, manga_title: str) -> models.Manga:
-    manga: Union[models.Manga, None] = db.query(models.Manga).filter(models.Manga.title == manga_title).one_or_none()
+    manga: Union[models.Manga, None] = db.query(models.Manga).filter(
+        models.Manga.title == manga_title).one_or_none()
     return manga

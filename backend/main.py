@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-
 import config
 import models
 from database import engine

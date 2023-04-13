@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 
 import crud.mal_api as mal
 import crud.manga
-from backend import schema
-from backend.database import get_db
+import schema
+from database import get_db
 
 router = APIRouter(prefix="/mal", tags=["MyAnimeList"])
 
