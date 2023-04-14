@@ -1,7 +1,4 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
@@ -15,6 +12,28 @@
             "cwd": "${workspaceFolder}/backend",
             "jinja": true,
             "justMyCode": true
+        },
+        {
+            "name": "React: npm start",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/frontend/node_modules/react-scripts/scripts/start.js",
+            "env": {
+                "BROWSER": "none"
+            },
+            "cwd": "${workspaceFolder}/frontend",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run-script",
+                "start"
+            ],
+            "console": "integratedTerminal"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Full Stack",
+            "configurations": ["Python: FastAPI", "React: npm start"]
         }
     ]
 }
