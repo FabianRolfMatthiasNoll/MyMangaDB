@@ -8,6 +8,11 @@ or the title and volume and with that your volume will be saved in your collecti
 like Authors, a Description, what Volumes there are, The Bookcover, All the Genres etc without having 
 to enter the data manually.
 
+# Disclaimer
+
+The Project will have downtimes but please dont worry i really want to create a working product but i am student and
+cant always work on it.
+
 #  About MyMangaDB
 
 Currently the Application will run with FastAPI as framework. For saving an managing the 
@@ -28,10 +33,13 @@ future that will change. And maybe in the future we can create a database that c
 - Export your mangas to excel
 - Get MetaData like Author, Genres, Total Volumes, Description completely automized if wanted
 - sort, manage and share your manga collection
+- Import and Export Manga Data through a excel or json file
 - and many more
 
-# Disclaimer
+# How to use (WIP)
 
-The Project will have downtimes but please dont worry i really want to create a working product but i am student and
-cant always work on it.
-
+to start up the backend and frontend please refer to the vscode launch.json 
+To make changes to the database you can use http://127.0.0.1:8000/docs to interact
+with the backend. The frontend is currently automatically fetching all mangas from the database and displaying them in a list.
+This is just a proof of concept. A search, sort and add,remove function will be added shortly. Please dont use the software for real
+currently because changes to the database will definitly be made.
