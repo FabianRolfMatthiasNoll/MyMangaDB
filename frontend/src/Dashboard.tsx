@@ -17,9 +17,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { mainListItems } from "./listItems";
-
-// https://mui.com/material-ui/getting-started/installation/
-// https://github.com/callFEELD/react-example
+import MangaList from "./MangaList";
 
 function Copyright(props: any) {
   return (
@@ -165,7 +163,9 @@ function DashboardContent() {
         >
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Grid container spacing={3}></Grid>
+            <Grid container spacing={3}>
+              <MangaList />
+            </Grid>
             <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>
