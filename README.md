@@ -42,4 +42,10 @@ to start up the backend and frontend please refer to the vscode launch.json
 To make changes to the database you can use http://127.0.0.1:8000/docs to interact
 with the backend. The frontend is currently automatically fetching all mangas from the database and displaying them in a list.
 This is just a proof of concept. A search, sort and add,remove function will be added shortly. Please dont use the software for real
-currently because changes to the database will definitly be made.
+currently because changes to the database will definitly be made.  
+ 
+Generate API
+```bash
+cd frontend/api
+npx openapi-generator-cli generate -i http://127.0.0.1:8000/openapi.json -g typescript-fetch
+```
