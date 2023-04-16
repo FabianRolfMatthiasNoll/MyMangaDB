@@ -1,3 +1,4 @@
+import os
 from typing import List
 
 from fastapi import HTTPException
@@ -6,6 +7,8 @@ import requests
 
 import config
 import schema
+
+# TODO: save images in db
 
 
 def get_manga_from_mal(manga_title: str) -> schema.Manga:
@@ -59,4 +62,29 @@ def get_manga_from_mal(manga_title: str) -> schema.Manga:
         description=manga_data["node"]["synopsis"],
         volumes=[],
     )
+
+    # Download and save the manga cover image
+    cover_image_url = manga_data["node"]["main_picture"]["large"]
+    cover_image_name = f"{manga_title}_cover.jpg"
+
+    # Replace with your desired download location
+    download_location = "../../frontend/public/static/images"
+    cover_image_path = os.path.join(download_location, cover_image_name)
+
+    try:
+        download_image(cover_image_url, cover_image_path)
+        print(f"Cover image downloaded to {cover_image_path}")
+    except Exception as e:
+        print(f"Failed to download cover image: {e}")
+
     return manga
+
+
+def download_image(url: str, save_path: str) -> None:
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(save_path, 'wb') as f:
+            f.write(response.content)
+    else:
+        raise Exception(
+            f"Failed to download image. Status code: {response.status_code}")
