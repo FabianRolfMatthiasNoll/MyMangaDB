@@ -1,5 +1,5 @@
-import { components, operations } from "./api-types";
 import { useState, useEffect } from "react";
+import { useQueries, useQuery } from "react-query";
 import axios, { AxiosResponse } from "axios";
 import Grid from "@mui/material/Grid";
 import * as React from "react";
@@ -8,9 +8,8 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { CardActionArea } from "@mui/material";
-
-type Manga = components["schemas"]["Manga"];
-const API_URL = "http://localhost:8000";
+import { manga } from "./api";
+import { Manga } from "./api/models";
 
 const MangaList: React.FC = () => {
   const [mangas, setMangas] = useState<Manga[]>([]);
@@ -18,30 +17,20 @@ const MangaList: React.FC = () => {
 
   // TODO: Check for : in title an remove when searching for cover image
 
-  useEffect(() => {
-    const fetchAllMangas = async () => {
-      try {
-        const response = await axios.get<Manga[]>(`${API_URL}/manga/`);
-        setMangas(response.data);
-        console.log("Received mangas:", response.data);
-      } catch (error) {
-        console.error("Error fetching mangas:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const stationQuery = useQuery({
+    queryKey: "GetAllMangas",
+    queryFn: () => manga.getAllMangasMangaGet(),
+    onSuccess: (data) => setMangas(data),
+  });
 
-    fetchAllMangas();
-  }, []);
-
-  if (loading) {
+  if (stationQuery.isLoading) {
     return <div>Loading...</div>;
   }
 
   return (
     <Grid container spacing={1}>
       {mangas.map((manga, index) => (
-        <Grid xs={3}>
+        <Grid xs={6} md={4} lg={3}>
           <Card sx={{ maxWidth: 270 }}>
             <CardActionArea>
               <CardMedia
@@ -70,23 +59,3 @@ const MangaList: React.FC = () => {
 };
 
 export default MangaList;
-
-{
-  /* <div>
-      <h1>All Mangas</h1>
-      {mangas.map((manga, index) => (
-        <div key={index}>
-          <h2>{manga.title}</h2>
-          <p>Description: {manga.description}</p>
-          <p>Total Volumes: {manga.total_volumes}</p>
-          <p>Genres: {manga.genres.map((genre) => genre.name).join(", ")}</p>
-          <p>
-            Authors:{" "}
-            {manga.authors
-              .map((author) => `${author.name} (${author.role})`)
-              .join(", ")}
-          </p>
-        </div>
-      ))}
-    </div> */
-}
