@@ -8,7 +8,6 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { CardActionArea } from "@mui/material";
-import volumecover from "./static/images/volumecover.jpg";
 
 type Manga = components["schemas"]["Manga"];
 const API_URL = "http://localhost:8000";
@@ -16,6 +15,8 @@ const API_URL = "http://localhost:8000";
 const MangaList: React.FC = () => {
   const [mangas, setMangas] = useState<Manga[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  // TODO: Check for : in title an remove when searching for cover image
 
   useEffect(() => {
     const fetchAllMangas = async () => {
@@ -46,7 +47,7 @@ const MangaList: React.FC = () => {
               <CardMedia
                 component="img"
                 height="400"
-                image={volumecover}
+                image={`/static/images/${manga.title}_cover.jpg`}
                 alt="mangacover"
               />
               <CardContent>
