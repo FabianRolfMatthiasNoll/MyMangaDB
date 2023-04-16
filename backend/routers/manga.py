@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -16,7 +17,7 @@ router = APIRouter(prefix="/manga", tags=["Manga"])
 
 
 @router.get("/")
-def get_all_mangas(db: Session = Depends(get_db)):
+def get_all_mangas(db: Session = Depends(get_db)) -> List[Manga]:
     db_mangas = db.query(models.Manga).all()
     mangas = []
     for db_manga in db_mangas:
