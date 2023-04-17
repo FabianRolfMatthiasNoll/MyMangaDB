@@ -2,7 +2,6 @@ from typing import List, Union
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from backend.models import Manga
 
 import crud.author
 import crud.genre

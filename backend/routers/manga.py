@@ -17,7 +17,7 @@ router = APIRouter(prefix="/manga", tags=["Manga"])
 
 
 @router.get("/")
-def get_all_mangas(db: Session = Depends(get_db)) -> List[models.Manga]:
+def get_all_mangas(db: Session = Depends(get_db)) -> List[Manga]:
     db_mangas = db.query(models.Manga).all()
     mangas = []
     for db_manga in db_mangas:
@@ -26,7 +26,7 @@ def get_all_mangas(db: Session = Depends(get_db)) -> List[models.Manga]:
 
 
 @router.get("/id/{manga_id}")
-def get_manga_by_id(manga_id: int, db: Session = Depends(get_db)) -> models.Manga:
+def get_manga_by_id(manga_id: int, db: Session = Depends(get_db)) -> Manga:
     db_manga = db.query(models.Manga).filter(
         models.Manga.id == manga_id).one_or_none()
     if db_manga is None:
@@ -38,7 +38,7 @@ def get_manga_by_id(manga_id: int, db: Session = Depends(get_db)) -> models.Mang
 
 
 @router.get("/title/{manga_title}")
-def get_manga_by_title(manga_title: str, db: Session = Depends(get_db)) -> models.Manga:
+def get_manga_by_title(manga_title: str, db: Session = Depends(get_db)) -> Manga:
     manga = crud.manga.get_manga_by_title(db, manga_title)
     if manga is None:
         raise HTTPException(
@@ -49,7 +49,7 @@ def get_manga_by_title(manga_title: str, db: Session = Depends(get_db)) -> model
 
 
 @router.get("/genre/{genre_name}")
-def get_mangas_by_genres(genre_name: str, db: Session = Depends(get_db)) -> List[models.Manga]:
+def get_mangas_by_genres(genre_name: str, db: Session = Depends(get_db)) -> List[Manga]:
     genre = crud.genre.get_genre(db, genre_name)
     if genre is None:
         raise HTTPException(
@@ -61,7 +61,7 @@ def get_mangas_by_genres(genre_name: str, db: Session = Depends(get_db)) -> List
 
 
 @router.get("/author/{author_name}")
-def get_mangas_by_author(author_name: str, db: Session = Depends(get_db)) -> List[models.Manga]:
+def get_mangas_by_author(author_name: str, db: Session = Depends(get_db)) -> List[Manga]:
     author = crud.author.get_author(db, author_name)
     if author is None:
         raise HTTPException(
@@ -78,7 +78,7 @@ def create_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
 
 
 @router.put("/id/add_vol/{manga_id}/{volume_num}")
-def add_volume_to_manga_by_id(manga_id: int, volume_num: int, db: Session = Depends(get_db)) -> models.Manga:
+def add_volume_to_manga_by_id(manga_id: int, volume_num: int, db: Session = Depends(get_db)) -> Manga:
     volume = crud.volume.get_volume(db, volume_num)
     if volume is None:
         volume = crud.volume.create_volume(db, volume_num)
@@ -87,7 +87,7 @@ def add_volume_to_manga_by_id(manga_id: int, volume_num: int, db: Session = Depe
 
 
 @router.put("/title/add_vol/{manga_title}/{volume_num}")
-def add_volume_to_manga_by_title(manga_title: str, volume_num: int, db: Session = Depends(get_db)) -> models.Manga:
+def add_volume_to_manga_by_title(manga_title: str, volume_num: int, db: Session = Depends(get_db)) -> Manga:
     manga = crud.manga.get_manga_by_title(db, manga_title)
     if manga is None:
         raise HTTPException(
