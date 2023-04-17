@@ -12,7 +12,7 @@ def get_volume(db: Session, volume_num: int) -> models.Volume:
     return volume
 
 
-def get_volumes_by_manga_id(db: Session, manga_id: int) -> List:
+def get_volumes_by_manga_id(db: Session, manga_id: int) -> List[int]:
     relations = get_volume_relations_by_manga(db, manga_id)
     volumes: List[int] = []
     for relation in relations:

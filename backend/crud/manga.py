@@ -1,7 +1,8 @@
-from typing import Union
+from typing import List, Union
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from backend.models import Manga
 
 import crud.author
 import crud.genre
@@ -20,7 +21,7 @@ def create_manga_model(db: Session, db_manga: models.Manga) -> schema.Manga:
     return manga
 
 
-def create_manga(db: Session, manga: schema.Manga):
+def create_manga(db: Session, manga: schema.Manga) -> schema.Manga:
     exists = db.query(
         db.query(models.Manga).filter_by(title=manga.title).exists()
     ).scalar()
@@ -54,7 +55,7 @@ def create_manga(db: Session, manga: schema.Manga):
     return manga
 
 
-def get_mangas_by_relations(db: Session, relations):
+def get_mangas_by_relations(db: Session, relations) -> List[models.Manga]:
     mangas = []
     for relation in relations:
         db_manga = db.query(models.Manga).filter(
