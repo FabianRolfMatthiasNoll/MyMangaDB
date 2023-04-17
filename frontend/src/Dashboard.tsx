@@ -166,12 +166,10 @@ function DashboardContent() {
           }}
         >
           <Toolbar />
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Grid container spacing={3}>
-              <MangaList />
-            </Grid>
-            <Copyright sx={{ pt: 4 }} />
-          </Container>
+          <Grid container spacing={3}>
+            <MangaList />
+          </Grid>
+          <Copyright sx={{ pt: 4 }} />
         </Box>
       </Box>
     </ThemeProvider>
