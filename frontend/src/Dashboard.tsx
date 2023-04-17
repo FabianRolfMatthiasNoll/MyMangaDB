@@ -5,6 +5,7 @@ import MuiDrawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
+import SearchField from "./SearchField";
 import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
@@ -130,6 +131,7 @@ function DashboardContent() {
             >
               MyMangaDB - Dashboard
             </Typography>
+            <SearchField />
             <IconButton color="inherit">
               <Badge badgeContent={4} color="secondary">
                 <NotificationsIcon />
@@ -167,10 +169,10 @@ function DashboardContent() {
         >
           <Toolbar />
           <Container maxWidth="xl" sx={{ mt: 12, mb: 4 }}>
-          <Grid container spacing={3}>
-            <MangaList />
-          </Grid>
-          <Copyright sx={{ pt: 4 }} />
+            <Grid container spacing={3}>
+              <MangaList />
+            </Grid>
+            <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>
       </Box>
