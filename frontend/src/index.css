@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --container-max-width: 1200px;
 }
 
 code {
@@ -22,7 +23,7 @@ code {
   max-width: 800px;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
   z-index: 9999;
 }
 
@@ -54,6 +55,6 @@ code {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.717);
+  background-color: rgb(0, 0, 0);
   z-index: 9998;
 }
