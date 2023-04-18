@@ -21,6 +21,7 @@ import { mainListItems } from "./listItems";
 import MangaList from "./MangaList";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { QueryClient, QueryClientProvider } from "react-query";
+import AddMangaButton from "./AddMangaButton";
 
 const queryClient = new QueryClient();
 
@@ -176,6 +177,7 @@ function DashboardContent() {
           </Container>
         </Box>
       </Box>
+      <AddMangaButton />
     </ThemeProvider>
   );
 }

@@ -3,7 +3,6 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
-  Grid,
   Typography,
 } from "@mui/material";
 import { Manga } from "./api/models";
