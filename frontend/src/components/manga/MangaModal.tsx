@@ -1,5 +1,5 @@
 import { Button, Modal } from "@mui/material";
-import { Manga, Author, Genre } from "./api/models";
+import { Manga, Author, Genre } from "../../api/models";
 
 interface Props {
   manga: Manga;

@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 import Grid from "@mui/material/Grid";
 import * as React from "react";
 import { mangaAPI } from "../../api";
-import { Manga } from "./api/models";
+import { Manga } from "../../api/models";
 import MangaCard from "../manga/MangaCard";
 
 const MangaList: React.FC = () => {

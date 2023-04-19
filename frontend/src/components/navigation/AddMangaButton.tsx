@@ -14,7 +14,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { mangaAPI } from "../../api";
-import { Manga } from "./api/models";
+import { Manga } from "../../api/models";
 import { useMutation, useQueryClient } from "react-query";
 
 const defaultManga: Manga = {
