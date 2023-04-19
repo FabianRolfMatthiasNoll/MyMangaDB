@@ -6,10 +6,14 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import AddMangaButton from "./components/navigation/AddMangaButton";
 import Navigation from "./components/navigation/Navigation";
+import React from "react";
 
 const queryClient = new QueryClient();
-
-const mdTheme = createTheme();
+const mdTheme = createTheme({
+  palette: {
+    mode: "light",
+  },
+});
 
 export default function Dashboard() {
   return (
