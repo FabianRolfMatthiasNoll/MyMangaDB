@@ -6,7 +6,7 @@ interface Props {
   manga: Manga;
   onClose: () => void;
 }
-
+// TODO: When volume name as string is implemented dont generate volume name instead take it from database
 export default function VolumesModal({ manga, onClose }: Props) {
   const [volumes, setVolumes] = useState(
     new Array(manga.totalVolumes).fill({

@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from database import Base
 
 
+# TODO: Add saving the cover image into the database.
 class Manga(Base):
     __tablename__ = "manga"
 
@@ -18,6 +19,7 @@ class Genre(Base):
     name = Column(String)
 
 
+# TODO: Change volume to string to accomodate volume zero or 0.5 etc.
 class Volume(Base):
     __tablename__ = "volume"
 
@@ -35,7 +37,6 @@ class Author(Base):
 class Role(Base):
     __tablename__ = "role"
 
-    # TODO: Rename to name on next datadrop
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
 

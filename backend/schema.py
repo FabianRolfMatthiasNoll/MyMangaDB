@@ -12,6 +12,8 @@ class Author(BaseModel):
     role: str
 
 
+# TODO: Add saving the cover image into the database.
+# TODO: Change volumes from list of ints to strings on next data change
 class Manga(BaseModel):
     title: str = Field(min_length=1)
     description: str
