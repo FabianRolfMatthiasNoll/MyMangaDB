@@ -9,13 +9,17 @@ import {
   Fab,
   Grid,
   IconButton,
+  Switch,
   TextField,
+  Toolbar,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { mangaAPI } from "../../api";
 import { Manga } from "../../api/models";
 import { useMutation, useQueryClient } from "react-query";
+import AddMangaManual from "../manga/add_manga/AddMangaManual";
+import AddMangaMAL from "../manga/add_manga/AddMangaMAL";
 
 const defaultManga: Manga = {
   title: "",
@@ -29,6 +33,7 @@ const defaultManga: Manga = {
 const AddMangaButton: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [manga, setManga] = useState<Manga>(defaultManga);
+  const [manualMode, setManualMode] = useState(true);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -45,8 +50,15 @@ const AddMangaButton: React.FC = () => {
     setManga({ ...manga, [field]: e.target.value });
   };
 
-  const handleSubmit = async () => {
+  const handleManualSubmit = async () => {
     mutation.mutate(manga);
+    // Reset manga state and close modal
+    setManga(defaultManga);
+    handleClose();
+  };
+
+  const handleMALSubmit = async (selectedManga: Manga) => {
+    mutation.mutate(selectedManga);
     // Reset manga state and close modal
     setManga(defaultManga);
     handleClose();
@@ -74,56 +86,34 @@ const AddMangaButton: React.FC = () => {
         <AddIcon />
       </Fab>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>
-          Add New Manga
-          <IconButton
-            edge="end"
-            color="inherit"
-            onClick={handleClose}
-            aria-label="close"
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
+        <Toolbar>
+          <DialogTitle>Add New Manga</DialogTitle>
+          <Switch
+            checked={manualMode}
+            onChange={() => setManualMode(!manualMode)}
+            color="primary"
+          />
+        </Toolbar>
         <DialogContent>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                required
-                label="Title"
-                fullWidth
-                value={manga.title}
-                onChange={(e) => handleInputChange(e, "title")}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Description"
-                fullWidth
-                value={manga.description}
-                onChange={(e) => handleInputChange(e, "description")}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Total Volumes"
-                type="number"
-                fullWidth
-                value={manga.totalVolumes}
-                onChange={(e) => handleInputChange(e, "totalVolumes")}
-              />
-            </Grid>
-          </Grid>
+          {manualMode ? (
+            <AddMangaManual
+              manga={manga}
+              handleInputChange={handleInputChange}
+            />
+          ) : (
+            <AddMangaMAL handleMALSubmit={handleMALSubmit} />
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit} color="primary">
-            Save
-          </Button>
+          {manualMode ? (
+            <Button onClick={handleManualSubmit} color="primary">
+              Save
+            </Button>
+          ) : null}
         </DialogActions>
       </Dialog>
     </Box>
   );
 };
-
 export default AddMangaButton;
