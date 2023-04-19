@@ -49,3 +49,12 @@ Generate API
 cd frontend/api
 npx openapi-generator-cli generate -i http://127.0.0.1:8000/openapi.json -g typescript-fetch
 ```
+# Sneak Preview
+
+The following images are all subject to change:
+## Dashboard
+![ScreenShot](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/master/screenshots/dashboard.png)
+## Manga Overview
+![ScreenShot](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/master/screenshots/manga_overview.png)
+## Volume Overview
+![ScreenShot](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/master/screenshots/volume_overview.png)
