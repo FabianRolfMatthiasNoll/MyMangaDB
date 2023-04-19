@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import Grid from "@mui/material/Grid";
 import * as React from "react";
-import { mangaAPI } from "./api";
+import { mangaAPI } from "../../api";
 import { Manga } from "./api/models";
-import MangaCard from "./MangaCard";
+import MangaCard from "../manga/MangaCard";
 
 const MangaList: React.FC = () => {
   const [mangas, setMangas] = useState<Manga[]>([]);

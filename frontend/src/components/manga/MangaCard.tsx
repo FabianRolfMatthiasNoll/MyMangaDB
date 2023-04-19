@@ -5,7 +5,7 @@ import {
   CardMedia,
   Typography,
 } from "@mui/material";
-import { Manga } from "./api/models";
+import { Manga, Author } from "../../api/models";
 import { useState } from "react";
 import MangaModal from "./MangaModal";
 
@@ -43,7 +43,7 @@ export default function MangaCard({ manga }: Props) {
             <Typography variant="body2" color="text.secondary">
               Authors:{" "}
               {manga.authors
-                .map((author) => `${author.name} (${author.role})`)
+                .map((author: Author) => `${author.name} (${author.role})`)
                 .join(", ")}
             </Typography>
           </CardContent>

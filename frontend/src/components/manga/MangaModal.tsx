@@ -1,5 +1,5 @@
 import { Button, Modal } from "@mui/material";
-import { Manga } from "./api/models";
+import { Manga, Author, Genre } from "./api/models";
 
 interface Props {
   manga: Manga;
@@ -22,12 +22,12 @@ export default function MangaModal({ manga, open, onClose }: Props) {
             <p>
               <strong>Authors:</strong>{" "}
               {manga.authors
-                .map((author) => `${author.name} (${author.role})`)
+                .map((author: Author) => `${author.name} (${author.role})`)
                 .join(", ")}
             </p>
             <p>
               <strong>Genres:</strong>{" "}
-              {manga.genres.map((genre) => genre.name).join(", ")}
+              {manga.genres.map((genre: Genre) => genre.name).join(", ")}
             </p>
             <p>{manga.description}</p>
           </div>

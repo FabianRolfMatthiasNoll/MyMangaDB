@@ -1,3 +1,4 @@
-import { MangaApi } from "./api/apis";
+// import { MangaApi } from "./api/apis";
 
-export const mangaAPI = new MangaApi();
+// export const mangaAPI = new MangaApi();
+export {};
