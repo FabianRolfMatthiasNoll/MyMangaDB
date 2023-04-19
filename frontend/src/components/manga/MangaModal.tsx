@@ -1,8 +1,7 @@
 import { Box, Button, Modal, Typography } from "@mui/material";
 import { Manga } from "../../api/models";
 import { useState } from "react";
-import { Button, Modal } from "@mui/material";
-import { Manga, Author, Genre } from "../../api/models";
+import VolumesModal from "./VolumeModal";
 
 interface Props {
   manga: Manga;
@@ -12,6 +11,8 @@ interface Props {
 
 export default function MangaModal({ manga, open, onClose }: Props) {
   const imageUrl = `/static/images/${manga.title.replace(":", "")}_cover.jpg`;
+  const [volumesOpen, setVolumesOpen] = useState(false);
+
   return (
     <Modal
       open={open}
@@ -71,12 +72,10 @@ export default function MangaModal({ manga, open, onClose }: Props) {
             </Typography>
           </Box>
         </Box>
-              {manga.genres.map((genre: Genre) => genre.name).join(", ")}
-            </p>
-            <p>{manga.description}</p>
-          </div>
-        </div>
-      </div>
+        <Button onClick={() => setVolumesOpen(true)}>Volumes</Button>
+        {volumesOpen && (
+          <VolumesModal manga={manga} onClose={() => setVolumesOpen(false)} />
+        )}
       </Box>
     </Modal>
   );
