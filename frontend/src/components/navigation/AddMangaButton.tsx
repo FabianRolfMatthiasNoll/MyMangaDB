@@ -7,10 +7,7 @@ import {
   DialogContent,
   DialogTitle,
   Fab,
-  Grid,
-  IconButton,
   Switch,
-  TextField,
   Toolbar,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -94,7 +91,7 @@ const AddMangaButton: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ["GetAllMangas"] });
     },
   });
-
+  // TODO: Reset input field states after closing
   return (
     <Box
       sx={{
@@ -124,15 +121,20 @@ const AddMangaButton: React.FC = () => {
                 genres={genres}
                 handleInputChange={handleInputChange}
               />
-
-              <button onClick={addAuthor}>Add Author</button>
-              <button onClick={addGenre}>Add Genre</button>
             </>
           ) : (
             <AddMangaMAL manga={manga} handleInputChange={handleInputChange} />
           )}
         </DialogContent>
         <DialogActions>
+          {manualMode ? (
+            <>
+              <Button onClick={addAuthor}>Add Author</Button>
+              <Button onClick={addGenre}>Add Genre</Button>
+            </>
+          ) : (
+            <></>
+          )}
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleSubmit} color="primary">
             Save
