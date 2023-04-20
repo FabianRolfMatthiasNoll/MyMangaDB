@@ -50,15 +50,8 @@ const AddMangaButton: React.FC = () => {
     setManga({ ...manga, [field]: e.target.value });
   };
 
-  const handleManualSubmit = async () => {
+  const handleSubmit = async () => {
     mutation.mutate(manga);
-    // Reset manga state and close modal
-    setManga(defaultManga);
-    handleClose();
-  };
-
-  const handleMALSubmit = async (selectedManga: Manga) => {
-    mutation.mutate(selectedManga);
     // Reset manga state and close modal
     setManga(defaultManga);
     handleClose();
@@ -101,16 +94,14 @@ const AddMangaButton: React.FC = () => {
               handleInputChange={handleInputChange}
             />
           ) : (
-            <AddMangaMAL handleMALSubmit={handleMALSubmit} />
+            <AddMangaMAL manga={manga} handleInputChange={handleInputChange} />
           )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          {manualMode ? (
-            <Button onClick={handleManualSubmit} color="primary">
-              Save
-            </Button>
-          ) : null}
+          <Button onClick={handleSubmit} color="primary">
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
