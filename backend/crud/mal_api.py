@@ -44,7 +44,7 @@ def get_manga_from_mal(manga_title: str) -> schema.Manga:
         genres.append(genre_model)
 
     manga = schema.Manga(
-        title=manga_title,
+        title=manga_data["node"]["title"],
         genres=genres,
         authors=authors,
         total_volumes=manga_data["node"]["num_volumes"],
@@ -83,7 +83,6 @@ def get_search_results_from_mal(manga_title: str) -> List[schema.Manga]:
 
     # Filter search results based on title
     # TODO: check for light novel vs manga
-    results = [r for r in results if r["node"]["title"].lower() == manga_title.lower()]
     if len(results) == 0:
         raise HTTPException(status_code=404, detail="Manga not found")
 
@@ -105,7 +104,7 @@ def get_search_results_from_mal(manga_title: str) -> List[schema.Manga]:
             genres.append(genre_model)
 
         manga = schema.Manga(
-            title=manga_title,
+            title=manga_data["node"]["title"],
             genres=genres,
             authors=authors,
             total_volumes=manga_data["node"]["num_volumes"],
