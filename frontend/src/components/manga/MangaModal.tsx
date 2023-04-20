@@ -23,13 +23,15 @@ export default function MangaModal({ manga, open, onClose }: Props) {
       <Box
         sx={{
           position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
+          top: "10%",
+          left: "10%",
+          right: "10%",
+          bottom: "10%",
           bgcolor: "background.paper",
           boxShadow: 24,
           p: 4,
           borderRadius: 5,
+          overflow: "auto",
         }}
       >
         <Box
@@ -37,6 +39,7 @@ export default function MangaModal({ manga, open, onClose }: Props) {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            mb: 5,
           }}
         >
           <img src={imageUrl} alt="mangacover" />

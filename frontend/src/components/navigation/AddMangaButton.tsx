@@ -14,9 +14,8 @@ import {
   Toolbar,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import CloseIcon from "@mui/icons-material/Close";
 import { mangaAPI } from "../../api";
-import { Manga } from "../../api/models";
+import { Manga, Author, Genre } from "../../api/models";
 import { useMutation, useQueryClient } from "react-query";
 import AddMangaManual from "../manga/add_manga/AddMangaManual";
 import AddMangaMAL from "../manga/add_manga/AddMangaMAL";
@@ -33,6 +32,8 @@ const defaultManga: Manga = {
 const AddMangaButton: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [manga, setManga] = useState<Manga>(defaultManga);
+  const [authors, setAuthors] = useState<Author[]>([{ name: "", role: "" }]);
+  const [genres, setGenres] = useState<Genre[]>([{ name: "" }]);
   const [manualMode, setManualMode] = useState(true);
 
   const handleClickOpen = () => {
@@ -43,11 +44,38 @@ const AddMangaButton: React.FC = () => {
     setOpen(false);
   };
 
+  const addAuthor = () => {
+    setAuthors([...authors, { name: "", role: "" }]);
+  };
+
+  const addGenre = () => {
+    setGenres([...genres, { name: "" }]);
+  };
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    field: keyof Manga
+    field: keyof Manga | "author" | "authorRole" | "genre",
+    index?: number
   ) => {
-    setManga({ ...manga, [field]: e.target.value });
+    if (field === "author" || field === "authorRole") {
+      const updatedAuthors = [...authors];
+      updatedAuthors[index!] = {
+        ...updatedAuthors[index!],
+        [field === "author" ? "name" : "role"]: e.target.value,
+      };
+      setAuthors(updatedAuthors);
+      setManga({ ...manga, authors: updatedAuthors });
+    } else if (field === "genre") {
+      const updatedGenres = [...genres];
+      updatedGenres[index!] = {
+        ...updatedGenres[index!],
+        name: e.target.value,
+      };
+      setGenres(updatedGenres);
+      setManga({ ...manga, genres: updatedGenres });
+    } else {
+      setManga({ ...manga, [field]: e.target.value });
+    }
   };
 
   const handleSubmit = async () => {
@@ -89,10 +117,17 @@ const AddMangaButton: React.FC = () => {
         </Toolbar>
         <DialogContent>
           {manualMode ? (
-            <AddMangaManual
-              manga={manga}
-              handleInputChange={handleInputChange}
-            />
+            <>
+              <AddMangaManual
+                manga={manga}
+                authors={authors}
+                genres={genres}
+                handleInputChange={handleInputChange}
+              />
+
+              <button onClick={addAuthor}>Add Author</button>
+              <button onClick={addGenre}>Add Genre</button>
+            </>
           ) : (
             <AddMangaMAL manga={manga} handleInputChange={handleInputChange} />
           )}

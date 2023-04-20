@@ -9,3 +9,7 @@ Make Search Request with Custom Google Search Engine and
 fetch picture results so that the user can choose on of them.
 
 ## Make Mangas editable
+
+## Manga Manual Creation
+Make "Predicitons" for already existing authors, roles and genres
+Get that data from the database or from the loaded mangas in the dashboard
