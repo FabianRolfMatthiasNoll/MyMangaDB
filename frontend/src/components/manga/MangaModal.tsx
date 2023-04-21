@@ -1,4 +1,4 @@
-import { Box, Button, Modal, Typography } from "@mui/material";
+import { Box, Button, Modal, Paper, Typography } from "@mui/material";
 import { Manga } from "../../api/models";
 import { useState } from "react";
 import VolumesModal from "./VolumeModal";
@@ -20,18 +20,20 @@ export default function MangaModal({ manga, open, onClose }: Props) {
       aria-labelledby="manga-modal-title"
       aria-describedby="manga-modal-description"
     >
-      <Box
+      <Paper
         sx={{
           position: "absolute",
-          top: "10%",
-          left: "10%",
-          right: "10%",
-          bottom: "10%",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
           bgcolor: "background.paper",
           boxShadow: 24,
           p: 4,
           borderRadius: 5,
           overflow: "auto",
+          maxWidth: "95vw", // or any other value
+          maxHeight: "95vh", // or any other value
+          width: "90vw",
         }}
       >
         <Box
@@ -79,7 +81,7 @@ export default function MangaModal({ manga, open, onClose }: Props) {
         {volumesOpen && (
           <VolumesModal manga={manga} onClose={() => setVolumesOpen(false)} />
         )}
-      </Box>
+      </Paper>
     </Modal>
   );
 }
