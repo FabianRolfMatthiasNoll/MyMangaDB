@@ -28,11 +28,11 @@ export default function MangaCard({ manga }: Props) {
 
   return (
     <>
-      <Card sx={{ maxWidth: 270 }} onClick={handleClick}>
+      <Card sx={{ maxWidth: 350, minHeight: 500 }} onClick={handleClick}>
         <CardActionArea>
           <CardMedia
             component="img"
-            height="400"
+            height="350"
             image={imageUrl}
             alt="mangacover"
           />
