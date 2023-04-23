@@ -38,6 +38,7 @@ const AddMangaButton: React.FC = () => {
   };
 
   const handleClose = () => {
+    setMangaDefault();
     setOpen(false);
   };
 
@@ -45,8 +46,20 @@ const AddMangaButton: React.FC = () => {
     setAuthors([...authors, { name: "", role: "" }]);
   };
 
+  const removeAuthor = (index: number) => {
+    const newAuthors = [...authors];
+    newAuthors.splice(index, 1);
+    setAuthors(newAuthors);
+  };
+
   const addGenre = () => {
     setGenres([...genres, { name: "" }]);
+  };
+
+  const removeGenre = (index: number) => {
+    const newGenres = [...genres];
+    newGenres.splice(index, 1);
+    setGenres(newGenres);
   };
 
   const handleInputChange = (
@@ -78,8 +91,14 @@ const AddMangaButton: React.FC = () => {
   const handleSubmit = async () => {
     mutation.mutate(manga);
     // Reset manga state and close modal
-    setManga(defaultManga);
+    setMangaDefault();
     handleClose();
+  };
+
+  const setMangaDefault = async () => {
+    setManga(defaultManga);
+    setAuthors([{ name: "", role: "" }]);
+    setGenres([{ name: "" }]);
   };
 
   const queryClient = useQueryClient();
@@ -120,6 +139,8 @@ const AddMangaButton: React.FC = () => {
                 authors={authors}
                 genres={genres}
                 handleInputChange={handleInputChange}
+                removeAuthor={removeAuthor}
+                removeGenre={removeGenre}
               />
             </>
           ) : (
