@@ -1,5 +1,5 @@
 import { Box, Button, Modal, Paper, Typography } from "@mui/material";
-import { Manga } from "../../api/models";
+import { Manga } from "../../../api/models";
 import { useState } from "react";
 import VolumesModal from "./VolumeModal";
 

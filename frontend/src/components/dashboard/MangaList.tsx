@@ -4,7 +4,7 @@ import Grid from "@mui/material/Grid";
 import * as React from "react";
 import { mangaAPI } from "../../api";
 import { Manga } from "../../api/models";
-import MangaCard from "../manga/MangaCard";
+import MangaCard from "../manga/display_manga/MangaCard";
 
 const MangaList: React.FC = () => {
   const [mangas, setMangas] = useState<Manga[]>([]);

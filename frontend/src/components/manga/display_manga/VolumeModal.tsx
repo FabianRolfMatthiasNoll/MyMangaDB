@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Manga } from "../../api/models";
+import { Manga } from "../../../api/models";
 import { Box, Button, Grid, Modal, TextField, Typography } from "@mui/material";
 
 interface Props {

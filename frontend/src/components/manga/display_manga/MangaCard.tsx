@@ -5,7 +5,7 @@ import {
   CardMedia,
   Typography,
 } from "@mui/material";
-import { Manga, Author } from "../../api/models";
+import { Manga, Author } from "../../../api/models";
 import { useState } from "react";
 import MangaModal from "./MangaModal";
 
