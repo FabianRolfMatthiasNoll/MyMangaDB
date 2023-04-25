@@ -6,12 +6,12 @@ from sqlalchemy.orm import Session
 import requests
 
 import config
-import schema
+from schema import Manga, Author, Genre
 
 # TODO: save images in db
 
 
-def get_manga_from_mal(manga_title: str) -> schema.Manga:
+def get_manga_from_mal(manga_title: str) -> Manga:
     url = "https://api.myanimelist.net/v2/manga"
     headers = {"Authorization": f"Bearer {config.MYANIMELIST_ACCESS_TOKEN}"}
     params = {
@@ -29,21 +29,21 @@ def get_manga_from_mal(manga_title: str) -> schema.Manga:
     if len(results) == 0:
         raise HTTPException(status_code=404, detail="Manga not found")
     manga_data = results[0]
-    authors: List[schema.Author] = []
+    authors: List[Author] = []
     for author in manga_data["node"]["authors"]:
         author_first_name = author["node"]["first_name"]
         author_last_name = author["node"]["last_name"]
         author_name = f"{author_first_name} {author_last_name}"
         author_data = {"name": author_name, "role": author["role"]}
-        author_model = schema.Author(**author_data)
+        author_model = Author(**author_data)
         authors.append(author_model)
-    genres: List[schema.Genre] = []
+    genres: List[Genre] = []
     for genre in manga_data["node"]["genres"]:
         genre_data = {"name": genre["name"]}
-        genre_model = schema.Genre(**genre_data)
+        genre_model = Genre(**genre_data)
         genres.append(genre_model)
 
-    manga = schema.Manga(
+    manga = Manga(
         title=manga_data["node"]["title"],
         genres=genres,
         authors=authors,
@@ -69,7 +69,7 @@ def get_manga_from_mal(manga_title: str) -> schema.Manga:
     return manga
 
 
-def get_search_results_from_mal(manga_title: str) -> List[schema.Manga]:
+def get_search_results_from_mal(manga_title: str) -> List[Manga]:
     url = "https://api.myanimelist.net/v2/manga"
     headers = {"Authorization": f"Bearer {config.MYANIMELIST_ACCESS_TOKEN}"}
     params = {
@@ -86,24 +86,24 @@ def get_search_results_from_mal(manga_title: str) -> List[schema.Manga]:
     if len(results) == 0:
         raise HTTPException(status_code=404, detail="Manga not found")
 
-    mangas: List[schema.Manga] = []
+    mangas: List[Manga] = []
 
     for manga_data in results:
-        authors: List[schema.Author] = []
+        authors: List[Author] = []
         for author in manga_data["node"]["authors"]:
             author_first_name = author["node"]["first_name"]
             author_last_name = author["node"]["last_name"]
             author_name = f"{author_first_name} {author_last_name}"
             author_data = {"name": author_name, "role": author["role"]}
-            author_model = schema.Author(**author_data)
+            author_model = Author(**author_data)
             authors.append(author_model)
-        genres: List[schema.Genre] = []
+        genres: List[Genre] = []
         for genre in manga_data["node"]["genres"]:
             genre_data = {"name": genre["name"]}
-            genre_model = schema.Genre(**genre_data)
+            genre_model = Genre(**genre_data)
             genres.append(genre_model)
 
-        manga = schema.Manga(
+        manga = Manga(
             title=manga_data["node"]["title"],
             genres=genres,
             authors=authors,

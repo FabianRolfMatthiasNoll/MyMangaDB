@@ -9,6 +9,7 @@ import crud.manga
 import models
 from database import get_db
 from schema import Manga
+from models import Manga as DBManga
 
 router = APIRouter(prefix="/manga", tags=["Manga"])
 
@@ -19,7 +20,7 @@ router = APIRouter(prefix="/manga", tags=["Manga"])
 
 @router.get("/")
 def get_all_mangas(db: Session = Depends(get_db)) -> List[Manga]:
-    db_mangas = db.query(models.Manga).all()
+    db_mangas = db.query(DBManga).all()
     mangas = []
     for db_manga in db_mangas:
         mangas.append(crud.manga.create_manga_model(db, db_manga))
@@ -28,7 +29,7 @@ def get_all_mangas(db: Session = Depends(get_db)) -> List[Manga]:
 
 @router.get("/id/{manga_id}")
 def get_manga_by_id(manga_id: int, db: Session = Depends(get_db)) -> Manga:
-    db_manga = db.query(models.Manga).filter(models.Manga.id == manga_id).one_or_none()
+    db_manga = db.query(DBManga).filter(DBManga.id == manga_id).one_or_none()
     if db_manga is None:
         raise HTTPException(status_code=404, detail="Manga id not found")
     return crud.manga.create_manga_model(db, db_manga)
