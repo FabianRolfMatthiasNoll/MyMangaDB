@@ -24,8 +24,6 @@ export default function MangaCard({ manga }: Props) {
     setOpen(false);
   };
 
-  const imageUrl = `/static/images/${manga.title.replace(":", "")}_cover.jpg`;
-
   return (
     <>
       <Card sx={{ maxWidth: 350, minHeight: 500 }} onClick={handleClick}>
@@ -33,8 +31,9 @@ export default function MangaCard({ manga }: Props) {
           <CardMedia
             component="img"
             height="350"
-            image={imageUrl}
+            image={`data:image/jpeg;base64,${manga.coverImage}`}
             alt="mangacover"
+            sx={{ objectFit: "contain" }}
           />
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">

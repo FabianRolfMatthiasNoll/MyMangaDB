@@ -21,6 +21,7 @@ const defaultManga: Manga = {
   volumes: [],
   authors: [],
   genres: [],
+  coverImage: "",
 };
 
 type Props = {
