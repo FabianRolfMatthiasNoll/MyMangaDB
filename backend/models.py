@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, LargeBinary
+from sqlalchemy import Column, Integer, String, ForeignKey, LargeBinary, Text
 from database import Base
 
 
@@ -9,7 +9,7 @@ class Manga(Base):
     title = Column(String)
     description = Column(String)
     total_volumes = Column(Integer, default=0)
-    cover_image = Column(LargeBinary, default=b"")
+    cover_image = Column(Text, default="")
 
 
 class Genre(Base):

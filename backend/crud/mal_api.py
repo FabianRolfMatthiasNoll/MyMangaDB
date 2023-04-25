@@ -1,3 +1,4 @@
+import base64
 import requests
 import config
 
@@ -41,8 +42,7 @@ def get_manga_from_mal(manga_title: str) -> Manga:
         genres.append(genre_model)
 
     cover_image_url = manga_data["node"]["main_picture"]["large"]
-    response = requests.get(cover_image_url)
-    img = Image.open(BytesIO(response.content))
+
     # TODO: Test from homestation because of stupid ssl certs!!!!!
     manga = Manga(
         title=manga_data["node"]["title"],
@@ -51,7 +51,7 @@ def get_manga_from_mal(manga_title: str) -> Manga:
         total_volumes=manga_data["node"]["num_volumes"],
         description=manga_data["node"]["synopsis"],
         volumes=[],
-        cover_image=img,
+        cover_image=get_image_base64(cover_image_url),
     )
 
     return manga
@@ -102,3 +102,24 @@ def get_search_results_from_mal(manga_title: str) -> List[Manga]:
         mangas.append(manga)
 
     return mangas
+
+
+def get_image_binary(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        image_binary = BytesIO(response.content).getvalue()
+        return image_binary
+    else:
+        print(f"Failed to download image from URL: {url}")
+        return None
+
+
+def get_image_base64(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        image_binary = BytesIO(response.content).getvalue()
+        image_base64 = base64.b64encode(image_binary).decode("utf-8")
+        return image_base64
+    else:
+        print(f"Failed to download image from URL: {url}")
+        return None

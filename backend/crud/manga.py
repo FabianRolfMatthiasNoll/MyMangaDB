@@ -35,6 +35,7 @@ def create_manga(db: Session, manga: Manga) -> Manga:
     manga_model.title = manga.title
     manga_model.description = manga.description
     manga_model.totalVolumes = manga.total_volumes
+    manga_model.cover_image = manga.cover_image
     db.add(manga_model)
     db.commit()
     db.refresh(manga_model)

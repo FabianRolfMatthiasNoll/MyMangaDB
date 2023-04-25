@@ -22,7 +22,7 @@ class Manga(BaseModel):
     title: str = Field(min_length=1)
     description: str
     total_volumes: int
-    cover_image: bytes
+    cover_image: str
     volumes: List[Volume]
     authors: List[Author]
     genres: List[Genre]
