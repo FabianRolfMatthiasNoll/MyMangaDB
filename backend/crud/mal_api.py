@@ -1,14 +1,12 @@
-import os
-from typing import List
+import requests
+import config
 
+from io import BytesIO
+from typing import List
+from PIL import Image
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-import requests
-
-import config
 from schema import Manga, Author, Genre
-
-# TODO: save images in db
 
 
 def get_manga_from_mal(manga_title: str) -> Manga:
@@ -19,7 +17,6 @@ def get_manga_from_mal(manga_title: str) -> Manga:
         "limit": 10,
         "fields": "title,authors{first_name,last_name},synopsis,main_picture,num_volumes,genres",
     }
-    # TODO: Return list of results and choose which one to send to create manga.
     response = requests.get(url, headers=headers, params=params)
     results = response.json().get("data", [])
 
@@ -43,6 +40,10 @@ def get_manga_from_mal(manga_title: str) -> Manga:
         genre_model = Genre(**genre_data)
         genres.append(genre_model)
 
+    cover_image_url = manga_data["node"]["main_picture"]["large"]
+    response = requests.get(cover_image_url)
+    img = Image.open(BytesIO(response.content))
+    # TODO: Test from homestation because of stupid ssl certs!!!!!
     manga = Manga(
         title=manga_data["node"]["title"],
         genres=genres,
@@ -50,21 +51,8 @@ def get_manga_from_mal(manga_title: str) -> Manga:
         total_volumes=manga_data["node"]["num_volumes"],
         description=manga_data["node"]["synopsis"],
         volumes=[],
+        cover_image=img,
     )
-
-    # Download and save the manga cover image
-    cover_image_url = manga_data["node"]["main_picture"]["large"]
-    cover_image_name = f"{manga_title}_cover.jpg"
-
-    # Replace with your desired download location
-    download_location = "../../frontend/public/static/images"
-    cover_image_path = os.path.join(download_location, cover_image_name)
-
-    try:
-        download_image(cover_image_url, cover_image_path)
-        print(f"Cover image downloaded to {cover_image_path}")
-    except Exception as e:
-        print(f"Failed to download cover image: {e}")
 
     return manga
 
@@ -114,14 +102,3 @@ def get_search_results_from_mal(manga_title: str) -> List[Manga]:
         mangas.append(manga)
 
     return mangas
-
-
-def download_image(url: str, save_path: str) -> None:
-    response = requests.get(url)
-    if response.status_code == 200:
-        with open(save_path, "wb") as f:
-            f.write(response.content)
-    else:
-        raise Exception(
-            f"Failed to download image. Status code: {response.status_code}"
-        )

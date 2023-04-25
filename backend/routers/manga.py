@@ -15,7 +15,6 @@ router = APIRouter(prefix="/manga", tags=["Manga"])
 
 
 # TODO: add volume by title
-# TODO: Change Volume number to string for use cases like volume 0 or 0.5
 
 
 @router.get("/")
