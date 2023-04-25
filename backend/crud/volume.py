@@ -20,31 +20,20 @@ def get_volumes_by_manga_id(db: Session, manga_id: int) -> List[Volume]:
     )
     volumes: List[Volume] = []
     for db_volume in db_volumes:
-        volume = Volume(**db_volume)
+        volume = Volume(
+            volume_num=db_volume.volume_num,
+            cover_image=db_volume.cover_image,
+            manga_id=db_volume.manga_id,
+        )
         volumes.append(volume)
     return volumes
 
 
-# def create_volume(db: Session, volume_num: int) -> DBVolume:
-#     volume = DBVolume()
-#     volume.volume = volume_num
-#     db.add(volume)
-#     db.commit()
-#     db.refresh(volume)
-
-#     return volume
-
-
-# def create_relation_manga_volume(db: Session, manga_id: int, volume_id: int):
-#     existing_relations = get_volume_relations_by_manga(db, manga_id)
-#     for existing_relation in existing_relations:
-#         if existing_relation.volumeID == volume_id:
-#             raise HTTPException(
-#                 status_code=400, detail="Volume Relation already exists"
-#             )
-#     relation = models.RelationMangaVolume()
-#     relation.mangaID = manga_id
-#     relation.volumeID = volume_id
-
-#     db.add(relation)
-#     db.commit()
+def create_volume(db: Session, new_volume: Volume):
+    # TODO: Try to get a cover image else let it be empty
+    db_volume = DBVolume()
+    db_volume.volume_num = new_volume.volume_num
+    # db_volume.cover_image = new_volume.cover_image
+    db_volume.manga_id = new_volume.manga_id
+    db.add(db_volume)
+    db.commit()

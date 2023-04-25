@@ -23,8 +23,8 @@ class Volume(Base):
     __tablename__ = "volume"
 
     id = Column(Integer, primary_key=True, index=True)
-    volume = Column(Integer)
-    cover_image = Column(LargeBinary)
+    volume_num = Column(Integer)
+    cover_image = Column(LargeBinary, default=b"")
     manga_id = Column(Integer, ForeignKey(Manga.__table__.c.id))
 
 

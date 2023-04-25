@@ -1,0 +1,27 @@
+{
+    "title": "TestManga",
+    "description": "Just a Test",
+    "total_volumes": 5,
+    "cover_image": "string",
+    "volumes": [
+        {
+            "volume_num": 0,
+            "cover_image": "string"
+        }
+    ],
+    "authors": [
+        {
+            "name": "Fabian Noll",
+            "role": "Story"
+        },
+        {
+            "name": "Lea Ivosevic",
+            "role": "Art"
+        }
+    ],
+    "genres": [
+        {
+            "name": "Action"
+        }
+    ]
+}

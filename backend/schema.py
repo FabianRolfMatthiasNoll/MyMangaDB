@@ -13,8 +13,9 @@ class Author(BaseModel):
 
 
 class Volume(BaseModel):
-    volume: int
+    volume_num: int
     cover_image: bytes
+    manga_id: int
 
 
 class Manga(BaseModel):
