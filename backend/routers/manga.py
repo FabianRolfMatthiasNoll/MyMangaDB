@@ -20,6 +20,8 @@ router = APIRouter(prefix="/manga", tags=["Manga"])
 # TODO: Change Author and / or Role
 # TODO: Remove / Edit Genres
 # TODO: Remove Volumes
+# TODO: Add cover image to manga
+# TODO: Add cover image to volume
 
 
 @router.get("/")

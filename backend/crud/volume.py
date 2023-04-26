@@ -16,7 +16,10 @@ def get_volume_by_id(db: Session, volume_id: int) -> DBVolume:
 
 def get_volumes_by_manga_id(db: Session, manga_id: int) -> List[Volume]:
     db_volumes: List[DBVolume] = (
-        db.query(DBVolume).filter(DBVolume.manga_id == manga_id).all()
+        db.query(DBVolume)
+        .filter(DBVolume.manga_id == manga_id)
+        .order_by(DBVolume.volume_num.asc())
+        .all()
     )
     volumes: List[Volume] = []
     for db_volume in db_volumes:
