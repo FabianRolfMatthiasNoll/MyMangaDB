@@ -1,15 +1,15 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, LargeBinary, Text
 from database import Base
 
 
-# TODO: Add saving the cover image into the database.
 class Manga(Base):
     __tablename__ = "manga"
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
     description = Column(String)
-    totalVolumes = Column(Integer)
+    total_volumes = Column(Integer, default=0)
+    cover_image = Column(Text, default="")
 
 
 class Genre(Base):
@@ -19,12 +19,13 @@ class Genre(Base):
     name = Column(String)
 
 
-# TODO: Change volume to string to accomodate volume zero or 0.5 etc.
 class Volume(Base):
     __tablename__ = "volume"
 
     id = Column(Integer, primary_key=True, index=True)
-    volume = Column(Integer)
+    volume_num = Column(Integer)
+    cover_image = Column(LargeBinary, default=b"")
+    manga_id = Column(Integer, ForeignKey(Manga.__table__.c.id))
 
 
 class Author(Base):
@@ -56,11 +57,3 @@ class RelationMangaAuthorRole(Base):
     mangaID = Column(Integer, ForeignKey(Manga.__table__.c.id))
     authorID = Column(Integer, ForeignKey(Author.__table__.c.id))
     roleID = Column(Integer, ForeignKey(Role.__table__.c.id))
-
-
-class RelationMangaVolume(Base):
-    __tablename__ = "relationMangaVolume"
-
-    id = Column(Integer, primary_key=True, index=True)
-    mangaID = Column(Integer, ForeignKey(Manga.__table__.c.id))
-    volumeID = Column(Integer, ForeignKey(Volume.__table__.c.id))

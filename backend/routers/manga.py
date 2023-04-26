@@ -6,20 +6,27 @@ import crud.author
 import crud.genre
 import crud.volume
 import crud.manga
-import models
+
 from database import get_db
-from schema import Manga
+from schema import Manga, Volume
+from models import Manga as DBManga
 
 router = APIRouter(prefix="/manga", tags=["Manga"])
 
 
 # TODO: add volume by title
-# TODO: Change Volume number to string for use cases like volume 0 or 0.5
+# TODO: Add Author by manga id
+# TODO: Add Genre by manga id
+# TODO: Change Author and / or Role
+# TODO: Remove / Edit Genres
+# TODO: Remove Volumes
+# TODO: Add cover image to manga
+# TODO: Add cover image to volume
 
 
 @router.get("/")
 def get_all_mangas(db: Session = Depends(get_db)) -> List[Manga]:
-    db_mangas = db.query(models.Manga).all()
+    db_mangas = db.query(DBManga).all()
     mangas = []
     for db_manga in db_mangas:
         mangas.append(crud.manga.create_manga_model(db, db_manga))
@@ -28,7 +35,7 @@ def get_all_mangas(db: Session = Depends(get_db)) -> List[Manga]:
 
 @router.get("/id/{manga_id}")
 def get_manga_by_id(manga_id: int, db: Session = Depends(get_db)) -> Manga:
-    db_manga = db.query(models.Manga).filter(models.Manga.id == manga_id).one_or_none()
+    db_manga = db.query(DBManga).filter(DBManga.id == manga_id).one_or_none()
     if db_manga is None:
         raise HTTPException(status_code=404, detail="Manga id not found")
     return crud.manga.create_manga_model(db, db_manga)
@@ -67,15 +74,16 @@ def create_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
     return crud.manga.create_manga(db, manga)
 
 
-@router.put("/id/add_vol/{manga_id}/{volume_num}")
-def add_volume_to_manga_by_id(
-    manga_id: int, volume_num: int, db: Session = Depends(get_db)
-) -> Manga:
-    volume = crud.volume.get_volume(db, volume_num)
-    if volume is None:
-        volume = crud.volume.create_volume(db, volume_num)
-    crud.volume.create_relation_manga_volume(db, manga_id, volume.id)
-    return get_manga_by_id(manga_id, db)
+@router.put("/id/add_vol")
+def add_volume(volume: Volume, db: Session = Depends(get_db)) -> Manga:
+    existing_volumes = crud.volume.get_volumes_by_manga_id(db, volume.manga_id)
+    for existing_volume in existing_volumes:
+        if existing_volume.volume_num == volume.volume_num:
+            raise HTTPException(status_code=404, detail="Volume already existing")
+
+    crud.volume.create_volume(db, volume)
+
+    return get_manga_by_id(volume.manga_id, db)
 
 
 @router.put("/title/add_vol/{manga_title}/{volume_num}")

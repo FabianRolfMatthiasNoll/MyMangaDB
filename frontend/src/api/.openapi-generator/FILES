@@ -8,5 +8,6 @@ models/HTTPValidationError.ts
 models/LocationInner.ts
 models/Manga.ts
 models/ValidationError.ts
+models/Volume.ts
 models/index.ts
 runtime.ts

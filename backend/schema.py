@@ -12,12 +12,17 @@ class Author(BaseModel):
     role: str
 
 
-# TODO: Add saving the cover image into the database.
-# TODO: Change volumes from list of ints to strings on next data change
+class Volume(BaseModel):
+    volume_num: int
+    cover_image: bytes
+    manga_id: int
+
+
 class Manga(BaseModel):
     title: str = Field(min_length=1)
     description: str
     total_volumes: int
-    volumes: List[int]
+    cover_image: str
+    volumes: List[Volume]
     authors: List[Author]
     genres: List[Genre]

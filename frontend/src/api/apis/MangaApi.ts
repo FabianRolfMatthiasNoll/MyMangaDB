@@ -17,17 +17,19 @@ import * as runtime from '../runtime';
 import type {
   HTTPValidationError,
   Manga,
+  Volume,
 } from '../models';
 import {
     HTTPValidationErrorFromJSON,
     HTTPValidationErrorToJSON,
     MangaFromJSON,
     MangaToJSON,
+    VolumeFromJSON,
+    VolumeToJSON,
 } from '../models';
 
-export interface AddVolumeToMangaByIdMangaIdAddVolMangaIdVolumeNumPutRequest {
-    mangaId: number;
-    volumeNum: number;
+export interface AddVolumeMangaIdAddVolPutRequest {
+    volume: Volume;
 }
 
 export interface AddVolumeToMangaByTitleMangaTitleAddVolMangaTitleVolumeNumPutRequest {
@@ -61,36 +63,35 @@ export interface GetMangasByGenresMangaGenreGenreNameGetRequest {
 export class MangaApi extends runtime.BaseAPI {
 
     /**
-     * Add Volume To Manga By Id
+     * Add Volume
      */
-    async addVolumeToMangaByIdMangaIdAddVolMangaIdVolumeNumPutRaw(requestParameters: AddVolumeToMangaByIdMangaIdAddVolMangaIdVolumeNumPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Manga>> {
-        if (requestParameters.mangaId === null || requestParameters.mangaId === undefined) {
-            throw new runtime.RequiredError('mangaId','Required parameter requestParameters.mangaId was null or undefined when calling addVolumeToMangaByIdMangaIdAddVolMangaIdVolumeNumPut.');
-        }
-
-        if (requestParameters.volumeNum === null || requestParameters.volumeNum === undefined) {
-            throw new runtime.RequiredError('volumeNum','Required parameter requestParameters.volumeNum was null or undefined when calling addVolumeToMangaByIdMangaIdAddVolMangaIdVolumeNumPut.');
+    async addVolumeMangaIdAddVolPutRaw(requestParameters: AddVolumeMangaIdAddVolPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Manga>> {
+        if (requestParameters.volume === null || requestParameters.volume === undefined) {
+            throw new runtime.RequiredError('volume','Required parameter requestParameters.volume was null or undefined when calling addVolumeMangaIdAddVolPut.');
         }
 
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        headerParameters['Content-Type'] = 'application/json';
+
         const response = await this.request({
-            path: `/manga/id/add_vol/{manga_id}/{volume_num}`.replace(`{${"manga_id"}}`, encodeURIComponent(String(requestParameters.mangaId))).replace(`{${"volume_num"}}`, encodeURIComponent(String(requestParameters.volumeNum))),
+            path: `/manga/id/add_vol`,
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
+            body: VolumeToJSON(requestParameters.volume),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => MangaFromJSON(jsonValue));
     }
 
     /**
-     * Add Volume To Manga By Id
+     * Add Volume
      */
-    async addVolumeToMangaByIdMangaIdAddVolMangaIdVolumeNumPut(requestParameters: AddVolumeToMangaByIdMangaIdAddVolMangaIdVolumeNumPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Manga> {
-        const response = await this.addVolumeToMangaByIdMangaIdAddVolMangaIdVolumeNumPutRaw(requestParameters, initOverrides);
+    async addVolumeMangaIdAddVolPut(requestParameters: AddVolumeMangaIdAddVolPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Manga> {
+        const response = await this.addVolumeMangaIdAddVolPutRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

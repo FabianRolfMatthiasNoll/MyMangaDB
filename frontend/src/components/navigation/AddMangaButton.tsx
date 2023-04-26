@@ -24,6 +24,7 @@ const defaultManga: Manga = {
   volumes: [],
   authors: [],
   genres: [],
+  coverImage: "",
 };
 
 const AddMangaButton: React.FC = () => {

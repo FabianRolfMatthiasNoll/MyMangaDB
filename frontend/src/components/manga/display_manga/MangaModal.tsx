@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default function MangaModal({ manga, open, onClose }: Props) {
-  const imageUrl = `/static/images/${manga.title.replace(":", "")}_cover.jpg`;
+  const imageUrl = `data:image/jpeg;base64,${manga.coverImage}`;
   const [volumesOpen, setVolumesOpen] = useState(false);
 
   return (

@@ -6,33 +6,36 @@ from sqlalchemy.orm import Session
 import crud.author
 import crud.genre
 import crud.volume
-import models
-import schema
+from models import Manga as DBManga
+from schema import Manga as Manga
 
 
-def create_manga_model(db: Session, db_manga: models.Manga) -> schema.Manga:
-    manga_data = {"id": db_manga.id, "title": db_manga.title, "description": db_manga.description,
-                  "volumes": crud.volume.get_volumes_by_manga_id(db, db_manga.id),
-                  "total_volumes": db_manga.totalVolumes,
-                  "authors": crud.author.get_authors_by_manga_id(db, db_manga.id),
-                  "genres": [g.__dict__ for g in crud.genre.get_genres_by_manga_id(db, db_manga.id)]}
-    manga = schema.Manga(**manga_data)
+def create_manga_model(db: Session, db_manga: DBManga) -> Manga:
+    manga_data = {
+        "id": db_manga.id,
+        "title": db_manga.title,
+        "description": db_manga.description,
+        "volumes": crud.volume.get_volumes_by_manga_id(db, db_manga.id),
+        "total_volumes": db_manga.total_volumes,
+        "authors": crud.author.get_authors_by_manga_id(db, db_manga.id),
+        "genres": [
+            g.__dict__ for g in crud.genre.get_genres_by_manga_id(db, db_manga.id)
+        ],
+        "cover_image": db_manga.cover_image,
+    }
+    manga = Manga(**manga_data)
     return manga
 
 
-def create_manga(db: Session, manga: schema.Manga) -> schema.Manga:
-    exists = db.query(
-        db.query(models.Manga).filter_by(title=manga.title).exists()
-    ).scalar()
+def create_manga(db: Session, manga: Manga) -> Manga:
+    exists = db.query(db.query(DBManga).filter_by(title=manga.title).exists()).scalar()
     if exists:
-        raise HTTPException(
-            status_code=400,
-            detail="Manga already exists"
-        )
-    manga_model = models.Manga()
+        raise HTTPException(status_code=400, detail="Manga already exists")
+    manga_model = DBManga()
     manga_model.title = manga.title
     manga_model.description = manga.description
     manga_model.totalVolumes = manga.total_volumes
+    manga_model.cover_image = manga.cover_image
     db.add(manga_model)
     db.commit()
     db.refresh(manga_model)
@@ -50,25 +53,25 @@ def create_manga(db: Session, manga: schema.Manga) -> schema.Manga:
         if result_role is None:
             result_role = crud.author.create_role(db, author.role)
         crud.author.create_relation(
-            db, result_author.id, manga_model.id, result_role.id)
+            db, result_author.id, manga_model.id, result_role.id
+        )
     return manga
 
 
-def get_mangas_by_relations(db: Session, relations) -> List[models.Manga]:
+def get_mangas_by_relations(db: Session, relations) -> List[DBManga]:
     mangas = []
     for relation in relations:
-        db_manga = db.query(models.Manga).filter(
-            models.Manga.id == relation.mangaID).one_or_none()
+        db_manga = (
+            db.query(DBManga).filter(DBManga.id == relation.mangaID).one_or_none()
+        )
         if db_manga is None:
-            raise HTTPException(
-                status_code=404,
-                detail="Manga id not found"
-            )
+            raise HTTPException(status_code=404, detail="Manga id not found")
         mangas.append(create_manga_model(db, db_manga))
     return mangas
 
 
-def get_manga_by_title(db: Session, manga_title: str) -> models.Manga:
-    manga: Union[models.Manga, None] = db.query(models.Manga).filter(
-        models.Manga.title == manga_title).one_or_none()
+def get_manga_by_title(db: Session, manga_title: str) -> DBManga:
+    manga: Union[DBManga, None] = (
+        db.query(DBManga).filter(DBManga.title == manga_title).one_or_none()
+    )
     return manga
