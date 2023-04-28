@@ -75,3 +75,18 @@ def get_manga_by_title(db: Session, manga_title: str) -> DBManga:
         db.query(DBManga).filter(DBManga.title == manga_title).one_or_none()
     )
     return manga
+
+
+# TODO: Add functionality
+# TODO: Check if Authors and Genres are changed and rework relations!!
+def update_manga(db: Session, manga: Manga) -> Manga:
+    db_manga: Union[DBManga, None] = (
+        db.query(DBManga).filter(DBManga.id == manga.id).one_or_none()
+    )
+    db_manga.title = manga.title
+    db_manga.description = manga.description
+    db_manga.cover_image = manga.cover_image
+    db_manga.total_volumes = manga.total_volumes
+    db.commit()
+    db.refresh(db_manga)
+    return manga

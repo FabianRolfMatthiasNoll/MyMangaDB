@@ -14,15 +14,16 @@ class Author(BaseModel):
 
 class Volume(BaseModel):
     volume_num: int
-    cover_image: bytes
     manga_id: int
+    cover_image: bytes
 
 
 class Manga(BaseModel):
+    id: int
     title: str = Field(min_length=1)
     description: str
     total_volumes: int
-    cover_image: str
     volumes: List[Volume]
     authors: List[Author]
     genres: List[Genre]
+    cover_image: str
