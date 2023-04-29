@@ -8,6 +8,7 @@
             "module": "uvicorn",
             "args": [
                 "main:app"
+                , "--reload"
             ],
             "cwd": "${workspaceFolder}/backend",
             "jinja": true,

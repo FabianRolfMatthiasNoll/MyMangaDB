@@ -104,10 +104,12 @@ def delete_relation(db: Session, author_id: int, manga_id: int):
     db.query(Relation).filter(
         Relation.authorID == author_id and Relation.manga_id == manga_id
     ).delete()
+    db.commit()
 
 
 def delete_relations_by_manga_id(db: Session, manga_id: int):
     db.query(Relation).filter(Relation.mangaID == manga_id).delete()
+    db.commit()
 
 
 def update_relations(db: Session, authors: List[Author], manga_id: int):
@@ -120,3 +122,4 @@ def update_relations(db: Session, authors: List[Author], manga_id: int):
         if result_role is None:
             result_role = create_role(db, author.role)
         create_relation(db, result_author.id, manga_id, result_role.id)
+    db.commit()

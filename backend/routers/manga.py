@@ -90,3 +90,8 @@ def remove_volume(volume_id: int, db: Session = Depends(get_db)):
 @router.put("/update_manga")
 def update_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
     return mangaManager.update_manga(db, manga)
+
+
+@router.delete("/remove")
+def remove_manga(manga_id: int, db: Session = Depends(get_db)):
+    mangaManager.remove_manga(db, manga_id)

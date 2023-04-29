@@ -99,3 +99,10 @@ def update_manga(db: Session, manga: Manga) -> Manga:
     genreManager.update_relations(db, manga.genres, manga.id)
 
     return manga
+
+
+def remove_manga(db: Session, manga_id: int):
+    db.query(DBManga).filter(DBManga.id == manga_id).delete()
+    authorManager.delete_relations_by_manga_id(db, manga_id)
+    genreManager.delete_relations_by_manga_id(db, manga_id)
+    db.commit()

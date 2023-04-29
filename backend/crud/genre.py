@@ -68,10 +68,12 @@ def delete_relation(db: Session, genre_id: int, manga_id: int):
     db.query(Relation).filter(
         Relation.authorID == genre_id and Relation.manga_id == manga_id
     ).delete()
+    db.commit()
 
 
 def delete_relations_by_manga_id(db: Session, manga_id: int):
     db.query(Relation).filter(Relation.mangaID == manga_id).delete()
+    db.commit()
 
 
 def update_relations(db: Session, genres: List[DBGenre], manga_id: int):
@@ -82,3 +84,4 @@ def update_relations(db: Session, genres: List[DBGenre], manga_id: int):
             result_genre = create_genre(db, genre.name)
         # when creating manga there can be not relations, so we just have to create it.
         create_relation(db, result_genre.id, manga_id)
+    db.commit()
