@@ -24,6 +24,7 @@ def get_volumes_by_manga_id(db: Session, manga_id: int) -> List[Volume]:
     volumes: List[Volume] = []
     for db_volume in db_volumes:
         volume = Volume(
+            id=db_volume.id,
             volume_num=db_volume.volume_num,
             cover_image=db_volume.cover_image,
             manga_id=db_volume.manga_id,

@@ -3,9 +3,11 @@ from typing import List, Union
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-import crud.author
-import crud.genre
-import crud.volume
+import crud.author as authorManager
+import crud.genre as genreManager
+import crud.volume as volumeManager
+import crud.manga as mangaManager
+
 from models import Manga as DBManga
 from schema import Manga as Manga
 
@@ -15,11 +17,11 @@ def create_manga_model(db: Session, db_manga: DBManga) -> Manga:
         "id": db_manga.id,
         "title": db_manga.title,
         "description": db_manga.description,
-        "volumes": crud.volume.get_volumes_by_manga_id(db, db_manga.id),
+        "volumes": volumeManager.get_volumes_by_manga_id(db, db_manga.id),
         "total_volumes": db_manga.total_volumes,
-        "authors": crud.author.get_authors_by_manga_id(db, db_manga.id),
+        "authors": authorManager.get_authors_by_manga_id(db, db_manga.id),
         "genres": [
-            g.__dict__ for g in crud.genre.get_genres_by_manga_id(db, db_manga.id)
+            g.__dict__ for g in genreManager.get_genres_by_manga_id(db, db_manga.id)
         ],
         "cover_image": db_manga.cover_image,
     }
@@ -40,19 +42,19 @@ def create_manga(db: Session, manga: Manga) -> Manga:
     db.commit()
     db.refresh(manga_model)
     for genre in manga.genres:
-        result_genre = crud.genre.get_genre(db, genre.name)
+        result_genre = genreManager.get_genre(db, genre.name)
         if result_genre is None:
-            result_genre = crud.genre.create_genre(db, genre.name)
+            result_genre = genreManager.create_genre(db, genre.name)
         # when creating manga there can be not relations, so we just have to create it.
-        crud.genre.create_relation(db, result_genre.id, manga_model.id)
+        genreManager.create_relation(db, result_genre.id, manga_model.id)
     for author in manga.authors:
-        result_author = crud.author.get_author(db, author.name)
+        result_author = authorManager.get_author(db, author.name)
         if result_author is None:
-            result_author = crud.author.create_author(db, author.name)
-        result_role = crud.author.get_role(db, author.role)
+            result_author = authorManager.create_author(db, author.name)
+        result_role = authorManager.get_role(db, author.role)
         if result_role is None:
-            result_role = crud.author.create_role(db, author.role)
-        crud.author.create_relation(
+            result_role = authorManager.create_role(db, author.role)
+        authorManager.create_relation(
             db, result_author.id, manga_model.id, result_role.id
         )
     return manga
@@ -83,10 +85,17 @@ def update_manga(db: Session, manga: Manga) -> Manga:
     db_manga: Union[DBManga, None] = (
         db.query(DBManga).filter(DBManga.id == manga.id).one_or_none()
     )
+
     db_manga.title = manga.title
     db_manga.description = manga.description
     db_manga.cover_image = manga.cover_image
     db_manga.total_volumes = manga.total_volumes
+
     db.commit()
     db.refresh(db_manga)
+
+    authorManager.update_relations(db, manga.authors, manga.id)
+
+    genreManager.update_relations(db, manga.genres, manga.id)
+
     return manga

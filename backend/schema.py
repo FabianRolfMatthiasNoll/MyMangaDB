@@ -4,15 +4,18 @@ from pydantic import BaseModel, Field
 
 
 class Genre(BaseModel):
+    id: int
     name: str
 
 
 class Author(BaseModel):
+    id: int
     name: str
     role: str
 
 
 class Volume(BaseModel):
+    id: int
     volume_num: int
     manga_id: int
     cover_image: bytes
