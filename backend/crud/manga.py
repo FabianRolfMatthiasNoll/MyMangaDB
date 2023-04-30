@@ -13,19 +13,16 @@ from schema import Manga as Manga
 
 
 def create_manga_model(db: Session, db_manga: DBManga) -> Manga:
-    manga_data = {
-        "id": db_manga.id,
-        "title": db_manga.title,
-        "description": db_manga.description,
-        "volumes": volumeManager.get_volumes_by_manga_id(db, db_manga.id),
-        "total_volumes": db_manga.total_volumes,
-        "authors": authorManager.get_authors_by_manga_id(db, db_manga.id),
-        "genres": [
-            g.__dict__ for g in genreManager.get_genres_by_manga_id(db, db_manga.id)
-        ],
-        "cover_image": db_manga.cover_image,
-    }
-    manga = Manga(**manga_data)
+    manga = Manga(
+        id=db_manga.id,
+        title=db_manga.title,
+        description=db_manga.description,
+        volumes=volumeManager.get_volumes_by_manga_id(db, db_manga.id),
+        total_volumes=db_manga.total_volumes,
+        authors=authorManager.get_authors_by_manga_id(db, db_manga.id),
+        genres=genreManager.get_genres_by_manga_id(db, db_manga.id),
+        cover_image=db_manga.cover_image,
+    )
     return manga
 
 

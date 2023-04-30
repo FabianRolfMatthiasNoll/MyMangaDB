@@ -3,7 +3,7 @@ from typing import Union, List, Type
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-import models
+from schema import Genre
 from models import Genre as DBGenre
 from models import RelationMangaGenre as Relation
 
@@ -22,11 +22,12 @@ def get_genre_by_id(db: Session, genre_id: int) -> DBGenre:
     return result
 
 
-def get_genres_by_manga_id(db: Session, manga_id: int) -> List[DBGenre]:
-    genres: List[DBGenre] = []
+def get_genres_by_manga_id(db: Session, manga_id: int) -> List[Genre]:
+    genres: List[Genre] = []
     result: List[Relation] = get_relations_by_manga_id(db, manga_id)
     for relation in result:
-        genre = get_genre_by_id(db, relation.genreID)
+        db_genre = get_genre_by_id(db, relation.genreID)
+        genre = Genre(id=db_genre.id, name=db_genre.name)
         genres.append(genre)
     return genres
 
