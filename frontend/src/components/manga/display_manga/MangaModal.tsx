@@ -2,6 +2,7 @@ import { Box, Button, Modal, Paper, Typography } from "@mui/material";
 import { Manga } from "../../../api/models";
 import { useState } from "react";
 import VolumesModal from "./VolumeModal";
+import EditMangaModal from "../edit_manga/EditMangaModal";
 
 interface Props {
   manga: Manga;
@@ -12,6 +13,7 @@ interface Props {
 export default function MangaModal({ manga, open, onClose }: Props) {
   const imageUrl = `data:image/jpeg;base64,${manga.coverImage}`;
   const [volumesOpen, setVolumesOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
 
   return (
     <Modal
@@ -80,6 +82,10 @@ export default function MangaModal({ manga, open, onClose }: Props) {
         <Button onClick={() => setVolumesOpen(true)}>Volumes</Button>
         {volumesOpen && (
           <VolumesModal manga={manga} onClose={() => setVolumesOpen(false)} />
+        )}
+        <Button onClick={() => setEditOpen(true)}>Edit</Button>
+        {editOpen && (
+          <EditMangaModal manga={manga} onClose={() => setEditOpen(false)} />
         )}
       </Paper>
     </Modal>

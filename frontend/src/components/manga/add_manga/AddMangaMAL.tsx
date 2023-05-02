@@ -12,9 +12,10 @@ import {
   InputLabel,
 } from "@mui/material";
 import { useQuery } from "react-query";
-import { mangaAPI, mangaMALAPI } from "../../../api";
+import { mangaMALAPI } from "../../../api";
 
 const defaultManga: Manga = {
+  id: 0,
   title: "",
   description: "",
   totalVolumes: 0,

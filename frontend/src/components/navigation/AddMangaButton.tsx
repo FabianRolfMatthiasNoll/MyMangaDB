@@ -18,6 +18,7 @@ import AddMangaManual from "../manga/add_manga/AddMangaManual";
 import AddMangaMAL from "../manga/add_manga/AddMangaMAL";
 
 const defaultManga: Manga = {
+  id: 0,
   title: "",
   description: "",
   totalVolumes: 0,
@@ -30,8 +31,10 @@ const defaultManga: Manga = {
 const AddMangaButton: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [manga, setManga] = useState<Manga>(defaultManga);
-  const [authors, setAuthors] = useState<Author[]>([{ name: "", role: "" }]);
-  const [genres, setGenres] = useState<Genre[]>([{ name: "" }]);
+  const [authors, setAuthors] = useState<Author[]>([
+    { id: 0, name: "", role: "" },
+  ]);
+  const [genres, setGenres] = useState<Genre[]>([{ id: 0, name: "" }]);
   const [manualMode, setManualMode] = useState(true);
 
   const handleClickOpen = () => {
@@ -44,7 +47,7 @@ const AddMangaButton: React.FC = () => {
   };
 
   const addAuthor = () => {
-    setAuthors([...authors, { name: "", role: "" }]);
+    setAuthors([...authors, { id: 0, name: "", role: "" }]);
   };
 
   const removeAuthor = (index: number) => {
@@ -54,7 +57,7 @@ const AddMangaButton: React.FC = () => {
   };
 
   const addGenre = () => {
-    setGenres([...genres, { name: "" }]);
+    setGenres([...genres, { id: 0, name: "" }]);
   };
 
   const removeGenre = (index: number) => {
@@ -98,8 +101,8 @@ const AddMangaButton: React.FC = () => {
 
   const setMangaDefault = async () => {
     setManga(defaultManga);
-    setAuthors([{ name: "", role: "" }]);
-    setGenres([{ name: "" }]);
+    setAuthors([{ id: 0, name: "", role: "" }]);
+    setGenres([{ id: 0, name: "" }]);
   };
 
   const queryClient = useQueryClient();
