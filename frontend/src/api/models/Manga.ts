@@ -40,6 +40,12 @@ import {
 export interface Manga {
     /**
      * 
+     * @type {number}
+     * @memberof Manga
+     */
+    id: number;
+    /**
+     * 
      * @type {string}
      * @memberof Manga
      */
@@ -58,12 +64,6 @@ export interface Manga {
     totalVolumes: number;
     /**
      * 
-     * @type {string}
-     * @memberof Manga
-     */
-    coverImage: string;
-    /**
-     * 
      * @type {Array<Volume>}
      * @memberof Manga
      */
@@ -80,6 +80,12 @@ export interface Manga {
      * @memberof Manga
      */
     genres: Array<Genre>;
+    /**
+     * 
+     * @type {string}
+     * @memberof Manga
+     */
+    coverImage: string;
 }
 
 /**
@@ -87,13 +93,14 @@ export interface Manga {
  */
 export function instanceOfManga(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "id" in value;
     isInstance = isInstance && "title" in value;
     isInstance = isInstance && "description" in value;
     isInstance = isInstance && "totalVolumes" in value;
-    isInstance = isInstance && "coverImage" in value;
     isInstance = isInstance && "volumes" in value;
     isInstance = isInstance && "authors" in value;
     isInstance = isInstance && "genres" in value;
+    isInstance = isInstance && "coverImage" in value;
 
     return isInstance;
 }
@@ -108,13 +115,14 @@ export function MangaFromJSONTyped(json: any, ignoreDiscriminator: boolean): Man
     }
     return {
         
+        'id': json['id'],
         'title': json['title'],
         'description': json['description'],
         'totalVolumes': json['total_volumes'],
-        'coverImage': json['cover_image'],
         'volumes': ((json['volumes'] as Array<any>).map(VolumeFromJSON)),
         'authors': ((json['authors'] as Array<any>).map(AuthorFromJSON)),
         'genres': ((json['genres'] as Array<any>).map(GenreFromJSON)),
+        'coverImage': json['cover_image'],
     };
 }
 
@@ -127,13 +135,14 @@ export function MangaToJSON(value?: Manga | null): any {
     }
     return {
         
+        'id': value.id,
         'title': value.title,
         'description': value.description,
         'total_volumes': value.totalVolumes,
-        'cover_image': value.coverImage,
         'volumes': ((value.volumes as Array<any>).map(VolumeToJSON)),
         'authors': ((value.authors as Array<any>).map(AuthorToJSON)),
         'genres': ((value.genres as Array<any>).map(GenreToJSON)),
+        'cover_image': value.coverImage,
     };
 }
 

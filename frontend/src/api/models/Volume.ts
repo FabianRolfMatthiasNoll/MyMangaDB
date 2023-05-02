@@ -24,19 +24,25 @@ export interface Volume {
      * @type {number}
      * @memberof Volume
      */
-    volumeNum: number;
+    id: number;
     /**
      * 
-     * @type {Blob}
+     * @type {number}
      * @memberof Volume
      */
-    coverImage: Blob;
+    volumeNum: number;
     /**
      * 
      * @type {number}
      * @memberof Volume
      */
     mangaId: number;
+    /**
+     * 
+     * @type {Blob}
+     * @memberof Volume
+     */
+    coverImage: Blob;
 }
 
 /**
@@ -44,9 +50,10 @@ export interface Volume {
  */
 export function instanceOfVolume(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "id" in value;
     isInstance = isInstance && "volumeNum" in value;
-    isInstance = isInstance && "coverImage" in value;
     isInstance = isInstance && "mangaId" in value;
+    isInstance = isInstance && "coverImage" in value;
 
     return isInstance;
 }
@@ -61,9 +68,10 @@ export function VolumeFromJSONTyped(json: any, ignoreDiscriminator: boolean): Vo
     }
     return {
         
+        'id': json['id'],
         'volumeNum': json['volume_num'],
-        'coverImage': json['cover_image'],
         'mangaId': json['manga_id'],
+        'coverImage': json['cover_image'],
     };
 }
 
@@ -76,9 +84,10 @@ export function VolumeToJSON(value?: Volume | null): any {
     }
     return {
         
+        'id': value.id,
         'volume_num': value.volumeNum,
-        'cover_image': value.coverImage,
         'manga_id': value.mangaId,
+        'cover_image': value.coverImage,
     };
 }
 

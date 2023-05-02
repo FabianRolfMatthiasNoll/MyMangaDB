@@ -21,6 +21,12 @@ import { exists, mapValues } from '../runtime';
 export interface Author {
     /**
      * 
+     * @type {number}
+     * @memberof Author
+     */
+    id: number;
+    /**
+     * 
      * @type {string}
      * @memberof Author
      */
@@ -38,6 +44,7 @@ export interface Author {
  */
 export function instanceOfAuthor(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "id" in value;
     isInstance = isInstance && "name" in value;
     isInstance = isInstance && "role" in value;
 
@@ -54,6 +61,7 @@ export function AuthorFromJSONTyped(json: any, ignoreDiscriminator: boolean): Au
     }
     return {
         
+        'id': json['id'],
         'name': json['name'],
         'role': json['role'],
     };
@@ -68,6 +76,7 @@ export function AuthorToJSON(value?: Author | null): any {
     }
     return {
         
+        'id': value.id,
         'name': value.name,
         'role': value.role,
     };

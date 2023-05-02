@@ -21,6 +21,12 @@ import { exists, mapValues } from '../runtime';
 export interface Genre {
     /**
      * 
+     * @type {number}
+     * @memberof Genre
+     */
+    id: number;
+    /**
+     * 
      * @type {string}
      * @memberof Genre
      */
@@ -32,6 +38,7 @@ export interface Genre {
  */
 export function instanceOfGenre(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "id" in value;
     isInstance = isInstance && "name" in value;
 
     return isInstance;
@@ -47,6 +54,7 @@ export function GenreFromJSONTyped(json: any, ignoreDiscriminator: boolean): Gen
     }
     return {
         
+        'id': json['id'],
         'name': json['name'],
     };
 }
@@ -60,6 +68,7 @@ export function GenreToJSON(value?: Genre | null): any {
     }
     return {
         
+        'id': value.id,
         'name': value.name,
     };
 }
