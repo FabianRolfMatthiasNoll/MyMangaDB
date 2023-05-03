@@ -1,18 +1,19 @@
 import {
-  Autocomplete,
   Box,
   Button,
   Grid,
   Modal,
   Paper,
   TextField,
-  Typography,
   IconButton,
 } from "@mui/material";
 import { Author, Genre, Manga } from "../../../api/models";
 import { useState } from "react";
 import React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { TagInput } from "./TagInput";
+import { useMutation, useQueryClient } from "react-query";
+import { mangaAPI } from "../../../api";
 
 interface Props {
   manga: Manga;
@@ -21,10 +22,6 @@ interface Props {
 
 export default function EditMangaModal({ manga, onClose }: Props) {
   const [updatedManga, setUpdatedManga] = useState<Manga>(manga);
-  const [authors, setAuthors] = useState<Author[]>([
-    { id: 0, name: "", role: "" },
-  ]);
-  const [genres, setGenres] = useState<Genre[]>([{ id: 0, name: "" }]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUpdatedManga({
@@ -33,26 +30,74 @@ export default function EditMangaModal({ manga, onClose }: Props) {
     });
   };
 
-  const addAuthor = () => {
-    setAuthors([...authors, { id: 0, name: "", role: "" }]);
+  const handleGenresChange = (newGenres: Genre[]) => {
+    setUpdatedManga({
+      ...updatedManga,
+      genres: newGenres,
+    });
+  };
+
+  const handleAuthorChange = (
+    index: number,
+    field: "name" | "role",
+    value: string
+  ) => {
+    setUpdatedManga((prevUpdatedManga) => {
+      const updatedAuthors = prevUpdatedManga.authors.map((author, i) => {
+        if (i === index) {
+          return {
+            ...author,
+            [field]: value,
+          };
+        }
+        return author;
+      });
+
+      return {
+        ...prevUpdatedManga,
+        authors: updatedAuthors,
+      };
+    });
   };
 
   const removeAuthor = (index: number) => {
-    const newAuthors = [...authors];
-    newAuthors.splice(index, 1);
-    setAuthors(newAuthors);
+    setUpdatedManga((prevUpdatedManga) => {
+      const updatedAuthors = prevUpdatedManga.authors.filter(
+        (_, i) => i !== index
+      );
+      return {
+        ...prevUpdatedManga,
+        authors: updatedAuthors,
+      };
+    });
   };
 
-  const addGenre = () => {
-    setGenres([...genres, { id: 0, name: "" }]);
+  const addAuthor = () => {
+    setUpdatedManga((prevUpdatedManga) => {
+      const newAuthor: Author = { id: 0, name: "", role: "" }; // You can set the initial values as needed
+      return {
+        ...prevUpdatedManga,
+        authors: [...prevUpdatedManga.authors, newAuthor],
+      };
+    });
   };
 
-  const removeGenre = (index: number) => {
-    const newGenres = [...genres];
-    newGenres.splice(index, 1);
-    setGenres(newGenres);
+  const handleSubmit = async () => {
+    mutation.mutate(updatedManga);
+    onClose();
   };
 
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (manga: Manga) =>
+      mangaAPI.updateMangaMangaUpdateMangaPut({ manga: manga }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["GetAllMangas"] });
+    },
+  });
+  // TODO: Put Authors in own component?
+  // TODO: Refactor Author to autocomplete component!
   return (
     <Modal
       open={true}
@@ -121,8 +166,9 @@ export default function EditMangaModal({ manga, onClose }: Props) {
                     label={`Author ${index + 1}`}
                     fullWidth
                     value={author.name}
-                    name={`authors.${index}.name`}
-                    onChange={handleInputChange}
+                    onChange={(event) =>
+                      handleAuthorChange(index, "name", event.target.value)
+                    }
                   />
                 </Grid>
                 <Grid item xs={12} sm={5}>
@@ -130,8 +176,9 @@ export default function EditMangaModal({ manga, onClose }: Props) {
                     label={`Role ${index + 1}`}
                     fullWidth
                     value={author.role}
-                    name={`authors.${index}.role`}
-                    onChange={handleInputChange}
+                    onChange={(event) =>
+                      handleAuthorChange(index, "role", event.target.value)
+                    }
                   />
                 </Grid>
                 <Grid item xs={12} sm={1} container alignItems="center">
@@ -144,28 +191,16 @@ export default function EditMangaModal({ manga, onClose }: Props) {
                 </Grid>
               </React.Fragment>
             ))}
-            {updatedManga.genres.map((genre, index) => (
-              <React.Fragment key={index}>
-                <Grid item xs={12} sm={11}>
-                  <TextField
-                    label={`Genre ${index + 1}`}
-                    fullWidth
-                    value={genre.name}
-                    onChange={handleInputChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={1} container alignItems="center">
-                  <IconButton
-                    aria-label="delete"
-                    onClick={() => removeGenre(index)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Grid>
-              </React.Fragment>
-            ))}
+            <Grid item xs={12} sm={11}>
+              <TagInput
+                initialGenres={updatedManga.genres}
+                onGenresChange={handleGenresChange}
+              />
+            </Grid>
           </Grid>
         </Box>
+        <Button onClick={addAuthor}>Add Author</Button>
+        <Button onClick={handleSubmit}>Submit</Button>
       </Paper>
     </Modal>
   );
