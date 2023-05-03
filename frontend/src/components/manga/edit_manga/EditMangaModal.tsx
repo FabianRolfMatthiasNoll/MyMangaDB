@@ -2,13 +2,17 @@ import {
   Autocomplete,
   Box,
   Button,
+  Grid,
   Modal,
   Paper,
   TextField,
   Typography,
+  IconButton,
 } from "@mui/material";
-import { Manga } from "../../../api/models";
+import { Author, Genre, Manga } from "../../../api/models";
 import { useState } from "react";
+import React from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Props {
   manga: Manga;
@@ -17,12 +21,36 @@ interface Props {
 
 export default function EditMangaModal({ manga, onClose }: Props) {
   const [updatedManga, setUpdatedManga] = useState<Manga>(manga);
+  const [authors, setAuthors] = useState<Author[]>([
+    { id: 0, name: "", role: "" },
+  ]);
+  const [genres, setGenres] = useState<Genre[]>([{ id: 0, name: "" }]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUpdatedManga({
       ...updatedManga,
       [event.target.name]: event.target.value,
     });
+  };
+
+  const addAuthor = () => {
+    setAuthors([...authors, { id: 0, name: "", role: "" }]);
+  };
+
+  const removeAuthor = (index: number) => {
+    const newAuthors = [...authors];
+    newAuthors.splice(index, 1);
+    setAuthors(newAuthors);
+  };
+
+  const addGenre = () => {
+    setGenres([...genres, { id: 0, name: "" }]);
+  };
+
+  const removeGenre = (index: number) => {
+    const newGenres = [...genres];
+    newGenres.splice(index, 1);
+    setGenres(newGenres);
   };
 
   return (
@@ -56,41 +84,87 @@ export default function EditMangaModal({ manga, onClose }: Props) {
             mb: 5,
           }}
         >
-          <TextField
-            fullWidth
-            margin="normal"
-            name="title"
-            label="Title"
-            value={updatedManga.title}
-            onChange={handleInputChange}
-          />
-          <TextField
-            fullWidth
-            margin="normal"
-            name="description"
-            label="Description"
-            value={updatedManga.description}
-            onChange={handleInputChange}
-            multiline
-            rows={4}
-          />
-          <TextField
-            fullWidth
-            margin="normal"
-            name="totalVolumes"
-            label="Total Volumes"
-            value={updatedManga.totalVolumes}
-            onChange={handleInputChange}
-            type="number"
-          />
-          <TextField
-            fullWidth
-            margin="normal"
-            name="coverImage"
-            label="Cover Image URL"
-            value={updatedManga.coverImage}
-            onChange={handleInputChange}
-          />
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                required
+                label="Title"
+                fullWidth
+                name="title"
+                value={updatedManga.title}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Description"
+                fullWidth
+                name="description"
+                value={updatedManga.description}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Total Volumes"
+                type="number"
+                fullWidth
+                name="totalVolumes"
+                value={updatedManga.totalVolumes}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            {updatedManga.authors.map((author, index) => (
+              <React.Fragment key={index}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label={`Author ${index + 1}`}
+                    fullWidth
+                    value={author.name}
+                    name={`authors.${index}.name`}
+                    onChange={handleInputChange}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={5}>
+                  <TextField
+                    label={`Role ${index + 1}`}
+                    fullWidth
+                    value={author.role}
+                    name={`authors.${index}.role`}
+                    onChange={handleInputChange}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={1} container alignItems="center">
+                  <IconButton
+                    aria-label="delete"
+                    onClick={() => removeAuthor(index)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Grid>
+              </React.Fragment>
+            ))}
+            {updatedManga.genres.map((genre, index) => (
+              <React.Fragment key={index}>
+                <Grid item xs={12} sm={11}>
+                  <TextField
+                    label={`Genre ${index + 1}`}
+                    fullWidth
+                    value={genre.name}
+                    onChange={handleInputChange}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={1} container alignItems="center">
+                  <IconButton
+                    aria-label="delete"
+                    onClick={() => removeGenre(index)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Grid>
+              </React.Fragment>
+            ))}
+          </Grid>
         </Box>
       </Paper>
     </Modal>
