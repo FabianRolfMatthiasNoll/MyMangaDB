@@ -46,3 +46,8 @@ def create_volume(db: Session, new_volume: Volume):
 def delete_volume(db: Session, volume_id: int):
     db.query(DBVolume).filter(DBVolume.id == volume_id).delete()
     db.commit()
+
+
+def delete_volumes_by_manga(db: Session, manga_id: int):
+    db.query(DBVolume).filter(DBVolume.manga_id == manga_id).delete()
+    db.commit()

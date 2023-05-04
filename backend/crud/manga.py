@@ -102,4 +102,5 @@ def remove_manga(db: Session, manga_id: int):
     db.query(DBManga).filter(DBManga.id == manga_id).delete()
     authorManager.delete_relations_by_manga_id(db, manga_id)
     genreManager.delete_relations_by_manga_id(db, manga_id)
+    volumeManager.delete_volumes_by_manga(db, manga_id)
     db.commit()
