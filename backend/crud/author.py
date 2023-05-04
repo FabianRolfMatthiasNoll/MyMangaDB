@@ -3,23 +3,38 @@ from typing import Union, List
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-import models
-from schema import Manga, Author
+from schema import Author
 from models import Role as DBRole
 from models import Author as DBAuthor
 from models import RelationMangaAuthorRole as Relation
 
 
+def get_all_author_names(db: Session) -> List[str]:
+    authors = db.query(DBAuthor).all()
+    author_names: List[str] = []
+    for author in authors:
+        author_names.append(author.name)
+    return author_names
+
+
+def get_all_role_names(db: Session) -> List[str]:
+    roles = db.query(DBRole).all()
+    role_names: List[str] = []
+    for role in roles:
+        role_names.append(role.name)
+    return role_names
+
+
 def get_author(db: Session, author_name: str):
-    result: Union[models.Author, None] = (
-        db.query(models.Author).filter(models.Author.name == author_name).one_or_none()
+    result: Union[DBAuthor, None] = (
+        db.query(DBAuthor).filter(DBAuthor.name == author_name).one_or_none()
     )
     return result
 
 
 def get_author_by_id(db: Session, author_id: int):
-    result: Union[models.Author, None] = (
-        db.query(models.Author).filter(models.Author.id == author_id).one_or_none()
+    result: Union[DBAuthor, None] = (
+        db.query(DBAuthor).filter(DBAuthor.id == author_id).one_or_none()
     )
     return result
 

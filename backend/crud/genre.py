@@ -8,6 +8,14 @@ from models import Genre as DBGenre
 from models import RelationMangaGenre as Relation
 
 
+def get_all_genre_names(db: Session) -> List[str]:
+    genres = db.query(DBGenre).all()
+    genre_names: List[str] = []
+    for genre in genres:
+        genre_names.append(genre.name)
+    return genre_names
+
+
 def get_genre(db: Session, genre: str) -> DBGenre:
     result: Union[DBGenre, None] = (
         db.query(DBGenre).filter(DBGenre.name == genre).one_or_none()

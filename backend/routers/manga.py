@@ -21,6 +21,7 @@ router = APIRouter(prefix="/manga", tags=["Manga"])
 # TODO: Will be for now withold until it is certain that these features are needed:
 # Remove Author endpoint
 # Remove Genre endpoint
+############################################################################################################
 
 
 @router.get("/")
@@ -68,12 +69,10 @@ def get_mangas_by_author(
     return mangaManager.get_mangas_by_relations(db, relations)
 
 
-@router.post("/")
-def create_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
-    return mangaManager.create_manga(db, manga)
+############################################################################################################
 
 
-@router.post("/add_vol")
+@router.post("/volume")
 def add_volume(volume: Volume, db: Session = Depends(get_db)) -> Manga:
     existing_volumes = volumeManager.get_volumes_by_manga_id(db, volume.manga_id)
     for existing_volume in existing_volumes:
@@ -85,9 +84,17 @@ def add_volume(volume: Volume, db: Session = Depends(get_db)) -> Manga:
     return get_manga_by_id(volume.manga_id, db)
 
 
-@router.delete("/del_vol")
+@router.delete("/volume")
 def remove_volume(volume_id: int, db: Session = Depends(get_db)):
     volumeManager.delete_volume(db, volume_id)
+
+
+############################################################################################################
+
+
+@router.post("/")
+def create_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
+    return mangaManager.create_manga(db, manga)
 
 
 @router.put("/update_manga")
@@ -98,3 +105,21 @@ def update_manga(manga: Manga, db: Session = Depends(get_db)) -> Manga:
 @router.delete("/remove")
 def remove_manga(manga_id: int, db: Session = Depends(get_db)):
     mangaManager.remove_manga(db, manga_id)
+
+
+############################################################################################################
+
+
+@router.get("/genre")
+def get_all_genre_names(db: Session = Depends(get_db)) -> List[str]:
+    return genreManager.get_all_genre_names(db)
+
+
+@router.get("/authors")
+def get_all_author_names(db: Session = Depends(get_db)) -> List[str]:
+    return authorManager.get_all_author_names(db)
+
+
+@router.get("/authors/roles")
+def get_all_role_names(db: Session = Depends(get_db)) -> List[str]:
+    return authorManager.get_all_role_names(db)
