@@ -11,9 +11,10 @@ import { Author, Genre, Manga } from "../../../api/models";
 import { useState } from "react";
 import React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { TagInput } from "./TagInput";
+import { GenreInput } from "./GenreInput";
 import { useMutation, useQueryClient } from "react-query";
 import { mangaAPI } from "../../../api";
+import AuthorInput from "./AuthorInput";
 
 interface Props {
   manga: Manga;
@@ -160,39 +161,15 @@ export default function EditMangaModal({ manga, onClose }: Props) {
               />
             </Grid>
             {updatedManga.authors.map((author, index) => (
-              <React.Fragment key={index}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label={`Author ${index + 1}`}
-                    fullWidth
-                    value={author.name}
-                    onChange={(event) =>
-                      handleAuthorChange(index, "name", event.target.value)
-                    }
-                  />
-                </Grid>
-                <Grid item xs={12} sm={5}>
-                  <TextField
-                    label={`Role ${index + 1}`}
-                    fullWidth
-                    value={author.role}
-                    onChange={(event) =>
-                      handleAuthorChange(index, "role", event.target.value)
-                    }
-                  />
-                </Grid>
-                <Grid item xs={12} sm={1} container alignItems="center">
-                  <IconButton
-                    aria-label="delete"
-                    onClick={() => removeAuthor(index)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Grid>
-              </React.Fragment>
+              <AuthorInput
+                author={author}
+                index={index}
+                handleAuthorChange={handleAuthorChange}
+                removeAuthor={removeAuthor}
+              />
             ))}
             <Grid item xs={12} sm={11}>
-              <TagInput
+              <GenreInput
                 initialGenres={updatedManga.genres}
                 onGenresChange={handleGenresChange}
               />
