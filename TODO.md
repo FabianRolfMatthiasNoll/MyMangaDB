@@ -1,5 +1,11 @@
 # Feature Ideas and Plans
 
+## NEXT STEPS
+refactor adding mangas to work exactly like when editing mangas
+add a add volume option
+add a edit volume option
+add adding cover images to editing manga, editing volume and adding manga
+add fetching cover images automatically
 ## Dont make Volumes preconfigured
 Let the user add themselfes volumes and give the option
 to name it (for cases like 0 or 0.5 etc.) and either provide a cover themselves or make a automatic search via a search engine and then let the user choose.
