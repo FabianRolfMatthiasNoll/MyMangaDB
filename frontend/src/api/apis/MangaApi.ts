@@ -28,7 +28,7 @@ import {
     VolumeToJSON,
 } from '../models';
 
-export interface AddVolumeMangaAddVolPostRequest {
+export interface AddVolumeMangaVolumePostRequest {
     volume: Volume;
 }
 
@@ -56,7 +56,7 @@ export interface RemoveMangaMangaRemoveDeleteRequest {
     mangaId: number;
 }
 
-export interface RemoveVolumeMangaDelVolDeleteRequest {
+export interface RemoveVolumeMangaVolumeDeleteRequest {
     volumeId: number;
 }
 
@@ -72,9 +72,9 @@ export class MangaApi extends runtime.BaseAPI {
     /**
      * Add Volume
      */
-    async addVolumeMangaAddVolPostRaw(requestParameters: AddVolumeMangaAddVolPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Manga>> {
+    async addVolumeMangaVolumePostRaw(requestParameters: AddVolumeMangaVolumePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Manga>> {
         if (requestParameters.volume === null || requestParameters.volume === undefined) {
-            throw new runtime.RequiredError('volume','Required parameter requestParameters.volume was null or undefined when calling addVolumeMangaAddVolPost.');
+            throw new runtime.RequiredError('volume','Required parameter requestParameters.volume was null or undefined when calling addVolumeMangaVolumePost.');
         }
 
         const queryParameters: any = {};
@@ -84,7 +84,7 @@ export class MangaApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/manga/add_vol`,
+            path: `/manga/volume`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -97,8 +97,8 @@ export class MangaApi extends runtime.BaseAPI {
     /**
      * Add Volume
      */
-    async addVolumeMangaAddVolPost(requestParameters: AddVolumeMangaAddVolPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Manga> {
-        const response = await this.addVolumeMangaAddVolPostRaw(requestParameters, initOverrides);
+    async addVolumeMangaVolumePost(requestParameters: AddVolumeMangaVolumePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Manga> {
+        const response = await this.addVolumeMangaVolumePostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -136,6 +136,58 @@ export class MangaApi extends runtime.BaseAPI {
     }
 
     /**
+     * Get All Author Names
+     */
+    async getAllAuthorNamesMangaAuthorsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<string>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/manga/authors`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * Get All Author Names
+     */
+    async getAllAuthorNamesMangaAuthorsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<string>> {
+        const response = await this.getAllAuthorNamesMangaAuthorsGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get All Genre Names
+     */
+    async getAllGenreNamesMangaGenreGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<string>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/manga/genre`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * Get All Genre Names
+     */
+    async getAllGenreNamesMangaGenreGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<string>> {
+        const response = await this.getAllGenreNamesMangaGenreGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Get All Mangas
      */
     async getAllMangasMangaGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
@@ -158,6 +210,32 @@ export class MangaApi extends runtime.BaseAPI {
      */
     async getAllMangasMangaGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Manga>> {
         const response = await this.getAllMangasMangaGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get All Role Names
+     */
+    async getAllRoleNamesMangaAuthorsRolesGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<string>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/manga/authors/roles`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * Get All Role Names
+     */
+    async getAllRoleNamesMangaAuthorsRolesGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<string>> {
+        const response = await this.getAllRoleNamesMangaAuthorsRolesGetRaw(initOverrides);
         return await response.value();
     }
 
@@ -322,9 +400,9 @@ export class MangaApi extends runtime.BaseAPI {
     /**
      * Remove Volume
      */
-    async removeVolumeMangaDelVolDeleteRaw(requestParameters: RemoveVolumeMangaDelVolDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+    async removeVolumeMangaVolumeDeleteRaw(requestParameters: RemoveVolumeMangaVolumeDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
         if (requestParameters.volumeId === null || requestParameters.volumeId === undefined) {
-            throw new runtime.RequiredError('volumeId','Required parameter requestParameters.volumeId was null or undefined when calling removeVolumeMangaDelVolDelete.');
+            throw new runtime.RequiredError('volumeId','Required parameter requestParameters.volumeId was null or undefined when calling removeVolumeMangaVolumeDelete.');
         }
 
         const queryParameters: any = {};
@@ -336,7 +414,7 @@ export class MangaApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/manga/del_vol`,
+            path: `/manga/volume`,
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -352,8 +430,8 @@ export class MangaApi extends runtime.BaseAPI {
     /**
      * Remove Volume
      */
-    async removeVolumeMangaDelVolDelete(requestParameters: RemoveVolumeMangaDelVolDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
-        const response = await this.removeVolumeMangaDelVolDeleteRaw(requestParameters, initOverrides);
+    async removeVolumeMangaVolumeDelete(requestParameters: RemoveVolumeMangaVolumeDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
+        const response = await this.removeVolumeMangaVolumeDeleteRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
