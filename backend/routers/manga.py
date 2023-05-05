@@ -10,6 +10,7 @@ import crud.manga as mangaManager
 from database import get_db
 from schema import Manga, Volume
 from models import Manga as DBManga
+from models import Volume as DBVolume
 
 router = APIRouter(prefix="/manga", tags=["Manga"])
 
@@ -82,6 +83,17 @@ def add_volume(volume: Volume, db: Session = Depends(get_db)) -> Manga:
     volumeManager.create_volume(db, volume)
 
     return get_manga_by_id(volume.manga_id, db)
+
+
+# TODO: Change to modify volume.
+@router.put("/volume/cover")
+def add_cover_to_volume(volume: Volume, db: Session = Depends(get_db)):
+    db_manga = db.query(DBVolume).filter(DBVolume.id == volume.id).one_or_none()
+
+    db_manga.cover_image = volume.cover_image
+
+    db.commit()
+    db.refresh(db_manga)
 
 
 @router.delete("/volume")

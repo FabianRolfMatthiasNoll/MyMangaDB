@@ -14,18 +14,31 @@ const imageUrl = "/static/images/basic_cover.jpg";
 
 export default function VolumeCard({ volume }: VolumeCardProps) {
   return (
-    <Card sx={{ maxWidth: 200 }}>
-      <CardActionArea>
+    <Card
+      sx={{
+        minWidth: 80,
+        maxWidth: 200,
+        minHeight: 150,
+        maxHeight: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <CardActionArea
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
         {volume.coverImage ? (
           <CardMedia
             component="img"
             image={`data:image/jpeg;base64,${volume.coverImage}`}
             sx={{
               objectFit: "contain",
-              height: 220,
-              paddingBottom: "0%",
-              position: "relative",
-              top: 0,
+              maxHeight: "100%",
             }}
           />
         ) : (
@@ -34,10 +47,11 @@ export default function VolumeCard({ volume }: VolumeCardProps) {
             image={imageUrl}
             sx={{
               objectFit: "contain",
+              maxHeight: "100%",
             }}
           />
         )}
-        <CardContent sx={{ padding: 0 }}>
+        <CardContent sx={{ padding: 0, maxHeight: "10%" }}>
           <Typography
             gutterBottom
             variant="h6"
