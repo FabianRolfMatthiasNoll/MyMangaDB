@@ -1,16 +1,7 @@
-import {
-  Box,
-  Button,
-  Grid,
-  Modal,
-  Paper,
-  TextField,
-  IconButton,
-} from "@mui/material";
+import { Box, Button, Grid, Modal, Paper, TextField } from "@mui/material";
 import { Author, Genre, Manga } from "../../../api/models";
 import { useState } from "react";
 import React from "react";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { GenreInput } from "./GenreInput";
 import { useMutation, useQueryClient } from "react-query";
 import { mangaAPI } from "../../../api";
@@ -97,8 +88,7 @@ export default function EditMangaModal({ manga, onClose }: Props) {
       queryClient.invalidateQueries({ queryKey: ["GetAllMangas"] });
     },
   });
-  // TODO: Put Authors in own component?
-  // TODO: Refactor Author to autocomplete component!
+
   return (
     <Modal
       open={true}
@@ -145,6 +135,7 @@ export default function EditMangaModal({ manga, onClose }: Props) {
               <TextField
                 label="Description"
                 fullWidth
+                multiline
                 name="description"
                 value={updatedManga.description}
                 onChange={handleInputChange}
@@ -160,6 +151,12 @@ export default function EditMangaModal({ manga, onClose }: Props) {
                 onChange={handleInputChange}
               />
             </Grid>
+            <Grid item xs={12} sm={11}>
+              <GenreInput
+                initialGenres={updatedManga.genres}
+                onGenresChange={handleGenresChange}
+              />
+            </Grid>
             {updatedManga.authors.map((author, index) => (
               <AuthorInput
                 author={author}
@@ -168,12 +165,6 @@ export default function EditMangaModal({ manga, onClose }: Props) {
                 removeAuthor={removeAuthor}
               />
             ))}
-            <Grid item xs={12} sm={11}>
-              <GenreInput
-                initialGenres={updatedManga.genres}
-                onGenresChange={handleGenresChange}
-              />
-            </Grid>
           </Grid>
         </Box>
         <Button onClick={addAuthor}>Add Author</Button>

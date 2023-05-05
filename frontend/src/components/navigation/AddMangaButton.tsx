@@ -1,21 +1,16 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Fab,
+  Modal,
+  Paper,
   Switch,
   Toolbar,
+  Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { mangaAPI } from "../../api";
-import { Manga, Author, Genre } from "../../api/models";
-import { useMutation, useQueryClient } from "react-query";
-import AddMangaManual from "../manga/add_manga/AddMangaManual";
-import AddMangaMAL from "../manga/add_manga/AddMangaMAL";
+import { Manga } from "../../api/models";
+import AddManga from "../manga/add_manga/AddManga";
 
 const defaultManga: Manga = {
   id: 0,
@@ -28,13 +23,8 @@ const defaultManga: Manga = {
   coverImage: "",
 };
 
-const AddMangaButton: React.FC = () => {
+export default function AddMangaButton() {
   const [open, setOpen] = useState(false);
-  const [manga, setManga] = useState<Manga>(defaultManga);
-  const [authors, setAuthors] = useState<Author[]>([
-    { id: 0, name: "", role: "" },
-  ]);
-  const [genres, setGenres] = useState<Genre[]>([{ id: 0, name: "" }]);
   const [manualMode, setManualMode] = useState(true);
 
   const handleClickOpen = () => {
@@ -42,79 +32,9 @@ const AddMangaButton: React.FC = () => {
   };
 
   const handleClose = () => {
-    setMangaDefault();
     setOpen(false);
   };
 
-  const addAuthor = () => {
-    setAuthors([...authors, { id: 0, name: "", role: "" }]);
-  };
-
-  const removeAuthor = (index: number) => {
-    const newAuthors = [...authors];
-    newAuthors.splice(index, 1);
-    setAuthors(newAuthors);
-  };
-
-  const addGenre = () => {
-    setGenres([...genres, { id: 0, name: "" }]);
-  };
-
-  const removeGenre = (index: number) => {
-    const newGenres = [...genres];
-    newGenres.splice(index, 1);
-    setGenres(newGenres);
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    field: keyof Manga | "author" | "authorRole" | "genre",
-    index?: number
-  ) => {
-    if (field === "author" || field === "authorRole") {
-      const updatedAuthors = [...authors];
-      updatedAuthors[index!] = {
-        ...updatedAuthors[index!],
-        [field === "author" ? "name" : "role"]: e.target.value,
-      };
-      setAuthors(updatedAuthors);
-      setManga({ ...manga, authors: updatedAuthors });
-    } else if (field === "genre") {
-      const updatedGenres = [...genres];
-      updatedGenres[index!] = {
-        ...updatedGenres[index!],
-        name: e.target.value,
-      };
-      setGenres(updatedGenres);
-      setManga({ ...manga, genres: updatedGenres });
-    } else {
-      setManga({ ...manga, [field]: e.target.value });
-    }
-  };
-
-  const handleSubmit = async () => {
-    mutation.mutate(manga);
-    // Reset manga state and close modal
-    setMangaDefault();
-    handleClose();
-  };
-
-  const setMangaDefault = async () => {
-    setManga(defaultManga);
-    setAuthors([{ id: 0, name: "", role: "" }]);
-    setGenres([{ id: 0, name: "" }]);
-  };
-
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: (manga: Manga) =>
-      mangaAPI.createMangaMangaPost({ manga: manga }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["GetAllMangas"] });
-    },
-  });
-  // TODO: Reset input field states after closing
   return (
     <Box
       sx={{
@@ -126,47 +46,53 @@ const AddMangaButton: React.FC = () => {
       <Fab color="primary" aria-label="add" onClick={handleClickOpen}>
         <AddIcon />
       </Fab>
-      <Dialog open={open} onClose={handleClose}>
-        <Toolbar>
-          <DialogTitle>Add New Manga</DialogTitle>
-          <Switch
-            checked={manualMode}
-            onChange={() => setManualMode(!manualMode)}
-            color="primary"
-          />
-        </Toolbar>
-        <DialogContent>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="manga-modal-title"
+        aria-describedby="manga-modal-description"
+      >
+        <Paper
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 5,
+            overflow: "auto",
+            maxWidth: "95vw", // or any other value
+            maxHeight: "95vh", // or any other value
+            width: "90vw",
+          }}
+        >
+          <Toolbar
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h4" component="h2" mb={2}>
+              Add new Manga
+            </Typography>
+            <Switch
+              checked={manualMode}
+              onChange={() => setManualMode(!manualMode)}
+              color="primary"
+            />
+          </Toolbar>
           {manualMode ? (
             <>
-              <AddMangaManual
-                manga={manga}
-                authors={authors}
-                genres={genres}
-                handleInputChange={handleInputChange}
-                removeAuthor={removeAuthor}
-                removeGenre={removeGenre}
-              />
-            </>
-          ) : (
-            <AddMangaMAL manga={manga} handleInputChange={handleInputChange} />
-          )}
-        </DialogContent>
-        <DialogActions>
-          {manualMode ? (
-            <>
-              <Button onClick={addAuthor}>Add Author</Button>
-              <Button onClick={addGenre}>Add Genre</Button>
+              <AddManga onClose={handleClose} />
             </>
           ) : (
             <></>
           )}
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit} color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </Paper>
+      </Modal>
     </Box>
   );
-};
-export default AddMangaButton;
+}
