@@ -9,19 +9,8 @@ import {
   Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { Manga } from "../../api/models";
 import AddManga from "../manga/add_manga/AddManga";
-
-const defaultManga: Manga = {
-  id: 0,
-  title: "",
-  description: "",
-  totalVolumes: 0,
-  volumes: [],
-  authors: [],
-  genres: [],
-  coverImage: "",
-};
+import AddMangaMAL from "../manga/add_manga/AddMangaMAL";
 
 export default function AddMangaButton() {
   const [open, setOpen] = useState(false);
@@ -89,7 +78,9 @@ export default function AddMangaButton() {
               <AddManga onClose={handleClose} />
             </>
           ) : (
-            <></>
+            <>
+              <AddMangaMAL onClose={handleClose} />
+            </>
           )}
         </Paper>
       </Modal>

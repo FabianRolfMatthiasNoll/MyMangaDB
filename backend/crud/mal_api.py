@@ -32,12 +32,12 @@ def get_manga_from_mal(manga_title: str) -> Manga:
         author_first_name = author["node"]["first_name"]
         author_last_name = author["node"]["last_name"]
         author_name = f"{author_first_name} {author_last_name}"
-        author_data = {"name": author_name, "role": author["role"]}
+        author_data = {"id": 0, "name": author_name, "role": author["role"]}
         author_model = Author(**author_data)
         authors.append(author_model)
     genres: List[Genre] = []
     for genre in manga_data["node"]["genres"]:
-        genre_data = {"name": genre["name"]}
+        genre_data = {"id": 0, "name": genre["name"]}
         genre_model = Genre(**genre_data)
         genres.append(genre_model)
 
@@ -45,6 +45,7 @@ def get_manga_from_mal(manga_title: str) -> Manga:
 
     # TODO: Test from homestation because of stupid ssl certs!!!!!
     manga = Manga(
+        id=0,
         title=manga_data["node"]["title"],
         genres=genres,
         authors=authors,
@@ -82,22 +83,26 @@ def get_search_results_from_mal(manga_title: str) -> List[Manga]:
             author_first_name = author["node"]["first_name"]
             author_last_name = author["node"]["last_name"]
             author_name = f"{author_first_name} {author_last_name}"
-            author_data = {"name": author_name, "role": author["role"]}
+            author_data = {"id": 0, "name": author_name, "role": author["role"]}
             author_model = Author(**author_data)
             authors.append(author_model)
         genres: List[Genre] = []
         for genre in manga_data["node"]["genres"]:
-            genre_data = {"name": genre["name"]}
+            genre_data = {"id": 0, "name": genre["name"]}
             genre_model = Genre(**genre_data)
             genres.append(genre_model)
 
+        cover_image_url = manga_data["node"]["main_picture"]["large"]
+
         manga = Manga(
+            id=0,
             title=manga_data["node"]["title"],
             genres=genres,
             authors=authors,
             total_volumes=manga_data["node"]["num_volumes"],
             description=manga_data["node"]["synopsis"],
             volumes=[],
+            cover_image=get_image_base64(cover_image_url),
         )
         mangas.append(manga)
 
