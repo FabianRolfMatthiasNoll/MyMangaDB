@@ -52,9 +52,19 @@ npx openapi-generator-cli generate -i http://127.0.0.1:8000/openapi.json -g type
 # Sneak Preview
 
 The following images are all subject to change:
-## Dashboard
+# Dashboard
 ![ScreenShot](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/master/screenshots/dashboard.png)
-## Manga Overview
+# Manga Overview
 ![ScreenShot](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/master/screenshots/manga_overview.png)
-## Volume Overview
+# Volume Overview
 ![ScreenShot](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/master/screenshots/volume_overview.png)
+# Editing Manga
+## Changing the Coverimage will soon be added
+![ScreenShot](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/manga_editing.png?raw=true)
+# Adding Mangas manually
+![ScreenShot](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/adding_manga_manual.png?raw=true)
+# Searching for Mangas with MAL
+## Search itself
+![ScreenShot](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/myanimelist_search.png?raw=true)
+## Results of the search cann be viewed and then selected to add to database
+![ScreenShot](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/myanimelist_search_preview.png?raw=true)
