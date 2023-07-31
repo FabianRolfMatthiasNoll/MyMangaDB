@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Author, Manga } from "../../../api/models";
-import { Autocomplete, Grid, IconButton, TextField } from "@mui/material";
+import { Autocomplete, Box, Grid, IconButton, TextField } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useQuery } from "react-query";
 import { mangaAPI } from "../../../api";
@@ -38,45 +38,49 @@ export default function AuthorInput({
   });
 
   return (
-    <React.Fragment key={index}>
-      <Grid item xs={12} sm={6}>
-        <Autocomplete
-          id="author-name"
-          freeSolo
-          options={existingAuthors}
-          value={author.name}
-          renderInput={(params) => (
-            <TextField {...params} label={`Author ${index + 1}`} />
-          )}
-          onInputChange={(event, newValue) =>
-            handleAuthorChange(index, "name", newValue || "")
-          }
-        />
+    <Grid container key={index} spacing={2} sm={true}>
+      <Grid item xs={6} sm={5}>
+        <Box mb={2}>
+          <Autocomplete
+            id="author-name"
+            freeSolo
+            options={existingAuthors}
+            value={author.name}
+            renderInput={(params) => (
+              <TextField {...params} label={`Author ${index + 1}`} />
+            )}
+            onInputChange={(event, newValue) =>
+              handleAuthorChange(index, "name", newValue || "")
+            }
+          />
+        </Box>
       </Grid>
-      <Grid item xs={12} sm={5}>
-        <Autocomplete
-          key={`author-role-${index}`}
-          id={`author-role-${index}`}
-          freeSolo
-          options={existingRoles}
-          value={author.role}
-          onInputChange={(event, newValue) =>
-            handleAuthorChange(index, "role", newValue || "")
-          }
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              key={`author-role-${index}`}
-              label={`Role ${index + 1}`}
-            />
-          )}
-        />
+      <Grid item xs={5} sm={4}>
+        <Box mb={2}>
+          <Autocomplete
+            key={`author-role-${index}`}
+            id={`author-role-${index}`}
+            freeSolo
+            options={existingRoles}
+            value={author.role}
+            onInputChange={(event, newValue) =>
+              handleAuthorChange(index, "role", newValue || "")
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                key={`author-role-${index}`}
+                label={`Role ${index + 1}`}
+              />
+            )}
+          />
+        </Box>
       </Grid>
-      <Grid item xs={12} sm={1} container alignItems="center">
+      <Grid item xs={1} sm={1} container alignItems="center">
         <IconButton aria-label="delete" onClick={() => removeAuthor(index)}>
           <DeleteIcon />
         </IconButton>
       </Grid>
-    </React.Fragment>
+    </Grid>
   );
 }

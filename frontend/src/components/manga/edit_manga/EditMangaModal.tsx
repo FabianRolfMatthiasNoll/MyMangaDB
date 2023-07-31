@@ -1,4 +1,12 @@
-import { Box, Button, Grid, Modal, Paper, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  Modal,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { Author, Genre, Manga } from "../../../api/models";
 import { useState } from "react";
 import React from "react";
@@ -14,6 +22,26 @@ interface Props {
 
 export default function EditMangaModal({ manga, onClose }: Props) {
   const [updatedManga, setUpdatedManga] = useState<Manga>(manga);
+  const [coverImage, setCoverImage] = useState<string | null>(
+    updatedManga.coverImage
+  );
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        let base64String = reader.result as string;
+        base64String = base64String.replace(/^data:image\/[a-z]+;base64,/, "");
+        setCoverImage(base64String);
+        setUpdatedManga({
+          ...updatedManga,
+          coverImage: base64String,
+        });
+      };
+    }
+  };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUpdatedManga({
@@ -115,60 +143,113 @@ export default function EditMangaModal({ manga, onClose }: Props) {
         <Box
           sx={{
             display: "flex",
+            flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
             mb: 5,
           }}
         >
           <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                required
-                label="Title"
-                fullWidth
-                name="title"
-                value={updatedManga.title}
-                onChange={handleInputChange}
-              />
+            {/* Left Column - Modern Image Uploader */}
+            <Grid item sm="auto">
+              <Box
+                sx={{
+                  width: `calc(0.8 * 80vh * 2/3)`, // 2:3 ratio, width is 2/3 of height
+                  height: `calc(0.8 * 80vh)`, // 80% of 80vh
+                  border: coverImage ? "none" : "2px dashed gray",
+                  backgroundImage: coverImage
+                    ? `url(data:image/jpeg;base64,${coverImage})`
+                    : "none",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  position: "relative",
+                }}
+              >
+                {!coverImage && <Typography>↑</Typography>}{" "}
+                {/* Replace with upload icon */}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    opacity: 0,
+                    cursor: "pointer",
+                  }}
+                />
+              </Box>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Description"
-                fullWidth
-                multiline
-                name="description"
-                value={updatedManga.description}
-                onChange={handleInputChange}
-              />
+
+            {/* Right Column - All other fields */}
+            <Grid item sm={true}>
+              <Box mb={2}>
+                <TextField
+                  required
+                  label="Title"
+                  fullWidth
+                  name="title"
+                  value={updatedManga.title}
+                  onChange={handleInputChange}
+                />
+              </Box>
+              <Box mb={2}>
+                <TextField
+                  label="Description"
+                  fullWidth
+                  multiline
+                  name="description"
+                  value={updatedManga.description}
+                  onChange={handleInputChange}
+                />
+              </Box>
+              <Box mb={2}>
+                <TextField
+                  label="Total Volumes"
+                  type="number"
+                  fullWidth
+                  name="totalVolumes"
+                  value={updatedManga.totalVolumes}
+                  onChange={handleInputChange}
+                />
+              </Box>
+              <Box mb={2}>
+                <GenreInput
+                  initialGenres={updatedManga.genres}
+                  onGenresChange={handleGenresChange}
+                />
+              </Box>
+              {updatedManga.authors.map((author, index) => (
+                <React.Fragment key={index}>
+                  <AuthorInput
+                    author={author}
+                    index={index}
+                    handleAuthorChange={handleAuthorChange}
+                    removeAuthor={removeAuthor}
+                  />
+                </React.Fragment>
+              ))}
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Total Volumes"
-                type="number"
-                fullWidth
-                name="totalVolumes"
-                value={updatedManga.totalVolumes}
-                onChange={handleInputChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={11}>
-              <GenreInput
-                initialGenres={updatedManga.genres}
-                onGenresChange={handleGenresChange}
-              />
-            </Grid>
-            {updatedManga.authors.map((author, index) => (
-              <AuthorInput
-                author={author}
-                index={index}
-                handleAuthorChange={handleAuthorChange}
-                removeAuthor={removeAuthor}
-              />
-            ))}
           </Grid>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-start",
+              width: "100%",
+              mt: 3,
+              mb: -7, // Adjust this value as needed
+            }}
+          >
+            <Button onClick={addAuthor}>Add Author</Button>
+            <Button onClick={handleSubmit}>Submit</Button>
+          </Box>
         </Box>
-        <Button onClick={addAuthor}>Add Author</Button>
-        <Button onClick={handleSubmit}>Submit</Button>
       </Paper>
     </Modal>
   );
