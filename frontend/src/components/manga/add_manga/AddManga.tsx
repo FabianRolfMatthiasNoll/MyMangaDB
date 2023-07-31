@@ -2,8 +2,6 @@ import {
   Box,
   Button,
   Grid,
-  Modal,
-  Paper,
   TextField,
   Typography,
 } from "@mui/material";
