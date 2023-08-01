@@ -6,7 +6,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import BookIcon from "@mui/icons-material/Book";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 
-export const mainListItems = (
+export const SidebarItems = (
   <React.Fragment>
     <ListItemButton>
       <ListItemIcon>

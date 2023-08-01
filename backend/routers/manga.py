@@ -1,6 +1,10 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
+from openpyxl import Workbook, load_workbook
+from io import BytesIO
+from schema import Author, Genre
 
 import crud.author as authorManager
 import crud.genre as genreManager
@@ -135,3 +139,102 @@ def get_all_author_names(db: Session = Depends(get_db)) -> List[str]:
 @router.get("/authors/roles")
 def get_all_role_names(db: Session = Depends(get_db)) -> List[str]:
     return authorManager.get_all_role_names(db)
+
+
+############################################################################################################
+
+
+@router.get("/export")
+async def export_mangas_to_excel(db: Session = Depends(get_db)):
+    db_mangas = db.query(DBManga).all()
+    mangas = [mangaManager.create_manga_model(db, db_manga) for db_manga in db_mangas]
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Mangas"
+
+    # Add headers
+    ws.append(
+        [
+            "Title",
+            "Description",
+            "Genres",
+            "Authors(Roles)",
+            "Total Volumes",
+            "Specific Volumes",
+        ]
+    )
+
+    # Add data
+    for manga in mangas:
+        genres = ", ".join([genre.name for genre in manga.genres])
+        authors_roles = ", ".join(
+            [f"{author.name}({author.role})" for author in manga.authors]
+        )
+        specific_volumes = ", ".join(
+            [str(volume.volume_num) for volume in manga.volumes]
+        )
+
+        ws.append(
+            [
+                manga.title,
+                manga.description,
+                genres,
+                authors_roles,
+                len(manga.volumes),
+                specific_volumes,
+            ]
+        )
+
+    buffer = BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+
+    return StreamingResponse(
+        buffer,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=mangas.xlsx"},
+    )
+
+
+@router.post("/import")
+async def import_mangas_from_excel(
+    file: UploadFile = File(...), db: Session = Depends(get_db)
+):
+    wb = load_workbook(filename=file.file)
+    ws = wb.active
+
+    for row in ws.iter_rows(min_row=2, values_only=True):  # Skip header row
+        (
+            title,
+            description,
+            genres_str,
+            authors_roles_str,
+            total_volumes,
+            specific_volumes_str,
+        ) = row
+
+        genres = [Genre(name=genre.strip()) for genre in genres_str.split(",")]
+        authors = [
+            Author(
+                name=author.split("(")[0].strip(),
+                role=author.split("(")[1].replace(")", "").strip(),
+            )
+            for author in authors_roles_str.split(",")
+        ]
+        volumes = [
+            Volume(volume_num=int(volume.strip()))
+            for volume in specific_volumes_str.split(",")
+        ]
+
+        manga = Manga(
+            title=title,
+            description=description,
+            genres=genres,
+            authors=authors,
+            total_volumes=total_volumes,
+            volumes=volumes,
+        )
+        mangaManager.create_manga(db, manga)
+
+    return {"message": "Mangas imported successfully"}
