@@ -1,5 +1,13 @@
 import { Manga, Volume } from "../../../api/models";
-import { Button, Grid, Modal, Paper, Typography } from "@mui/material";
+import {
+  Button,
+  Grid,
+  Modal,
+  Paper,
+  Typography,
+  Card,
+  Box,
+} from "@mui/material";
 import VolumeCard from "./VolumeCard";
 import AddVolume from "../adding_components/AddVolume";
 import React from "react";
@@ -9,8 +17,54 @@ interface Props {
   onClose: () => void;
 }
 
+// ListView Component
+function ListView({ volumes }: { volumes: Volume[] }) {
+  return (
+    <Box
+      display="flex"
+      flexDirection="row"
+      flexWrap="wrap"
+      gap="8px" // This controls the space between items. Adjust as needed.
+    >
+      {volumes.map((volume: Volume) => (
+        <Box key={volume.volumeNum}>
+          <Card
+            elevation={3}
+            sx={{
+              width: "60px",
+              height: "60px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+            }}
+          >
+            <Typography variant="h6" component="div">
+              {volume.volumeNum}
+            </Typography>
+          </Card>
+        </Box>
+      ))}
+    </Box>
+  );
+}
+
+// CardView Component
+function CardView({ volumes }: { volumes: Volume[] }) {
+  return (
+    <Grid container spacing={2}>
+      {volumes.map((volume: Volume) => (
+        <Grid item xs={6} sm={4} md={2} lg={1} key={volume.volumeNum}>
+          <VolumeCard volume={volume} />
+        </Grid>
+      ))}
+    </Grid>
+  );
+}
+
 export default function VolumesModal({ manga, onClose }: Props) {
   const [isAddVolumeOpen, setIsAddVolumeOpen] = React.useState(false);
+  const [isListView, setIsListView] = React.useState(false);
 
   const handleAddVolumeClose = () => {
     setIsAddVolumeOpen(false);
@@ -38,13 +92,16 @@ export default function VolumesModal({ manga, onClose }: Props) {
           <Typography variant="h2" component="h2" mb={2}>
             Volumes
           </Typography>
-          <Grid container spacing={1}>
-            {manga.volumes.map((volume: Volume) => (
-              <Grid item xs={6} sm={4} md={2} lg={1} key={volume.volumeNum}>
-                <VolumeCard volume={volume} />
-              </Grid>
-            ))}
-          </Grid>
+          <Button onClick={() => setIsListView(!isListView)}>
+            {isListView ? "Show Detailed View" : "Show List View"}
+          </Button>
+          <>
+            {isListView ? (
+              <ListView volumes={manga.volumes} />
+            ) : (
+              <CardView volumes={manga.volumes} />
+            )}
+          </>
           {/* Button to trigger the AddVolume component */}
           <Button
             variant="contained"
