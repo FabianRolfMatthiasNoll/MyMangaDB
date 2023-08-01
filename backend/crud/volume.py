@@ -37,6 +37,7 @@ def create_volume(db: Session, new_volume: Volume):
     # TODO: Try to get a cover image else let it be empty
     db_volume = DBVolume()
     db_volume.volume_num = new_volume.volume_num
+    db_volume.cover_image = new_volume.cover_image
     # db_volume.cover_image = new_volume.cover_image
     db_volume.manga_id = new_volume.manga_id
     db.add(db_volume)

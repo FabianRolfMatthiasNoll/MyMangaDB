@@ -24,7 +24,7 @@ class Volume(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     volume_num = Column(Integer)
-    cover_image = Column(LargeBinary, default=b"")
+    cover_image = Column(Text, default="")
     manga_id = Column(Integer, ForeignKey(Manga.__table__.c.id))
 
 

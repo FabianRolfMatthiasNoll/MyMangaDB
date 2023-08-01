@@ -39,10 +39,10 @@ export interface Volume {
     mangaId: number;
     /**
      * 
-     * @type {Blob}
+     * @type {String}
      * @memberof Volume
      */
-    coverImage: Blob;
+    coverImage: String;
 }
 
 /**

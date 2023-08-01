@@ -1,12 +1,5 @@
-import {
-  Box,
-  Button,
-  Grid,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { useState } from "react";
-import React from "react";
+import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import React, { useState, useCallback } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { Author, Genre, Manga } from "../../../api/models";
 import { mangaAPI } from "../../../api";
@@ -30,97 +23,79 @@ const defaultManga: Manga = {
 
 export default function AddManga({ onClose }: Props) {
   const [updatedManga, setUpdatedManga] = useState<Manga>(defaultManga);
-  const [coverImage, setCoverImage] = useState<string | null>(null);
+  const { title, description, totalVolumes, genres, authors, coverImage } =
+    updatedManga;
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = () => {
-        let base64String = reader.result as string;
-        base64String = base64String.replace(/^data:image\/[a-z]+;base64,/, "");
-        setCoverImage(base64String);
-        setUpdatedManga({
-          ...updatedManga,
-          coverImage: base64String,
-        });
-      };
-    }
-  };
+  const handleImageUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = () => {
+          const base64String = (reader.result as string).replace(
+            /^data:image\/[a-z]+;base64,/,
+            ""
+          );
+          setUpdatedManga((prev) => ({ ...prev, coverImage: base64String }));
+        };
+      }
+    },
+    []
+  );
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUpdatedManga({
-      ...updatedManga,
-      [event.target.name]: event.target.value,
-    });
-  };
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target;
+      setUpdatedManga((prev) => ({ ...prev, [name]: value }));
+    },
+    []
+  );
 
-  const handleGenresChange = (newGenres: Genre[]) => {
-    setUpdatedManga({
-      ...updatedManga,
-      genres: newGenres,
-    });
-  };
+  const handleGenresChange = useCallback((newGenres: Genre[]) => {
+    setUpdatedManga((prev) => ({ ...prev, genres: newGenres }));
+  }, []);
 
-  const handleAuthorChange = (
-    index: number,
-    field: "name" | "role",
-    value: string
-  ) => {
-    setUpdatedManga((prevUpdatedManga) => {
-      const updatedAuthors = prevUpdatedManga.authors.map((author, i) => {
-        if (i === index) {
-          return {
-            ...author,
-            [field]: value,
-          };
-        }
-        return author;
+  const handleAuthorChange = useCallback(
+    (index: number, field: "name" | "role", value: string) => {
+      setUpdatedManga((prev) => {
+        const updatedAuthors = prev.authors.map((author, i) =>
+          i === index ? { ...author, [field]: value } : author
+        );
+        return { ...prev, authors: updatedAuthors };
       });
+    },
+    []
+  );
 
-      return {
-        ...prevUpdatedManga,
-        authors: updatedAuthors,
-      };
+  const removeAuthor = useCallback((index: number) => {
+    setUpdatedManga((prev) => {
+      const updatedAuthors = prev.authors.filter((_, i) => i !== index);
+      return { ...prev, authors: updatedAuthors };
     });
-  };
+  }, []);
 
-  const removeAuthor = (index: number) => {
-    setUpdatedManga((prevUpdatedManga) => {
-      const updatedAuthors = prevUpdatedManga.authors.filter(
-        (_, i) => i !== index
-      );
-      return {
-        ...prevUpdatedManga,
-        authors: updatedAuthors,
-      };
-    });
-  };
+  const addAuthor = useCallback(() => {
+    const newAuthor: Author = { id: 0, name: "", role: "" };
+    setUpdatedManga((prev) => ({
+      ...prev,
+      authors: [...prev.authors, newAuthor],
+    }));
+  }, []);
 
-  const addAuthor = () => {
-    setUpdatedManga((prevUpdatedManga) => {
-      const newAuthor: Author = { id: 0, name: "", role: "" }; // You can set the initial values as needed
-      return {
-        ...prevUpdatedManga,
-        authors: [...prevUpdatedManga.authors, newAuthor],
-      };
-    });
-  };
-
-  const handleSubmit = async () => {
-    mutation.mutate(updatedManga);
-    onClose();
-  };
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (manga: Manga) =>
-      mangaAPI.createMangaMangaPost({ manga: manga }),
+    mutationFn: (manga: Manga) => mangaAPI.createMangaMangaPost({ manga }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["GetAllMangas"] });
     },
   });
+
+  const handleSubmit = useCallback(async () => {
+    mutation.mutate(updatedManga);
+    onClose();
+  }, [updatedManga, mutation, onClose]);
 
   return (
     <Box
@@ -137,8 +112,8 @@ export default function AddManga({ onClose }: Props) {
         <Grid item sm="auto">
           <Box
             sx={{
-              width: `calc(0.8 * 80vh * 2/3)`, // 2:3 ratio, width is 2/3 of height
-              height: `calc(0.8 * 80vh)`, // 80% of 80vh
+              width: `calc(0.8 * 80vh * 2/3)`,
+              height: `calc(0.8 * 80vh)`,
               border: coverImage ? "none" : "2px dashed gray",
               backgroundImage: coverImage
                 ? `url(data:image/jpeg;base64,${coverImage})`
@@ -151,8 +126,7 @@ export default function AddManga({ onClose }: Props) {
               position: "relative",
             }}
           >
-            {!coverImage && <Typography>↑</Typography>}{" "}
-            {/* Replace with upload icon */}
+            {!coverImage && <Typography>↑</Typography>}
             <input
               type="file"
               accept="image/*"
@@ -178,7 +152,7 @@ export default function AddManga({ onClose }: Props) {
               label="Title"
               fullWidth
               name="title"
-              value={updatedManga.title}
+              value={title}
               onChange={handleInputChange}
             />
           </Box>
@@ -188,7 +162,7 @@ export default function AddManga({ onClose }: Props) {
               fullWidth
               multiline
               name="description"
-              value={updatedManga.description}
+              value={description}
               onChange={handleInputChange}
             />
           </Box>
@@ -198,17 +172,17 @@ export default function AddManga({ onClose }: Props) {
               type="number"
               fullWidth
               name="totalVolumes"
-              value={updatedManga.totalVolumes}
+              value={totalVolumes}
               onChange={handleInputChange}
             />
           </Box>
           <Box mb={2}>
             <GenreInput
-              initialGenres={updatedManga.genres}
+              initialGenres={genres}
               onGenresChange={handleGenresChange}
             />
           </Box>
-          {updatedManga.authors.map((author, index) => (
+          {authors.map((author, index) => (
             <React.Fragment key={index}>
               <AuthorInput
                 author={author}
@@ -226,7 +200,7 @@ export default function AddManga({ onClose }: Props) {
           justifyContent: "flex-start",
           width: "100%",
           mt: 3,
-          mb: -7, // Adjust this value as needed
+          mb: -7,
         }}
       >
         <Button onClick={addAuthor}>Add Author</Button>

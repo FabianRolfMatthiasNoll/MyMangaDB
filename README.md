@@ -19,7 +19,7 @@ Due to the varied nature of manga provider websites, our focus is on building an
 
 ## ✅ Current Features
 
-- [x] Automated metadata retrieval (Author, Genres, Total Volumes, Description)
+- [x] Automated metadata retrieval (Author, Genres, Total Volumes, Description) // english mangas only currently
 - [x] Efficient manga collection management
 - [x] Support for multiple authors and their roles
 - [x] Genre addition and management
@@ -29,9 +29,7 @@ Due to the varied nature of manga provider websites, our focus is on building an
 
 - [ ] Excel list export and import
 - [ ] Enhanced collection management tools (sorting, sharing)
-- [ ] Automated manga cover search
-- [ ] Custom field addition (e.g., price)
-- [ ] Robust search bar with sorting and filtering options
+- [ ] Search bar with sorting and filtering options
 - [ ] Genre and author/role-based filtering
 - [ ] Self-renewing MAL-API access
 - [ ] Desktop installer
@@ -39,12 +37,15 @@ Due to the varied nature of manga provider websites, our focus is on building an
 
 ## 🚀 Future Features
 
+- [ ] Automated manga cover search
+- [ ] Custom field addition (e.g., price)
 - [ ] Multi-source metadata gathering
 - [ ] Automated server setup for personal hosting
 - [ ] Web service availability
 - [ ] Dynamic design overhaul
 - [ ] Visual analytics for your collection
 - [ ] Add and Fetch Mangas from the Web by ISBN
+- [ ] multi language meta data fetching
 
 ## 🛠️ How to Use (WIP)
 

@@ -18,7 +18,7 @@ class Volume(BaseModel):
     id: int
     volume_num: int
     manga_id: int
-    cover_image: bytes
+    cover_image: str
 
 
 class Manga(BaseModel):

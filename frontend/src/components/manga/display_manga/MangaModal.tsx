@@ -75,7 +75,14 @@ export default function MangaModal({ manga, open, onClose }: Props) {
     >
       <>
         <Paper sx={paperStyles}>
-          <Box sx={{ position: "absolute", top: 2, right: 2 }}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: 20,
+              right: 20,
+              transform: "scale(2)",
+            }}
+          >
             <IconButton
               aria-label="delete"
               onClick={() =>

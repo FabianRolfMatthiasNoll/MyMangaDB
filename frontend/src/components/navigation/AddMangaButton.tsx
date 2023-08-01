@@ -9,8 +9,8 @@ import {
   Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import AddManga from "../manga/add_manga/AddManga";
-import AddMangaMAL from "../manga/add_manga/AddMangaMAL";
+import AddManga from "../manga/adding_components/AddManga";
+import AddMangaMAL from "../manga/adding_components/AddMangaMAL";
 
 export default function AddMangaButton() {
   const [open, setOpen] = useState(false);
