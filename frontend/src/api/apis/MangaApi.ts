@@ -28,6 +28,10 @@ import {
     VolumeToJSON,
 } from '../models';
 
+export interface AddCoverToVolumeMangaVolumeCoverPutRequest {
+    volume: Volume;
+}
+
 export interface AddVolumeMangaVolumePostRequest {
     volume: Volume;
 }
@@ -68,6 +72,43 @@ export interface UpdateMangaMangaUpdateMangaPutRequest {
  * 
  */
 export class MangaApi extends runtime.BaseAPI {
+
+    /**
+     * Add Cover To Volume
+     */
+    async addCoverToVolumeMangaVolumeCoverPutRaw(requestParameters: AddCoverToVolumeMangaVolumeCoverPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+        if (requestParameters.volume === null || requestParameters.volume === undefined) {
+            throw new runtime.RequiredError('volume','Required parameter requestParameters.volume was null or undefined when calling addCoverToVolumeMangaVolumeCoverPut.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/manga/volume/cover`,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: VolumeToJSON(requestParameters.volume),
+        }, initOverrides);
+
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<any>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
+    }
+
+    /**
+     * Add Cover To Volume
+     */
+    async addCoverToVolumeMangaVolumeCoverPut(requestParameters: AddCoverToVolumeMangaVolumeCoverPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
+        const response = await this.addCoverToVolumeMangaVolumeCoverPutRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Add Volume

@@ -53,7 +53,7 @@ To initialize both backend and frontend, please check the `vscode launch.json`. 
 
 **Generate API:**
 ```bash
-cd frontend/api
+cd frontend/src/api
 npx openapi-generator-cli generate -i http://127.0.0.1:8000/openapi.json -g typescript-fetch
 ```
 

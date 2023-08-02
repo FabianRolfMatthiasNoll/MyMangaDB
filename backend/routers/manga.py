@@ -1,10 +1,6 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from openpyxl import Workbook, load_workbook
-from io import BytesIO
-from schema import Author, Genre
 
 import crud.author as authorManager
 import crud.genre as genreManager
