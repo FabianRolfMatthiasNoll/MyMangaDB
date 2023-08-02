@@ -204,7 +204,7 @@ async def import_mangas_from_excel(
     wb = load_workbook(filename=file.file)
     ws = wb.active
 
-    for row in ws.iter_rows(min_row=2, values_only=True):  # Skip header row
+    for row in ws.iter_rows(min_row=2, values_only=True):
         (
             title,
             description,
@@ -214,27 +214,58 @@ async def import_mangas_from_excel(
             specific_volumes_str,
         ) = row
 
-        genres = [Genre(name=genre.strip()) for genre in genres_str.split(",")]
-        authors = [
-            Author(
-                name=author.split("(")[0].strip(),
-                role=author.split("(")[1].replace(")", "").strip(),
-            )
-            for author in authors_roles_str.split(",")
-        ]
-        volumes = [
-            Volume(volume_num=int(volume.strip()))
-            for volume in specific_volumes_str.split(",")
-        ]
+        manga_model = DBManga()
+        manga_model.title = title
+        manga_model.description = description
+        manga_model.totalVolumes = total_volumes
+        db.add(manga_model)
+        db.commit()
+        db.refresh(manga_model)
 
-        manga = Manga(
-            title=title,
-            description=description,
-            genres=genres,
-            authors=authors,
-            total_volumes=total_volumes,
-            volumes=volumes,
+        # Handle Genres
+        genre_names = (
+            [genre.strip() for genre in genres_str.split(",")] if genres_str else []
         )
-        mangaManager.create_manga(db, manga)
+        for genre_name in genre_names:
+            genre = genreManager.get_genre(db, genre_name)
+            if not genre:
+                genre = genreManager.create_genre(db, genre_name)
+            genreManager.create_relation(db, genre.id, manga_model.id)
+
+        authors_list = (
+            [author_role.strip() for author_role in authors_roles_str.split(",")]
+            if authors_roles_str
+            else []
+        )
+        #TODO: Watch out for cases like missing role etc, after hookup to frontend
+        # add error messages etc.
+        for author_role_str in authors_list:
+            parts = author_role_str.split("(")
+            author_name = parts[0].strip()
+            role = parts[1].replace(")", "").strip() if len(parts) > 1 else None
+            result_author = authorManager.get_author(db, author_name)
+            if result_author is None:
+                result_author = authorManager.create_author(db, author_name)
+            result_role = authorManager.get_role(db, role)
+            if result_role is None:
+                result_role = authorManager.create_role(db, role)
+            authorManager.create_relation(
+                db, result_author.id, manga_model.id, result_role.id
+            )
+
+        # Handle Volumes
+        volume_nums = (
+            [int(vol.strip()) for vol in specific_volumes_str.split(",")]
+            if specific_volumes_str
+            else []
+        )
+        for volume_num in volume_nums:
+            volume = Volume(
+                id=0,
+                volume_num=volume_num,
+                manga_id=manga_model.id,
+                cover_image="",
+            )
+            volumeManager.create_volume(db, volume)
 
     return {"message": "Mangas imported successfully"}
