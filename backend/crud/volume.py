@@ -1,6 +1,5 @@
 from typing import Union, List
 
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from models import Volume as DBVolume
@@ -34,11 +33,9 @@ def get_volumes_by_manga_id(db: Session, manga_id: int) -> List[Volume]:
 
 
 def create_volume(db: Session, new_volume: Volume):
-    # TODO: Try to get a cover image else let it be empty
     db_volume = DBVolume()
     db_volume.volume_num = new_volume.volume_num
     db_volume.cover_image = new_volume.cover_image
-    # db_volume.cover_image = new_volume.cover_image
     db_volume.manga_id = new_volume.manga_id
     db.add(db_volume)
     db.commit()

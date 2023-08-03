@@ -18,6 +18,8 @@ router = APIRouter(prefix="/excel", tags=["ExcelInOut"])
 ##########################################  Import   ###########################################################
 
 # TODO: If the title exists already ask the User if he wants to import the new one, keep the old one or keep both
+# TODO: Export manga and volume cover images as well as importing
+# TODO: Make it possible to export and import to save data over breaking changes
 
 
 def validate_manga_fields(row):
