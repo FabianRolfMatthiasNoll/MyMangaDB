@@ -8,11 +8,12 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsIcon from "@mui/icons-material/Notifications";
+import SettingsIcon from "@mui/icons-material/Settings";
 import { SidebarItems } from "./SidebarItems";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
+import { useUI } from "./UIContext";
 
 const drawerWidth: number = 240;
 
@@ -66,6 +67,7 @@ const Drawer = styled(MuiDrawer, {
 
 export default function Navigation() {
   const [open, setOpen] = React.useState(false);
+  const { toggleSettings } = useUI();
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -99,11 +101,9 @@ export default function Navigation() {
           >
             MyMangaDB - Dashboard
           </Typography>
-          <SearchField />
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
+          {/*<SearchField />*/}
+          <IconButton color="inherit" onClick={toggleSettings}>
+            <SettingsIcon fontSize="large" />
           </IconButton>
         </Toolbar>
       </AppBar>

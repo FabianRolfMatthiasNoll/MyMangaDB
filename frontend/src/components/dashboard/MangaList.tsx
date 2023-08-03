@@ -9,8 +9,6 @@ import MangaCard from "../manga/display_manga/MangaCard";
 const MangaList: React.FC = () => {
   const [mangas, setMangas] = useState<Manga[]>([]);
 
-  // TODO: Check for : in title an remove when searching for cover image
-
   const stationQuery = useQuery({
     queryKey: "GetAllMangas",
     queryFn: () => mangaAPI.getAllMangasMangaGet(),
@@ -19,6 +17,10 @@ const MangaList: React.FC = () => {
 
   if (stationQuery.isLoading) {
     return <div>Loading...</div>;
+  }
+
+  if (stationQuery.isError) {
+    console.error(stationQuery.error);
   }
 
   return (

@@ -112,8 +112,8 @@ export default function AddManga({ onClose }: Props) {
         <Grid item sm="auto">
           <Box
             sx={{
-              width: `calc(0.8 * 80vh * 2/3)`,
-              height: `calc(0.8 * 80vh)`,
+              width: `calc(0.8 * 45vh * 2/3)`,
+              height: `calc(0.8 * 45vh)`,
               border: coverImage ? "none" : "2px dashed gray",
               backgroundImage: coverImage
                 ? `url(data:image/jpeg;base64,${coverImage})`

@@ -31,6 +31,7 @@ export default function MangaCard({ manga }: Props) {
           <CardMedia
             component="img"
             height="350"
+            width={(350 * 2) / 3}
             image={`data:image/jpeg;base64,${manga.coverImage}`}
             alt="mangacover"
             sx={{ objectFit: "contain" }}
