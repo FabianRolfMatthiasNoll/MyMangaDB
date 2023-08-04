@@ -49,7 +49,6 @@ export const GenreInput: React.FC<GenreInputProps> = ({
     queryFn: () => mangaAPI.getAllGenreNamesMangaGenreGet(),
     onSuccess: (data) => setExistingGenres(data),
   });
-  //TODO: Give all available genres and list them with the options menu. MUI -> Autocomplete
   return (
     <Autocomplete
       multiple

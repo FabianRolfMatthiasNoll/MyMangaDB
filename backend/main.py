@@ -3,17 +3,18 @@ from fastapi.middleware.cors import CORSMiddleware
 import config
 import models
 from database import engine
-from routers import manga, mal
+from routers import manga, mal, excelIO
 
 app = FastAPI()
 
 app.include_router(manga.router)
+app.include_router(excelIO.router)
 app.include_router(mal.router)
 
 # CORS settings
 origins = [
     "http://192.168.56.1:3000",
-    "http://localhost:3000",  # Add your frontend origin here
+    "http://localhost:3000",
 ]
 
 app.add_middleware(

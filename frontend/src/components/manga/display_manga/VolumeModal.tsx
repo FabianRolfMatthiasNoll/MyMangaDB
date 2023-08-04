@@ -20,12 +20,7 @@ interface Props {
 // ListView Component
 function ListView({ volumes }: { volumes: Volume[] }) {
   return (
-    <Box
-      display="flex"
-      flexDirection="row"
-      flexWrap="wrap"
-      gap="8px" // This controls the space between items. Adjust as needed.
-    >
+    <Box display="flex" flexDirection="row" flexWrap="wrap" gap="8px">
       {volumes.map((volume: Volume) => (
         <Box key={volume.volumeNum}>
           <Card

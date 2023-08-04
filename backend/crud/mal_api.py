@@ -9,7 +9,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from schema import Manga, Author, Genre
 
-
+# TODO: Check if still needed in the future. Probably deprecated
 def get_manga_from_mal(manga_title: str) -> Manga:
     url = "https://api.myanimelist.net/v2/manga"
     headers = {"Authorization": f"Bearer {config.MYANIMELIST_ACCESS_TOKEN}"}
@@ -21,8 +21,6 @@ def get_manga_from_mal(manga_title: str) -> Manga:
     response = requests.get(url, headers=headers, params=params)
     results = response.json().get("data", [])
 
-    # Filter search results based on title
-    # TODO: check for light novel vs manga
     results = [r for r in results if r["node"]["title"].lower() == manga_title.lower()]
     if len(results) == 0:
         raise HTTPException(status_code=404, detail="Manga not found")
@@ -43,7 +41,6 @@ def get_manga_from_mal(manga_title: str) -> Manga:
 
     cover_image_url = manga_data["node"]["main_picture"]["large"]
 
-    # TODO: Test from homestation because of stupid ssl certs!!!!!
     manga = Manga(
         id=0,
         title=manga_data["node"]["title"],
@@ -66,12 +63,9 @@ def get_search_results_from_mal(manga_title: str) -> List[Manga]:
         "limit": 10,
         "fields": "title,authors{first_name,last_name},synopsis,main_picture,num_volumes,genres",
     }
-    # TODO: Return list of results and choose which one to send to create manga.
     response = requests.get(url, headers=headers, params=params)
     results = response.json().get("data", [])
 
-    # Filter search results based on title
-    # TODO: check for light novel vs manga
     if len(results) == 0:
         raise HTTPException(status_code=404, detail="Manga not found")
 

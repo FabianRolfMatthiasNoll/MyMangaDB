@@ -5,6 +5,8 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import MangaList from "./MangaList";
+import SettingsMenu from "../settings_menu/SettingsMenu";
+import { useUI } from "../navigation/UIContext";
 
 function Copyright(props: any) {
   return (
@@ -25,6 +27,7 @@ function Copyright(props: any) {
 }
 
 export default function DashboardContent() {
+  const { isSettingsOpen } = useUI();
   return (
     <Box
       component="main"
@@ -41,7 +44,7 @@ export default function DashboardContent() {
       <Toolbar />
       <Container maxWidth="xl" sx={{ mt: 12, mb: 4 }}>
         <Grid container spacing={3}>
-          <MangaList />
+          {isSettingsOpen ? <SettingsMenu /> : <MangaList />}
         </Grid>
         <Copyright sx={{ pt: 4 }} />
       </Container>

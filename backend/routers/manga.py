@@ -15,13 +15,7 @@ from models import Volume as DBVolume
 router = APIRouter(prefix="/manga", tags=["Manga"])
 
 # TODO: Try to fetch cover images for mangas
-# TODO: Get all Genres
-# TODO: Get all Authors
-# TODO: Get all Roles
 
-# TODO: Will be for now withold until it is certain that these features are needed:
-# Remove Author endpoint
-# Remove Genre endpoint
 ############################################################################################################
 
 

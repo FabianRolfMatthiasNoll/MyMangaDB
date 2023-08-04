@@ -3,7 +3,7 @@ import { Manga } from "../../../api/models";
 import { Button, Grid, TextField, Box } from "@mui/material";
 import { useQuery } from "react-query";
 import { mangaMALAPI } from "../../../api";
-import MangaModalMAL from "./MangaModalMAL";
+import MangaModalMAL from "../display_manga/MangaModalMAL";
 
 interface Props {
   onClose: () => void;
