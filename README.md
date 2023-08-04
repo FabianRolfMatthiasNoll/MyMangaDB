@@ -24,6 +24,7 @@ Due to the varied nature of manga provider websites, our focus is on building an
 - [x] Support for multiple authors and their roles
 - [x] Genre addition and management
 - [x] Flexible manga cover management (manual and automatic)
+- [x] Excel list export and import
 
 ## 📅 Planned Features for v1.0.0
 
@@ -74,3 +75,6 @@ npx openapi-generator-cli generate -i http://127.0.0.1:8000/openapi.json -g type
 ### Searching for Mangas via MAL
 ![MAL Search](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/myanimelist_search.png?raw=true)
 ![MAL Search Preview](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/myanimelist_search_preview.png?raw=true)
+
+### Current Settings Menu
+![Exporting/Importing Library](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/settings_menu.png?raw=true)
