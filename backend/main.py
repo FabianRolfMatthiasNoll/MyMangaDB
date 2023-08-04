@@ -14,7 +14,7 @@ app.include_router(mal.router)
 # CORS settings
 origins = [
     "http://192.168.56.1:3000",
-    "http://localhost:3000",  # Add your frontend origin here
+    "http://localhost:3000",
 ]
 
 app.add_middleware(
