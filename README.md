@@ -27,7 +27,7 @@ Due to the varied nature of manga provider websites, our focus is on building an
 
 ## 📅 Planned Features for v1.0.0
 
-- [ ] Excel list export and import
+- [x] Excel list export and import -> most important feature!
 - [ ] Enhanced collection management tools (sorting, sharing)
 - [ ] Search bar with sorting and filtering options
 - [ ] Genre and author/role-based filtering
