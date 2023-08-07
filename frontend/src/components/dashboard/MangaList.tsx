@@ -47,8 +47,8 @@ const MangaList: React.FC = () => {
 
   return (
     <>
-      <Grid container spacing={2} alignItems="center">
-        <Grid item xs={12} sm={10}>
+      <Grid container spacing={1} alignItems="center">
+        <Grid item xs={10} sm={8} lg={9} xl={10}>
           <TextField
             label="Search manga"
             variant="outlined"
@@ -60,8 +60,10 @@ const MangaList: React.FC = () => {
 
         <Grid
           item
-          xs={12}
-          sm={2}
+          xs={2}
+          sm={4}
+          lg={2.2}
+          xl={2}
           sx={{ display: "flex", justifyContent: "flex-end" }}
         >
           <IconButton
@@ -87,7 +89,7 @@ const MangaList: React.FC = () => {
 
       <Grid container spacing={2} sx={{ marginTop: 2 }}>
         {filteredMangas.map((manga, index) => (
-          <Grid item key={index} xs={6} md={3} lg={2.4} xl={2}>
+          <Grid item key={index} xs={6} md={3} lg={2.3} xl={2}>
             <MangaCard manga={manga} />
           </Grid>
         ))}

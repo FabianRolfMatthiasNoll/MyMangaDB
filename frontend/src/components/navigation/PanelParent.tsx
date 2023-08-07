@@ -4,9 +4,12 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
-import MangaList from "./MangaList";
+import MangaList from "../dashboard/MangaList";
 import SettingsMenu from "../settings_menu/SettingsMenu";
-import { useUI } from "../navigation/UIContext";
+import { useUI } from "./UIContext";
+import AuthorMenu from "../author_panel/AuthorMenu";
+import GenreMenu from "../genre_panel/GenreMenu";
+import StatisticMenu from "../statistic_panel/StatisticMenu";
 
 function Copyright(props: any) {
   return (
@@ -26,8 +29,8 @@ function Copyright(props: any) {
   );
 }
 
-export default function DashboardContent() {
-  const { isSettingsOpen } = useUI();
+export default function PanelParent() {
+  const { activeComponent, setActiveComponent } = useUI();
   return (
     <Box
       component="main"
@@ -42,9 +45,13 @@ export default function DashboardContent() {
       }}
     >
       <Toolbar />
-      <Container maxWidth="xl" sx={{ mt: 7, mb: 4 }}>
+      <Container maxWidth="xl" sx={{ mt: 7, mb: 4, ml: 4 }}>
         <Grid container spacing={3}>
-          {isSettingsOpen ? <SettingsMenu /> : <MangaList />}
+          {activeComponent === "dashboard" && <MangaList />}
+          {activeComponent === "settings" && <SettingsMenu />}
+          {activeComponent === "genre" && <GenreMenu />}
+          {activeComponent === "author" && <AuthorMenu />}
+          {activeComponent === "statistics" && <StatisticMenu />}
         </Grid>
         <Copyright sx={{ pt: 4, mt: 20 }} />
       </Container>

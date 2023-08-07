@@ -3,13 +3,11 @@ import { styled } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import SearchField from "./SearchField";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-import Badge from "@mui/material/Badge";
 import MenuIcon from "@mui/icons-material/Menu";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { SidebarItems } from "./SidebarItems";
+import SidebarItems from "./SidebarItems";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
@@ -67,7 +65,7 @@ const Drawer = styled(MuiDrawer, {
 
 export default function Navigation() {
   const [open, setOpen] = React.useState(false);
-  const { toggleSettings } = useUI();
+  const { activeComponent, setActiveComponent } = useUI();
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -75,11 +73,7 @@ export default function Navigation() {
   return (
     <>
       <AppBar position="absolute" open={open}>
-        <Toolbar
-          sx={{
-            pr: "24px", // keep right padding when drawer closed
-          }}
-        >
+        <Toolbar>
           <IconButton
             edge="start"
             color="inherit"
@@ -101,8 +95,10 @@ export default function Navigation() {
           >
             MyMangaDB - Dashboard
           </Typography>
-          {/*<SearchField />*/}
-          <IconButton color="inherit" onClick={toggleSettings}>
+          <IconButton
+            color="inherit"
+            onClick={() => setActiveComponent("settings")}
+          >
             <SettingsIcon fontSize="large" />
           </IconButton>
         </Toolbar>
@@ -121,7 +117,9 @@ export default function Navigation() {
           </IconButton>
         </Toolbar>
         <Divider />
-        <List component="nav">{SidebarItems}</List>
+        <List component="nav">
+          <SidebarItems />
+        </List>
       </Drawer>
     </>
   );

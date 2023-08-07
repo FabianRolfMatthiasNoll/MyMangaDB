@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useState } from "react";
 
 interface UIState {
-  isSettingsOpen: boolean;
-  toggleSettings: () => void;
+  activeComponent: "dashboard" | "settings" | "genre" | "author" | "statistics";
+  setActiveComponent: (
+    component: "dashboard" | "settings" | "genre" | "author" | "statistics"
+  ) => void;
 }
 
 const UIContext = createContext<UIState | undefined>(undefined);
@@ -12,14 +14,12 @@ interface UIProviderProps {
 }
 
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-  const toggleSettings = () => {
-    setIsSettingsOpen(!isSettingsOpen);
-  };
+  const [activeComponent, setActiveComponent] = useState<
+    "dashboard" | "settings" | "genre" | "author" | "statistics"
+  >("dashboard");
 
   return (
-    <UIContext.Provider value={{ isSettingsOpen, toggleSettings }}>
+    <UIContext.Provider value={{ activeComponent, setActiveComponent }}>
       {children}
     </UIContext.Provider>
   );
