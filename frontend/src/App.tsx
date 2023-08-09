@@ -1,6 +1,6 @@
 import { ReactQueryDevtools } from "react-query/devtools";
 import { QueryClient, QueryClientProvider } from "react-query";
-import DashboardContent from "./components/dashboard/DashboardContent";
+import PanelParent from "./components/navigation/PanelParent";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
@@ -23,7 +23,7 @@ export default function Dashboard() {
           <Box sx={{ display: "flex" }}>
             <CssBaseline />
             <Navigation />
-            <DashboardContent />
+            <PanelParent />
           </Box>
           <AddMangaButton />
         </ThemeProvider>
@@ -32,4 +32,3 @@ export default function Dashboard() {
     </UIProvider>
   );
 }
-

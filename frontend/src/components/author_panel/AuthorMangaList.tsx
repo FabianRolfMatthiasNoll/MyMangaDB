@@ -1,25 +1,21 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "react-query";
+import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import SortByAlphaIcon from "@mui/icons-material/SortByAlpha";
 import SortByAlphaRoundedIcon from "@mui/icons-material/SortByAlphaRounded";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
-import { mangaAPI } from "../../api";
-import { Manga } from "../../api/models";
 import MangaCard from "../manga/display_manga/MangaCard";
+import { Manga } from "../../api/models";
+import { Button } from "@mui/material";
 
-const MangaList: React.FC = () => {
-  const [mangas, setMangas] = useState<Manga[]>([]);
+const MangaList: React.FC<{ mangas: Manga[]; onBackToAuthors: () => void }> = ({
+  mangas,
+  onBackToAuthors,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortType, setSortType] = useState("id");
-
-  const stationQuery = useQuery({
-    queryKey: "GetAllMangas",
-    queryFn: () => mangaAPI.getAllMangasMangaGet(),
-    onSuccess: (data) => setMangas(data),
-  });
+  const [sortedMangas, setSortedMangas] = useState(mangas);
 
   useEffect(() => {
     let sortedMangas = [...mangas];
@@ -30,23 +26,16 @@ const MangaList: React.FC = () => {
     } else {
       sortedMangas.sort((a, b) => a.id - b.id);
     }
-    setMangas(sortedMangas);
-  }, [sortType]);
+    setSortedMangas(sortedMangas);
+  }, [sortType, mangas]);
 
-  if (stationQuery.isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (stationQuery.isError) {
-    console.error(stationQuery.error);
-  }
-
-  const filteredMangas = mangas.filter((manga) =>
+  const filteredMangas = sortedMangas.filter((manga) =>
     manga.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <>
+      <Button onClick={onBackToAuthors}>Back to Authors</Button>
       <Grid container spacing={1} alignItems="center">
         <Grid item xs={10} sm={8} lg={9} xl={10}>
           <TextField

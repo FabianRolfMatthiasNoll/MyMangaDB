@@ -29,17 +29,17 @@ Due to the varied nature of manga provider websites, our focus is on building an
 ## 📅 Planned Features for v1.0.0
 
 - [x] Excel list export and import -> most important feature!
-- [ ] Enhanced collection management tools (sorting, sharing)
-- [ ] Search bar with sorting and filtering options
-- [ ] Genre and author/role-based filtering
-- [ ] Self-renewing MAL-API access
+- [x] Enhanced collection management tools (sorting, sharing)
+- [x] Search bar with sorting and filtering options
+- [x] Genre and author/role-based filtering
+- [ ] Self-renewing MAL-API access / Jikan Support
 - [ ] Desktop installer
-- [ ] Adding ISBN to the Mangas
 
 ## 🚀 Future Features
 
 - [ ] Automated manga cover search
 - [ ] Custom field addition (e.g., price)
+- [ ] Adding ISBN to the Mangas
 - [ ] Multi-source metadata gathering
 - [ ] Automated server setup for personal hosting
 - [ ] Web service availability
