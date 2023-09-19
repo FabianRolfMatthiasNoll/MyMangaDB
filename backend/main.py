@@ -3,13 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 import config
 import models
 from database import engine
-from routers import manga, mal, excelIO
+from routers import manga, jikan, excelIO
 
 app = FastAPI()
 
 app.include_router(manga.router)
 app.include_router(excelIO.router)
-app.include_router(mal.router)
+app.include_router(jikan.router)
 
 # CORS settings
 origins = [
