@@ -22,6 +22,8 @@ def create_manga_model(db: Session, db_manga: DBManga) -> Manga:
         authors=authorManager.get_authors_by_manga_id(db, db_manga.id),
         genres=genreManager.get_genres_by_manga_id(db, db_manga.id),
         cover_image=db_manga.cover_image,
+        reading_status=db_manga.reading_status,
+        collection_status=db_manga.collection_status,
     )
     return manga
 
@@ -30,20 +32,22 @@ def create_manga(db: Session, manga: Manga) -> Manga:
     exists = db.query(db.query(DBManga).filter_by(title=manga.title).exists()).scalar()
     if exists:
         raise HTTPException(status_code=400, detail="Manga already exists")
-    manga_model = DBManga()
-    manga_model.title = manga.title
-    manga_model.description = manga.description
-    manga_model.totalVolumes = manga.total_volumes
-    manga_model.cover_image = manga.cover_image
-    db.add(manga_model)
+    db_manga = DBManga()
+    db_manga.title = manga.title
+    db_manga.description = manga.description
+    db_manga.totalVolumes = manga.total_volumes
+    db_manga.cover_image = manga.cover_image
+    db_manga.reading_status = manga.reading_status
+    db_manga.collection_status = manga.collection_status
+    db.add(db_manga)
     db.commit()
-    db.refresh(manga_model)
+    db.refresh(db_manga)
     for genre in manga.genres:
         result_genre = genreManager.get_genre(db, genre.name)
         if result_genre is None:
             result_genre = genreManager.create_genre(db, genre.name)
         # when creating manga there can be not relations, so we just have to create it.
-        genreManager.create_relation(db, result_genre.id, manga_model.id)
+        genreManager.create_relation(db, result_genre.id, db_manga.id)
     for author in manga.authors:
         result_author = authorManager.get_author(db, author.name)
         if result_author is None:
@@ -51,9 +55,7 @@ def create_manga(db: Session, manga: Manga) -> Manga:
         result_role = authorManager.get_role(db, author.role)
         if result_role is None:
             result_role = authorManager.create_role(db, author.role)
-        authorManager.create_relation(
-            db, result_author.id, manga_model.id, result_role.id
-        )
+        authorManager.create_relation(db, result_author.id, db_manga.id, result_role.id)
     return manga
 
 
@@ -85,6 +87,8 @@ def update_manga(db: Session, manga: Manga) -> Manga:
     db_manga.description = manga.description
     db_manga.cover_image = manga.cover_image
     db_manga.total_volumes = manga.total_volumes
+    db_manga.reading_status = manga.reading_status
+    db_manga.collection_status = manga.collection_status
 
     db.commit()
     db.refresh(db_manga)

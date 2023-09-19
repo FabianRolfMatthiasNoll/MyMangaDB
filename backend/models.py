@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, LargeBinary, Text
+from sqlalchemy import Column, Enum, Integer, String, ForeignKey, LargeBinary, Text
 from database import Base
 
 
@@ -10,6 +10,21 @@ class Manga(Base):
     description = Column(String)
     total_volumes = Column(Integer, default=0)
     cover_image = Column(Text, default="")
+    reading_status = Column(
+        Enum("not_set", "reading", "completed", "canceled", name="reading_status"),
+        default="not_set",
+    )
+    collection_status = Column(
+        Enum(
+            "not_set",
+            "completed",
+            "ongoing",
+            "incomplete",
+            "canceled",
+            name="collection_status",
+        ),
+        default="not_set",
+    )
 
 
 class Genre(Base):

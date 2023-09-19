@@ -27,10 +27,33 @@ router = APIRouter(prefix="/excel", tags=["ExcelInOut"])
 
 def validate_manga_fields(row):
     """Check if required manga fields are present and return errors if any."""
-    (title, description, genres_str, authors_roles_str, _, _) = row
+    (
+        title,
+        description,
+        genres_str,
+        authors_roles_str,
+        _,
+        _,
+        reading_status,
+        collection_status,
+    ) = row
     errors = []
-    field_names = ["title", "description", "genres_str", "authors_roles_str"]
-    values = [title, description, genres_str, authors_roles_str]
+    field_names = [
+        "title",
+        "description",
+        "genres_str",
+        "authors_roles_str",
+        "reading_status",
+        "collection_status",
+    ]
+    values = [
+        title,
+        description,
+        genres_str,
+        authors_roles_str,
+        reading_status,
+        collection_status,
+    ]
     for field, value in zip(field_names, values):
         if not value:
             errors.append(f"Missing {field} in Manga {title}")
@@ -115,7 +138,11 @@ async def import_mangas_from_excel(
 
         # Create main Manga entry
         manga_model = DBManga(
-            title=title, description=row[1], total_volumes=total_volumes
+            title=title,
+            description=row[1],
+            total_volumes=total_volumes,
+            reading_status=row[6],
+            collection_status=row[7],
         )
 
         # Associate cover image
@@ -168,6 +195,8 @@ def create_headers(ws):
             "Authors(Roles)",
             "Total Volumes",
             "Specific Volumes",
+            "Reading Status",
+            "Collection Status",
         ]
     )
 
@@ -186,6 +215,8 @@ def get_manga_data(manga):
         authors_roles,
         len(manga.volumes),
         specific_volumes,
+        manga.reading_status.value,
+        manga.collection_status.value,
     )
 
 
@@ -196,12 +227,6 @@ async def export_mangas_to_excel(db: Session = Depends(get_db)):
     # Fetch and process manga data
     db_mangas = db.query(DBManga).all()
     mangas = [mangaManager.create_manga_model(db, db_manga) for db_manga in db_mangas]
-
-    fetching_time = time.time() - start_time
-    print(f"Time taken for fetching from DB: {fetching_time:.2f} seconds")
-
-    # Reset start time for next measurement
-    start_time = time.time()
 
     # Create a new workbook and worksheet
     wb = Workbook()
@@ -214,12 +239,6 @@ async def export_mangas_to_excel(db: Session = Depends(get_db)):
     # Populate worksheet with manga data
     for manga in mangas:
         ws.append(get_manga_data(manga))
-
-    excel_creation_time = time.time() - start_time
-    print(f"Time taken for creating Excel: {excel_creation_time:.2f} seconds")
-
-    # Reset start time for next measurement
-    start_time = time.time()
 
     # Save workbook to a buffer
     excel_buffer = BytesIO()
@@ -244,9 +263,6 @@ async def export_mangas_to_excel(db: Session = Depends(get_db)):
                         f"cover_images/{manga.title}_volume_{volume.volume_num}.jpg",
                         img_data,
                     )
-
-    zipping_time = time.time() - start_time
-    print(f"Time taken for zipping: {zipping_time:.2f} seconds")
 
     zip_buffer.seek(0)
 
