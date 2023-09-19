@@ -37,8 +37,8 @@ def create_manga(db: Session, manga: Manga) -> Manga:
     db_manga.description = manga.description
     db_manga.totalVolumes = manga.total_volumes
     db_manga.cover_image = manga.cover_image
-    db_manga.reading_status = manga.reading_status
-    db_manga.collection_status = manga.collection_status
+    db_manga.reading_status = manga.reading_status.value
+    db_manga.collection_status = manga.collection_status.value
     db.add(db_manga)
     db.commit()
     db.refresh(db_manga)
@@ -52,10 +52,7 @@ def create_manga(db: Session, manga: Manga) -> Manga:
         result_author = authorManager.get_author(db, author.name)
         if result_author is None:
             result_author = authorManager.create_author(db, author.name)
-        result_role = authorManager.get_role(db, author.role)
-        if result_role is None:
-            result_role = authorManager.create_role(db, author.role)
-        authorManager.create_relation(db, result_author.id, db_manga.id, result_role.id)
+        authorManager.create_relation(db, result_author.id, db_manga.id)
     return manga
 
 

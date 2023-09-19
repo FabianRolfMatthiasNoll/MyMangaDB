@@ -8,14 +8,13 @@ As the development of this project is an endeavor undertaken during my student y
 
 ## 📖 About MyMangaDB
 
-- **Framework:** We leverage the power of FastAPI.
+- **Framework:** FastAPI.
 - **Database Management:** SQLAlchemy, as recommended by FastAPI, is used for data management. All data is stored in a local SQLite3 database.
 - **Data Sources:**
   - The primary data, including author details, genres, and descriptions, are sourced from the MyAnimeList API.
-  - The Google Books API is used to fetch titles if the ISBN isn’t supported by MyAnimeList.
   - Plans are in place to integrate more data sources for book covers and other specifics.
 
-Due to the varied nature of manga provider websites, our focus is on building an intuitive user interface. This will allow users to efficiently manage their collection. We're hopeful that more manga providers will collaborate in the future, paving the way for a comprehensive, standardized manga database.
+Due to the varied nature of manga provider websites, the focus is on building an intuitive user interface. This will allow users to efficiently manage their collection.
 
 ## ✅ Current Features
 
@@ -53,6 +52,7 @@ Due to the varied nature of manga provider websites, our focus is on building an
 To initialize both backend and frontend, please check the `vscode launch.json`. To make modifications to the database, navigate to `http://127.0.0.1:8000/docs` to engage with the backend. For now, the frontend fetches and lists all mangas from the database, functioning as a proof of concept. **Caution**: Avoid using the software intensively as database changes are impending.
 
 **Generate API:**
+
 ```bash
 cd frontend/src/api
 npx openapi-generator-cli generate -i http://127.0.0.1:8000/openapi.json -g typescript-fetch
@@ -63,18 +63,30 @@ npx openapi-generator-cli generate -i http://127.0.0.1:8000/openapi.json -g type
 *Note: Images below are work-in-progress and might undergo changes.*
 
 ### Dashboard
+
 ![Dashboard](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/master/screenshots/dashboard.png)
+
 ### Manga Overview
+
 ![Manga Overview](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/master/screenshots/manga_overview.png)
+
 ### Volume Overview
+
 ![Volume Overview](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/master/screenshots/volume_overview.png)
+
 ### Editing Manga
+
 ![Editing Manga](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/manga_editing.png?raw=true)
+
 ### Manually Adding Mangas
+
 ![Adding Manga Manually](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/adding_manga_manual.png?raw=true)
+
 ### Searching for Mangas via MAL
+
 ![MAL Search](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/myanimelist_search.png?raw=true)
 ![MAL Search Preview](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/myanimelist_search_preview.png?raw=true)
 
 ### Current Settings Menu
+
 ![Exporting/Importing Library](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/settings_menu.png?raw=true)

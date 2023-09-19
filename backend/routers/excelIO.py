@@ -31,7 +31,7 @@ def validate_manga_fields(row):
         title,
         description,
         genres_str,
-        authors_roles_str,
+        authors_str,
         _,
         _,
         reading_status,
@@ -42,7 +42,7 @@ def validate_manga_fields(row):
         "title",
         "description",
         "genres_str",
-        "authors_roles_str",
+        "authors_str",
         "reading_status",
         "collection_status",
     ]
@@ -50,7 +50,7 @@ def validate_manga_fields(row):
         title,
         description,
         genres_str,
-        authors_roles_str,
+        authors_str,
         reading_status,
         collection_status,
     ]
@@ -72,29 +72,16 @@ def process_genres(db, genres_str, manga_model):
         genreManager.create_relation(db, genre.id, manga_model.id)
 
 
-def process_authors_and_roles(db, authors_roles_str, manga_model):
-    """Process authors, roles, and relate them to the given manga model."""
-    errors = []
+def process_authors(db, authors_str, manga_model):
+    """Process authors and relate them to the given manga model."""
     authors_list = (
-        [author_role.strip() for author_role in authors_roles_str.split(",")]
-        if authors_roles_str
-        else []
+        [author.strip() for author in authors_str.split(",")] if authors_str else []
     )
-    for author_role_str in authors_list:
-        parts = author_role_str.split("(")
-        author_name = parts[0].strip()
-        role = parts[1].replace(")", "").strip() if len(parts) > 1 else None
-        if not role:
-            errors.append(f"Missing role of {author_name} in Manga {manga_model.title}")
-            continue
+    for author_name in authors_list:
         author = authorManager.get_author(
             db, author_name
         ) or authorManager.create_author(db, author_name)
-        role_obj = authorManager.get_role(db, role) or authorManager.create_role(
-            db, role
-        )
-        authorManager.create_relation(db, author.id, manga_model.id, role_obj.id)
-    return errors
+        authorManager.create_relation(db, author.id, manga_model.id)
 
 
 @router.post("/import")
@@ -156,8 +143,7 @@ async def import_mangas_from_excel(
 
         # Process genres, authors, roles
         process_genres(db, row[2], manga_model)
-        author_errors = process_authors_and_roles(db, row[3], manga_model)
-        errors.extend(author_errors)
+        process_authors(db, row[3], manga_model)
 
         # Process Volumes
         volume_nums = (
@@ -192,7 +178,7 @@ def create_headers(ws):
             "Title",
             "Description",
             "Genres",
-            "Authors(Roles)",
+            "Authors",
             "Total Volumes",
             "Specific Volumes",
             "Reading Status",
@@ -204,15 +190,13 @@ def create_headers(ws):
 def get_manga_data(manga):
     """Retrieve manga related data to be used in the worksheet."""
     genres = ", ".join([genre.name for genre in manga.genres])
-    authors_roles = ", ".join(
-        [f"{author.name}({author.role})" for author in manga.authors]
-    )
+    authors = ", ".join([author.name for author in manga.authors])
     specific_volumes = ", ".join([str(volume.volume_num) for volume in manga.volumes])
     return (
         manga.title,
         manga.description,
         genres,
-        authors_roles,
+        authors,
         len(manga.volumes),
         specific_volumes,
         manga.reading_status.value,
@@ -222,8 +206,6 @@ def get_manga_data(manga):
 
 @router.get("/export")
 async def export_mangas_to_excel(db: Session = Depends(get_db)):
-    start_time = time.time()
-
     # Fetch and process manga data
     db_mangas = db.query(DBManga).all()
     mangas = [mangaManager.create_manga_model(db, db_manga) for db_manga in db_mangas]

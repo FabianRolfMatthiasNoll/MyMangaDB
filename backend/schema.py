@@ -26,7 +26,6 @@ class Genre(BaseModel):
 class Author(BaseModel):
     id: int
     name: str
-    role: str
 
 
 class Volume(BaseModel):
@@ -45,5 +44,5 @@ class Manga(BaseModel):
     authors: List[Author]
     genres: List[Genre]
     cover_image: str
-    reading_status: ReadingStatus = ReadingStatus.not_set
-    collection_status: CollectionStatus = CollectionStatus.not_set
+    reading_status: ReadingStatus
+    collection_status: CollectionStatus

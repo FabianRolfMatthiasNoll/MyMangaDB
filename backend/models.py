@@ -50,13 +50,6 @@ class Author(Base):
     name = Column(String)
 
 
-class Role(Base):
-    __tablename__ = "role"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-
-
 class RelationMangaGenre(Base):
     __tablename__ = "relationMangaGenre"
 
@@ -65,10 +58,9 @@ class RelationMangaGenre(Base):
     genreID = Column(Integer, ForeignKey(Genre.__table__.c.id))
 
 
-class RelationMangaAuthorRole(Base):
-    __tablename__ = "relationMangaAuthorRole"
+class RelationMangaAuthor(Base):
+    __tablename__ = "relationMangaAuthor"
 
     id = Column(Integer, primary_key=True, index=True)
     mangaID = Column(Integer, ForeignKey(Manga.__table__.c.id))
     authorID = Column(Integer, ForeignKey(Author.__table__.c.id))
-    roleID = Column(Integer, ForeignKey(Role.__table__.c.id))
