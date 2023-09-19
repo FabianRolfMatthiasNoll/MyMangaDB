@@ -1,5 +1,6 @@
 import base64
 import requests
+from sqlalchemy import null
 import config
 
 from io import BytesIO
@@ -21,6 +22,14 @@ def get_image_base64(url):
         return None
 
 
+def switch_names(name):
+    try:
+        last_name, first_name = name.split(", ")
+        return f"{first_name} {last_name}"
+    except ValueError:
+        return name
+
+
 def get_search_results_from_jikan(manga_title: str) -> List[Manga]:
     search_url = f"https://api.jikan.moe/v4/manga?q={manga_title}&limit=10"
     search_response = requests.get(search_url, verify=False)
@@ -33,9 +42,10 @@ def get_search_results_from_jikan(manga_title: str) -> List[Manga]:
     for search_result in search_results:
         authors: List[Author] = []
         for author in search_result["authors"]:
+            author_name = switch_names(author["name"])
             author_data = {
-                "id": author["id"],
-                "name": author["name"],
+                "id": 0,
+                "name": author_name,
             }
             author_model = Author(**author_data)
             authors.append(author_model)
@@ -43,20 +53,25 @@ def get_search_results_from_jikan(manga_title: str) -> List[Manga]:
         genres: List[Genre] = []
         for genre_type in ["genres", "themes", "demographics"]:
             for genre in search_result[genre_type]:
-                genre_data = {"id": genre["id"], "name": genre["name"]}
+                genre_data = {"id": 0, "name": genre["name"]}
                 genre_model = Genre(**genre_data)
                 genres.append(genre_model)
 
-        cover_image_url = search_result["images"]["cover_image"]
+        # change to large_image_url if too small
+        cover_image_url = search_result["images"]["jpg"]["image_url"]
+
+        description_data = search_result["synopsis"]
+        if description_data is None:
+            description_data = "no description provided"
 
         manga = Manga(
-            id=search_result["id"],
+            id=0,
             title=search_result["title"],
             genres=genres,
             authors=authors,
-            total_volumes=search_result["num_volumes"],
-            description=search_result["synopsis"],
-            volumes=[],  # Jikan API v4 doesn't provide volume data
+            total_volumes=0,
+            description=description_data,
+            volumes=[],
             cover_image=get_image_base64(cover_image_url),
             reading_status="not_set",
             collection_status="not_set",

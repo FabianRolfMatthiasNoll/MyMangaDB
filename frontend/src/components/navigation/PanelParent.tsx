@@ -42,10 +42,14 @@ export default function PanelParent() {
         flexGrow: 1,
         height: "100vh",
         overflow: "auto",
+        pr: 5,
       }}
     >
       <Toolbar />
-      <Container maxWidth="xl" sx={{ mt: 7, mb: 4, ml: 4 }}>
+      <Container
+        maxWidth={false}
+        sx={{ mt: 7, mb: 4, ml: 4}}
+      >
         <Grid container spacing={3}>
           {activeComponent === "dashboard" && <MangaList />}
           {activeComponent === "settings" && <SettingsMenu />}

@@ -8,11 +8,7 @@ import { mangaAPI } from "../../../api";
 interface Props {
   author: Author;
   index: number;
-  handleAuthorChange: (
-    index: number,
-    field: "name" | "role",
-    value: string
-  ) => void;
+  handleAuthorChange: (index: number, field: "name", value: string) => void;
   removeAuthor: (index: number) => void;
 }
 
@@ -23,18 +19,11 @@ export default function AuthorInput({
   removeAuthor,
 }: Props) {
   const [existingAuthors, setExistingAuthors] = useState<string[]>([]);
-  const [existingRoles, setExistingRoles] = useState<string[]>([]);
 
   const authorQuery = useQuery({
     queryKey: "GetAllAuthorNames",
     queryFn: () => mangaAPI.getAllAuthorNamesMangaAuthorsGet(),
     onSuccess: (data) => setExistingAuthors(data),
-  });
-
-  const roleQuery = useQuery({
-    queryKey: "GetAllRoles",
-    queryFn: () => mangaAPI.getAllRoleNamesMangaAuthorsRolesGet(),
-    onSuccess: (data) => setExistingRoles(data),
   });
 
   return (
@@ -52,27 +41,6 @@ export default function AuthorInput({
             onInputChange={(event, newValue) =>
               handleAuthorChange(index, "name", newValue || "")
             }
-          />
-        </Box>
-      </Grid>
-      <Grid item xs={5} sm={4}>
-        <Box mb={2}>
-          <Autocomplete
-            key={`author-role-${index}`}
-            id={`author-role-${index}`}
-            freeSolo
-            options={existingRoles}
-            value={author.role}
-            onInputChange={(event, newValue) =>
-              handleAuthorChange(index, "role", newValue || "")
-            }
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                key={`author-role-${index}`}
-                label={`Role ${index + 1}`}
-              />
-            )}
           />
         </Box>
       </Grid>

@@ -19,6 +19,8 @@ const defaultManga: Manga = {
   authors: [],
   genres: [],
   coverImage: "",
+  readingStatus: "not_set",
+  collectionStatus: "not_set"
 };
 
 export default function AddManga({ onClose }: Props) {
@@ -76,7 +78,7 @@ export default function AddManga({ onClose }: Props) {
   }, []);
 
   const addAuthor = useCallback(() => {
-    const newAuthor: Author = { id: 0, name: "", role: "" };
+    const newAuthor: Author = { id: 0, name: ""};
     setUpdatedManga((prev) => ({
       ...prev,
       authors: [...prev.authors, newAuthor],

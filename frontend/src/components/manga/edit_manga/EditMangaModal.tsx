@@ -59,7 +59,7 @@ export default function EditMangaModal({ manga, onClose }: Props) {
 
   const handleAuthorChange = (
     index: number,
-    field: "name" | "role",
+    field: "name",
     value: string
   ) => {
     setUpdatedManga((prevUpdatedManga) => {
@@ -94,7 +94,7 @@ export default function EditMangaModal({ manga, onClose }: Props) {
 
   const addAuthor = () => {
     setUpdatedManga((prevUpdatedManga) => {
-      const newAuthor: Author = { id: 0, name: "", role: "" }; // You can set the initial values as needed
+      const newAuthor: Author = { id: 0, name: ""}; // You can set the initial values as needed
       return {
         ...prevUpdatedManga,
         authors: [...prevUpdatedManga.authors, newAuthor],

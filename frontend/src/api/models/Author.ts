@@ -31,12 +31,6 @@ export interface Author {
      * @memberof Author
      */
     name: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Author
-     */
-    role: string;
 }
 
 /**
@@ -46,7 +40,6 @@ export function instanceOfAuthor(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "id" in value;
     isInstance = isInstance && "name" in value;
-    isInstance = isInstance && "role" in value;
 
     return isInstance;
 }
@@ -63,7 +56,6 @@ export function AuthorFromJSONTyped(json: any, ignoreDiscriminator: boolean): Au
         
         'id': json['id'],
         'name': json['name'],
-        'role': json['role'],
     };
 }
 
@@ -78,7 +70,6 @@ export function AuthorToJSON(value?: Author | null): any {
         
         'id': value.id,
         'name': value.name,
-        'role': value.role,
     };
 }
 

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Manga } from "../../../api/models";
 import { Button, Grid, TextField, Box } from "@mui/material";
 import { useQuery } from "react-query";
-import { mangaMALAPI } from "../../../api";
+import { mangaJikanAPI } from "../../../api";
 import MangaModalMAL from "../display_manga/MangaModalMAL";
 
 interface Props {
@@ -27,7 +27,7 @@ export default function AddMangaMAL({ onClose }: Props) {
   const resultQuery = useQuery({
     queryKey: "GetMALSearchResults",
     queryFn: () =>
-      mangaMALAPI.getMangaResultsWithMalMalSearchMangaTitleGet({
+      mangaJikanAPI.getMangasWithJikanJikanSearchMangaTitleGet({
         mangaTitle: searchTitle,
       }),
     onSuccess: (data) => setMangaList(data),
