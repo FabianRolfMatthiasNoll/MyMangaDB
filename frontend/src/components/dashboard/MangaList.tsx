@@ -89,7 +89,7 @@ const MangaList: React.FC = () => {
 
       <Grid container spacing={2} sx={{ marginTop: 2 }}>
         {filteredMangas.map((manga, index) => (
-          <Grid item key={index} xs={6} md={3} lg={2.3} xl={2}>
+          <Grid item key={index} xs={6} md={3} lg={2} xl={1.7}>
             <MangaCard manga={manga} />
           </Grid>
         ))}
