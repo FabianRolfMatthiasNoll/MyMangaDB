@@ -1,13 +1,9 @@
 import base64
 import requests
-from sqlalchemy import null
-import config
 
 from io import BytesIO
 from typing import List
-from PIL import Image
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
 from schema import Manga, Author, Genre
 
 

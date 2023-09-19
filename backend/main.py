@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import config
 import models
 from database import engine
 from routers import manga, jikan, excelIO
@@ -29,4 +28,3 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup():
     models.Base.metadata.create_all(bind=engine)
-    config.read()
