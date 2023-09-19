@@ -119,9 +119,8 @@ async def import_mangas_from_excel(
         row_errors = validate_manga_fields(row)
         if row_errors:
             errors.extend(row_errors)
-            continue
 
-        title, _, _, _, total_volumes, specific_volumes_str = row
+        title, _, _, _, total_volumes, specific_volumes_str, _, _ = row
 
         # Create main Manga entry
         manga_model = DBManga(
