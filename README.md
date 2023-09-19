@@ -32,8 +32,9 @@ Due to the varied nature of manga provider websites, our focus is on building an
 - [x] Enhanced collection management tools (sorting, sharing)
 - [x] Search bar with sorting and filtering options
 - [x] Genre and author/role-based filtering
-- [ ] Self-renewing MAL-API access / Jikan Support
-- [ ] Desktop installer
+- [ ] switch from MAL to Jikan
+- [ ] add reader and collection status
+- [ ] (Desktop installer)
 
 ## 🚀 Future Features
 
