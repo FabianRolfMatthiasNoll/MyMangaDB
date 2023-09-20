@@ -33,11 +33,12 @@ jobs:
         working-directory: ./frontend
         run: |
           npm install
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
+          if ($env:RUNNER_OS -eq "Windows_NT") {
             npm run build:ci:win
-          else
+          } else {
             npm run build:ci:other
-          fi
+          }
+        shell: pwsh
 
       - name: Set PyInstaller Data Delimiter
         run: echo "PYINSTALLER_DELIMITER=;" >> $GITHUB_ENV
