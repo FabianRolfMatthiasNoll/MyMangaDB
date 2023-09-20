@@ -40,7 +40,7 @@ jobs:
           }
         shell: pwsh
         env:
-          CI: false
+          CI: ""
 
       - name: Set PyInstaller Data Delimiter
         run: echo "PYINSTALLER_DELIMITER=;" >> $GITHUB_ENV
