@@ -19,7 +19,7 @@ def start_frontend():
 
     html_path = os.path.join(base_path, "build", "index.html")
 
-    webview.create_window("MyMangaDB", html_path, min_size=(1600, 800))
+    webview.create_window("MyMangaDB", html_path, maximized=True)
     webview.start()  # debug=True
 
 
