@@ -43,21 +43,26 @@ jobs:
         env:
           CI: false
 
-      - name: Set PyInstaller Data Delimiter
-        run: echo "PYINSTALLER_DELIMITER=;" >> $GITHUB_ENV
+      - name: Set PyInstaller Data Delimiter for Windows
+        id: set_delimiter
+        run: |
+          echo "::set-output name=delimiter::;"
         if: runner.os == 'Windows'
-      
-      - name: Set PyInstaller Data Delimiter
-        run: echo "PYINSTALLER_DELIMITER=:" >> $GITHUB_ENV
+
+      - name: Set PyInstaller Data Delimiter for Others
+        id: set_delimiter
+        run: |
+          echo "::set-output name=delimiter:::"
         if: runner.os != 'Windows'
 
+
       - name: Print PYINSTALLER_DELIMITER
-        run: 'echo "Delimiter is: $env:PYINSTALLER_DELIMITER"'
+        run: 'echo "Delimiter is: ${{ steps.set_delimiter.outputs.delimiter }}"'
         shell: pwsh
         
       - name: Build with PyInstaller
         run: |
-          $dataPath = "./frontend/build" + $env:PYINSTALLER_DELIMITER + "build"
+          $dataPath = "./frontend/build" + ${{ steps.set_delimiter.outputs.delimiter }} + "build"
           pyinstaller main.py --onefile --noconsole --add-data=$dataPath --name MyMangaDB
         shell: pwsh
         
