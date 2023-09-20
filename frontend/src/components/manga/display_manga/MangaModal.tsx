@@ -106,7 +106,7 @@ export default function MangaModal({ manga, open, onClose }: Props) {
               <Typography component="p" mb={1}>
                 <strong>Authors:</strong>{" "}
                 {manga.authors
-                  .map((author) => `${author.name} (${author.role})`)
+                  .map((author) => `${author.name}`)
                   .join(", ")}
               </Typography>
               <Typography component="p" mb={1}>

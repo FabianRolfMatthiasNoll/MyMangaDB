@@ -1,7 +1,7 @@
-import { ExcelInOutApi, MangaApi, MyAnimeListApi } from "./api/apis";
+import { ExcelInOutApi, JikanApi, MangaApi } from "./api/apis";
 
 export const mangaAPI = new MangaApi();
 
-export const mangaMALAPI = new MyAnimeListApi();
+export const mangaJikanAPI = new JikanApi();
 
 export const excelIOAPI = new ExcelInOutApi();

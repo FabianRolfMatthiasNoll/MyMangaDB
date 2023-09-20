@@ -1,13 +1,15 @@
 apis/ExcelInOutApi.ts
+apis/JikanApi.ts
 apis/MangaApi.ts
-apis/MyAnimeListApi.ts
 apis/index.ts
 index.ts
 models/Author.ts
+models/CollectionStatus.ts
 models/Genre.ts
 models/HTTPValidationError.ts
 models/LocationInner.ts
 models/Manga.ts
+models/ReadingStatus.ts
 models/ValidationError.ts
 models/Volume.ts
 models/index.ts

@@ -103,7 +103,7 @@ export default function MangaModalMAL({
             <Typography component="p" mb={1}>
               <strong>Authors:</strong>{" "}
               {mangaList[index].authors
-                .map((author) => `${author.name} (${author.role})`)
+                .map((author) => `${author.name}`)
                 .join(", ")}
             </Typography>
             <Typography component="p" mb={1}>

@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "@emotion/react": "^11.10.6",
-    "@emotion/styled": "^11.10.6",
-    "@mui/material": "^5.12.0",
-    "react-intersection-observer": "^9.5.2"
-  }
-}

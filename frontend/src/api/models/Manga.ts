@@ -19,12 +19,24 @@ import {
     AuthorFromJSONTyped,
     AuthorToJSON,
 } from './Author';
+import type { CollectionStatus } from './CollectionStatus';
+import {
+    CollectionStatusFromJSON,
+    CollectionStatusFromJSONTyped,
+    CollectionStatusToJSON,
+} from './CollectionStatus';
 import type { Genre } from './Genre';
 import {
     GenreFromJSON,
     GenreFromJSONTyped,
     GenreToJSON,
 } from './Genre';
+import type { ReadingStatus } from './ReadingStatus';
+import {
+    ReadingStatusFromJSON,
+    ReadingStatusFromJSONTyped,
+    ReadingStatusToJSON,
+} from './ReadingStatus';
 import type { Volume } from './Volume';
 import {
     VolumeFromJSON,
@@ -86,6 +98,18 @@ export interface Manga {
      * @memberof Manga
      */
     coverImage: string;
+    /**
+     * 
+     * @type {ReadingStatus}
+     * @memberof Manga
+     */
+    readingStatus: ReadingStatus;
+    /**
+     * 
+     * @type {CollectionStatus}
+     * @memberof Manga
+     */
+    collectionStatus: CollectionStatus;
 }
 
 /**
@@ -101,6 +125,8 @@ export function instanceOfManga(value: object): boolean {
     isInstance = isInstance && "authors" in value;
     isInstance = isInstance && "genres" in value;
     isInstance = isInstance && "coverImage" in value;
+    isInstance = isInstance && "readingStatus" in value;
+    isInstance = isInstance && "collectionStatus" in value;
 
     return isInstance;
 }
@@ -123,6 +149,8 @@ export function MangaFromJSONTyped(json: any, ignoreDiscriminator: boolean): Man
         'authors': ((json['authors'] as Array<any>).map(AuthorFromJSON)),
         'genres': ((json['genres'] as Array<any>).map(GenreFromJSON)),
         'coverImage': json['cover_image'],
+        'readingStatus': ReadingStatusFromJSON(json['reading_status']),
+        'collectionStatus': CollectionStatusFromJSON(json['collection_status']),
     };
 }
 
@@ -143,6 +171,8 @@ export function MangaToJSON(value?: Manga | null): any {
         'authors': ((value.authors as Array<any>).map(AuthorToJSON)),
         'genres': ((value.genres as Array<any>).map(GenreToJSON)),
         'cover_image': value.coverImage,
+        'reading_status': ReadingStatusToJSON(value.readingStatus),
+        'collection_status': CollectionStatusToJSON(value.collectionStatus),
     };
 }
 

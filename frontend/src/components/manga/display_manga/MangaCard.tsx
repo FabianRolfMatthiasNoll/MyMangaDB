@@ -43,7 +43,7 @@ export default function MangaCard({ manga }: Props) {
             <Typography variant="body2" color="text.secondary">
               Authors:{" "}
               {manga.authors
-                .map((author: Author) => `${author.name} (${author.role})`)
+                .map((author: Author) => `${author.name}`)
                 .join(", ")}
             </Typography>
           </CardContent>

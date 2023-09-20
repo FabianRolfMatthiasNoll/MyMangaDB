@@ -2,15 +2,15 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-import crud.author as authorManager
-import crud.genre as genreManager
-import crud.volume as volumeManager
-import crud.manga as mangaManager
+import backend.crud.author as authorManager
+import backend.crud.genre as genreManager
+import backend.crud.volume as volumeManager
+import backend.crud.manga as mangaManager
 
-from database import get_db
-from schema import Manga, Volume
-from models import Manga as DBManga
-from models import Volume as DBVolume
+from backend.database import get_db
+from backend.schema import Manga, Volume
+from backend.models import Manga as DBManga
+from backend.models import Volume as DBVolume
 
 router = APIRouter(prefix="/manga", tags=["Manga"])
 

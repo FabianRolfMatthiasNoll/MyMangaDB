@@ -1,27 +1,29 @@
 {
+    "id": 0,
     "title": "TestManga",
-    "description": "Just a Test",
-    "total_volumes": 5,
-    "cover_image": "string",
+    "description": "JustATest",
+    "total_volumes": 4,
     "volumes": [
-        {
-            "volume_num": 0,
-            "cover_image": "string"
-        }
+      {
+        "id": 0,
+        "volume_num": 1,
+        "manga_id": 0,
+        "cover_image": "caCtzRTh760xiahhaUMY6Q=="
+      }
     ],
     "authors": [
-        {
-            "name": "Fabian Noll",
-            "role": "Story"
-        },
-        {
-            "name": "Lea Ivosevic",
-            "role": "Art"
-        }
+      {
+        "id": 0,
+        "name": "Fabian Noll"
+      }
     ],
     "genres": [
-        {
-            "name": "Action"
-        }
-    ]
-}
+      {
+        "id": 0,
+        "name": "Action"
+      }
+    ],
+    "cover_image": "caCtzRTh760xiahhaUMY6Q==",
+    "reading_status": "completed",
+    "collection_status": "canceled"
+  }
