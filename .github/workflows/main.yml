@@ -50,9 +50,17 @@ jobs:
       - name: Set PyInstaller Data Delimiter
         run: echo "PYINSTALLER_DELIMITER=:" >> $GITHUB_ENV
         if: runner.os != 'Windows'
+
+      - name: Print PYINSTALLER_DELIMITER
+        run: 'echo "Delimiter is: $env:PYINSTALLER_DELIMITER"'
+        shell: pwsh
         
       - name: Build with PyInstaller
-        run: pyinstaller main.py --onefile --noconsole --add-data="./frontend/build$env:PYINSTALLER_DELIMITERbuild" --name MyMangaDB
+        run: |
+          $dataPath = "./frontend/build" + $env:PYINSTALLER_DELIMITER + "build"
+          pyinstaller main.py --onefile --noconsole --add-data=$dataPath --name MyMangaDB
+        shell: pwsh
+        
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
