@@ -52,6 +52,7 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
+          pip freeze
           if ("${{ runner.os }}" -eq 'Windows') {
             pyinstaller main.py --onefile --noconsole --add-data="./frontend/build;build" --name MyMangaDB
           } else {
