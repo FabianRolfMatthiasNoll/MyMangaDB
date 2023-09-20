@@ -29,22 +29,37 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0 
+          sudo apt-get install -y libx11-xcb1 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0
+          pip install PyGObject
+
       - name: Build frontend
         working-directory: ./frontend
         run: |
           npm install
-          CI=false npm run build
+          if ("${{ runner.os }}" -eq 'Windows') {
+            $env:CI="false"
+            npm run build:ci:win
+          } else {
+            npm run build:ci:other
+          }
+        shell: pwsh
+        env:
+          CI: false
 
-      - name: Set PyInstaller Data Delimiter
-        run: echo "PYINSTALLER_DELIMITER=;" >> $GITHUB_ENV
-        if: runner.os == 'Windows'
-      
-      - name: Set PyInstaller Data Delimiter
-        run: echo "PYINSTALLER_DELIMITER=:" >> $GITHUB_ENV
-        if: runner.os != 'Windows'
-        
       - name: Build with PyInstaller
-        run: pyinstaller main.py --onefile --noconsole --add-data="./frontend/build${PYINSTALLER_DELIMITER}build" --name MyMangaDB
+        run: |
+          pip freeze
+          if ("${{ runner.os }}" -eq 'Windows') {
+            pyinstaller main.py --onefile --noconsole --add-data="./frontend/build;build" --name MyMangaDB
+          } else {
+            pyinstaller main.py --onefile --noconsole --add-data="./frontend/build:build" --name MyMangaDB
+          }
+        shell: pwsh
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2

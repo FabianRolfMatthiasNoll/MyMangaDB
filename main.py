@@ -5,7 +5,7 @@ import multiprocessing
 import webview
 import backend.main  # needed for pyinstaller
 
-# pyinstaller main.py --onefile --noconsole --add-data="./frontend/build;build" --name MyMangaDB
+# pyinstaller main.py --onefile --noconsole --add-data="./frontend/build:build" --name MyMangaDB
 
 
 # TODO: integrate build into exe and change database path (windows -> appdata) (Github actions spike?)
@@ -19,7 +19,7 @@ def start_frontend():
 
     html_path = os.path.join(base_path, "build", "index.html")
 
-    webview.create_window("MyMangaDB", html_path, min_size=(1600, 800))
+    webview.create_window("MyMangaDB", html_path, maximized=True)
     webview.start()  # debug=True
 
 
