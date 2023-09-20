@@ -33,7 +33,7 @@ jobs:
         working-directory: ./frontend
         run: |
           npm install
-          if ($env:RUNNER_OS -eq "Windows_NT") {
+          if (${{ runner.os }} == 'Windows') {
             npm run build:ci:win
           } else {
             npm run build:ci:other
