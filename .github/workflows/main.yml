@@ -35,8 +35,16 @@ jobs:
           npm install
           CI=false npm run build
 
+      - name: Set PyInstaller Data Delimiter
+        run: echo "PYINSTALLER_DELIMITER=;" >> $GITHUB_ENV
+        if: runner.os == 'Windows'
+      
+      - name: Set PyInstaller Data Delimiter
+        run: echo "PYINSTALLER_DELIMITER=:" >> $GITHUB_ENV
+        if: runner.os != 'Windows'
+        
       - name: Build with PyInstaller
-        run: pyinstaller main.py --onefile --noconsole --add-data="./frontend/build;build" --name MyMangaDB
+        run: pyinstaller main.py --onefile --noconsole --add-data="./frontend/build${PYINSTALLER_DELIMITER}build" --name MyMangaDB
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
