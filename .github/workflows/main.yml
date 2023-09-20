@@ -33,7 +33,7 @@ jobs:
         working-directory: ./frontend
         run: |
           npm install
-          npm run build
+          CI=false npm run build
 
       - name: Build with PyInstaller
         run: pyinstaller main.py --onefile --noconsole --add-data="./frontend/build;build" --name MyMangaDB
