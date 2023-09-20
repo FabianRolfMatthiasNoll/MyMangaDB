@@ -52,8 +52,7 @@ jobs:
         if: runner.os != 'Windows'
         
       - name: Build with PyInstaller
-        run: pyinstaller main.py --onefile --noconsole --add-data="./frontend/build${PYINSTALLER_DELIMITER}build" --name MyMangaDB
-
+        run: pyinstaller main.py --onefile --noconsole --add-data="./frontend/build$env:PYINSTALLER_DELIMITERbuild" --name MyMangaDB
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
