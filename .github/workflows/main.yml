@@ -32,8 +32,9 @@ jobs:
       - name: Build frontend
         working-directory: ./frontend
         run: |
+          echo "CI=false" >> $GITHUB_ENV
           npm install
-          CI=false npm run build
+          npm run build
 
       - name: Set PyInstaller Data Delimiter
         run: echo "PYINSTALLER_DELIMITER=;" >> $GITHUB_ENV
