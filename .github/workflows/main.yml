@@ -32,9 +32,12 @@ jobs:
       - name: Build frontend
         working-directory: ./frontend
         run: |
-          echo "CI=false" >> $GITHUB_ENV
           npm install
-          npm run build
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            npm run build:ci:win
+          else
+            npm run build:ci:other
+          fi
 
       - name: Set PyInstaller Data Delimiter
         run: echo "PYINSTALLER_DELIMITER=;" >> $GITHUB_ENV
