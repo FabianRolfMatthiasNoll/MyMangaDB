@@ -29,16 +29,6 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
-      - name: Install platform-specific dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-webkit2gtk-4.0
-
-      - name: Install platform-specific dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: pip install PyObjC
-
       - name: Build frontend
         working-directory: ./frontend
         run: |
@@ -52,7 +42,7 @@ jobs:
         shell: pwsh
         env:
           CI: false
-        
+
       - name: Build with PyInstaller
         run: |
           if ("${{ runner.os }}" -eq 'Windows') {
@@ -61,7 +51,7 @@ jobs:
             pyinstaller main.py --onefile --noconsole --add-data="./frontend/build:build" --name MyMangaDB
           }
         shell: pwsh
-        
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
