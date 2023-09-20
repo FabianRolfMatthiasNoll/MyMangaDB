@@ -33,11 +33,7 @@ jobs:
         working-directory: ./frontend
         run: |
           npm install
-          if ("${{ runner.os }}" -eq 'Windows') {
-            npm run build:ci:win
-          } else {
-            npm run build:ci:other
-          }
+          npm run build:ci:other
         shell: pwsh
 
       - name: Set PyInstaller Data Delimiter
