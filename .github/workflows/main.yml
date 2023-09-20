@@ -64,24 +64,9 @@ jobs:
       - name: Set Linux Executable Permissions
         if: runner.os == 'Linux'
         run: chmod +x ./dist/MyMangaDB
-        
-      - name: Upload Windows artifact
-        if: runner.os == 'Windows'
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: MyMangaDB-Windows.exe
-          path: ./dist/MyMangaDB.exe
-      
-      - name: Upload Linux artifact
-        if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v2
-        with:
-          name: MyMangaDB-Linux
-          path: ./dist/MyMangaDB
-      
-      - name: Upload MacOS artifact
-        if: runner.os == 'macOS'
-        uses: actions/upload-artifact@v2
-        with:
-          name: MyMangaDB-macOS
-          path: ./dist/MyMangaDB
+          name: ${{ runner.os }}-build
+          path: ./dist/*

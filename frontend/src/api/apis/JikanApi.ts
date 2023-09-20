@@ -29,6 +29,10 @@ export interface GetMangasWithJikanJikanSearchMangaTitleGetRequest {
     mangaTitle: string;
 }
 
+export interface UpdateMangaWithJikanJikanUpdatePutRequest {
+    manga: Manga;
+}
+
 /**
  * 
  */
@@ -61,6 +65,39 @@ export class JikanApi extends runtime.BaseAPI {
      */
     async getMangasWithJikanJikanSearchMangaTitleGet(requestParameters: GetMangasWithJikanJikanSearchMangaTitleGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Manga>> {
         const response = await this.getMangasWithJikanJikanSearchMangaTitleGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Update Manga With Jikan
+     */
+    async updateMangaWithJikanJikanUpdatePutRaw(requestParameters: UpdateMangaWithJikanJikanUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Manga>> {
+        if (requestParameters.manga === null || requestParameters.manga === undefined) {
+            throw new runtime.RequiredError('manga','Required parameter requestParameters.manga was null or undefined when calling updateMangaWithJikanJikanUpdatePut.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/jikan/update`,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: MangaToJSON(requestParameters.manga),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => MangaFromJSON(jsonValue));
+    }
+
+    /**
+     * Update Manga With Jikan
+     */
+    async updateMangaWithJikanJikanUpdatePut(requestParameters: UpdateMangaWithJikanJikanUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Manga> {
+        const response = await this.updateMangaWithJikanJikanUpdatePutRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

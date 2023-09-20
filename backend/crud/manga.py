@@ -79,13 +79,14 @@ def update_manga(db: Session, manga: Manga) -> Manga:
     db_manga: Union[DBManga, None] = (
         db.query(DBManga).filter(DBManga.id == manga.id).one_or_none()
     )
-
     db_manga.title = manga.title
     db_manga.description = manga.description
     db_manga.cover_image = manga.cover_image
     db_manga.total_volumes = manga.total_volumes
-    db_manga.reading_status = manga.reading_status
-    db_manga.collection_status = manga.collection_status
+    db_manga.reading_status = manga.reading_status.value
+    db_manga.collection_status = manga.collection_status.value
+
+    print(manga.genres)
 
     db.commit()
     db.refresh(db_manga)

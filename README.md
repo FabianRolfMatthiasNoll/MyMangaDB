@@ -6,6 +6,8 @@
 
 As the development of this project is an endeavor undertaken during my student years, there might be occasional downtimes. But rest assured, I'm committed to building a reliable product and will continue refining it.
 
+And i am happy to announce that Version 1.0.0 is finally released.
+
 ## 📖 About MyMangaDB
 
 - **Framework:** FastAPI.
@@ -20,9 +22,10 @@ Due to the varied nature of manga provider websites, the focus is on building an
 
 - [x] Automated metadata retrieval (Author, Genres, Total Volumes, Description) // english mangas only currently
 - [x] Efficient manga collection management
-- [x] Support for multiple authors and their roles
+- [x] Support for multiple authors
 - [x] Genre addition and management
 - [x] Flexible manga cover management (manual and automatic)
+- [x] Adding Volumes with covers to the manga
 - [x] Excel list export and import
 
 ## 📅 Planned Features for v1.0.0
@@ -31,24 +34,28 @@ Due to the varied nature of manga provider websites, the focus is on building an
 - [x] Enhanced collection management tools (sorting, sharing)
 - [x] Search bar with sorting and filtering options
 - [x] Genre and author/role-based filtering
-- [ ] switch from MAL to Jikan
-- [ ] add reader and collection status
-- [ ] (Desktop installer)
+- [x] switch from MAL to Jikan
+- [x] add reader and collection status
+- [x] Distribution and Executable
 
 ## 🚀 Future Features
 
 - [ ] Automated manga cover search
 - [ ] Custom field addition (e.g., price)
 - [ ] Adding ISBN to the Mangas
-- [ ] Multi-source metadata gathering
 - [ ] Automated server setup for personal hosting
 - [ ] Web service availability
-- [ ] Dynamic design overhaul
 - [ ] Visual analytics for your collection
 - [ ] Add and Fetch Mangas from the Web by ISBN
 - [ ] multi language meta data fetching
 
 ## 🛠️ How to Use (WIP)
+
+### Release Version
+
+Just open the downloaded file of the realease. A window will open and the service is running. The App will generate a local database on your system. The Service will stop running as soon as you close the window. In the future there will be easy to install versions to host the service as a home server.
+
+### Source Code
 
 To initialize both backend and frontend, please check the `vscode launch.json`. To make modifications to the database, navigate to `http://127.0.0.1:8000/docs` to engage with the backend. For now, the frontend fetches and lists all mangas from the database, functioning as a proof of concept. **Caution**: Avoid using the software intensively as database changes are impending.
 
@@ -59,7 +66,7 @@ cd frontend/src/api
 npx openapi-generator-cli generate -i http://127.0.0.1:8000/openapi.json -g typescript-fetch
 ```
 
-## 📸 Sneak Preview
+## 📸 Sneak Preview (Pre v1.0.0)
 
 *Note: Images below are work-in-progress and might undergo changes.*
 

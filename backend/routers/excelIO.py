@@ -120,15 +120,18 @@ async def import_mangas_from_excel(
         if row_errors:
             errors.extend(row_errors)
 
-        title, _, _, _, total_volumes, specific_volumes_str, _, _ = row
+        title = row[0] if row[0] else ""
+        description = row[1] if row[1] else ""
+        total_volumes = row[4] if row[4] else 0
+        reading_status = row[6] if row[6] else "not_set"
+        collection_status = row[7] if row[7] else "not_set"
 
-        # Create main Manga entry
         manga_model = DBManga(
             title=title,
-            description=row[1],
+            description=description,
             total_volumes=total_volumes,
-            reading_status=row[6],
-            collection_status=row[7],
+            reading_status=reading_status,
+            collection_status=collection_status,
         )
 
         # Associate cover image
@@ -145,11 +148,9 @@ async def import_mangas_from_excel(
         process_authors(db, row[3], manga_model)
 
         # Process Volumes
-        volume_nums = (
-            [int(vol.strip()) for vol in specific_volumes_str.split(",")]
-            if specific_volumes_str
-            else []
-        )
+        specific_volumes_str = row[5] if row[5] else ""
+        volume_nums = [int(vol.strip()) for vol in specific_volumes_str.split(",")] if specific_volumes_str else []
+
         for volume_num in volume_nums:
             volume = Volume(
                 id=0, volume_num=volume_num, manga_id=manga_model.id, cover_image=""
