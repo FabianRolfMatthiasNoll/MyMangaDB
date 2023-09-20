@@ -3,13 +3,13 @@ from typing import List, Union
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-import crud.author as authorManager
-import crud.genre as genreManager
-import crud.volume as volumeManager
-import crud.manga as mangaManager
+import backend.crud.author as authorManager
+import backend.crud.genre as genreManager
+import backend.crud.volume as volumeManager
+import backend.crud.manga as mangaManager
 
-from models import Manga as DBManga
-from schema import Manga as Manga
+from backend.models import Manga as DBManga
+from backend.schema import Manga as Manga
 
 
 def create_manga_model(db: Session, db_manga: DBManga) -> Manga:

@@ -3,9 +3,9 @@ from typing import Union, List, Type
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from schema import Genre
-from models import Genre as DBGenre
-from models import RelationMangaGenre as Relation
+from backend.schema import Genre
+from backend.models import Genre as DBGenre
+from backend.models import RelationMangaGenre as Relation
 
 
 def get_all_genre_names(db: Session) -> List[str]:

@@ -3,9 +3,9 @@ from typing import Union, List
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from schema import Author
-from models import Author as DBAuthor
-from models import RelationMangaAuthor as Relation
+from backend.schema import Author
+from backend.models import Author as DBAuthor
+from backend.models import RelationMangaAuthor as Relation
 
 
 def get_all_author_names(db: Session) -> List[str]:

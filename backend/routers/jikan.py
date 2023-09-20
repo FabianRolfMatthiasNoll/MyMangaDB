@@ -1,10 +1,10 @@
 from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from crud import jikan_api
+from backend.crud import jikan_api
 
-from database import get_db
-from schema import Manga
+from backend.database import get_db
+from backend.schema import Manga
 
 router = APIRouter(prefix="/jikan", tags=["Jikan"])
 

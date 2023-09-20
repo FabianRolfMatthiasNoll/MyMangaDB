@@ -2,8 +2,8 @@ from typing import Union, List
 
 from sqlalchemy.orm import Session
 
-from models import Volume as DBVolume
-from schema import Volume
+from backend.models import Volume as DBVolume
+from backend.schema import Volume
 
 
 def get_volume_by_id(db: Session, volume_id: int) -> DBVolume:

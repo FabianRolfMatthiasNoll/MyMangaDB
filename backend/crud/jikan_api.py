@@ -4,7 +4,7 @@ import requests
 from io import BytesIO
 from typing import List
 from fastapi import HTTPException
-from schema import Manga, Author, Genre
+from backend.schema import Manga, Author, Genre
 
 
 def get_image_base64(url):

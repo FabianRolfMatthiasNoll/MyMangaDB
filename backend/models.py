@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Enum, Integer, String, ForeignKey, LargeBinary, Text
-from database import Base
+from backend.database import Base
 
 
 class Manga(Base):
