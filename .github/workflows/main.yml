@@ -34,13 +34,14 @@ jobs:
         run: |
           npm install
           if ("${{ runner.os }}" -eq 'Windows') {
+            $env:CI="false"
             npm run build:ci:win
           } else {
             npm run build:ci:other
           }
         shell: pwsh
         env:
-          CI: ""
+          CI: false
 
       - name: Set PyInstaller Data Delimiter
         run: echo "PYINSTALLER_DELIMITER=;" >> $GITHUB_ENV
