@@ -5,7 +5,7 @@ import multiprocessing
 import webview
 import backend.main  # needed for pyinstaller
 
-# pyinstaller main.py --onefile --noconsole --add-data="./frontend/build;build" --name MyMangaDB
+# pyinstaller main.py --onefile --noconsole --add-data="./frontend/build:build" --name MyMangaDB
 
 
 # TODO: integrate build into exe and change database path (windows -> appdata) (Github actions spike?)
