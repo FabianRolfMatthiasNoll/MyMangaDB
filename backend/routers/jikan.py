@@ -21,5 +21,4 @@ def get_mangas_with_jikan(
 def update_manga_with_jikan(manga: Manga, db: Session = Depends(get_db)) -> Manga:
     manga_result = jikan_api.get_search_results_from_jikan(manga.title, 1)[0]
     manga_result.id = manga.id
-    print(manga_result.genres)
     return manga_result
