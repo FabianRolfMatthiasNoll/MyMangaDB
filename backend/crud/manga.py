@@ -86,8 +86,6 @@ def update_manga(db: Session, manga: Manga) -> Manga:
     db_manga.reading_status = manga.reading_status.value
     db_manga.collection_status = manga.collection_status.value
 
-    print(manga.genres)
-
     db.commit()
     db.refresh(db_manga)
 
