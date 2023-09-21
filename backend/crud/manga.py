@@ -79,7 +79,6 @@ def update_manga(db: Session, manga: Manga) -> Manga:
     db_manga: Union[DBManga, None] = (
         db.query(DBManga).filter(DBManga.id == manga.id).one_or_none()
     )
-
     db_manga.title = manga.title
     db_manga.description = manga.description
     db_manga.cover_image = manga.cover_image

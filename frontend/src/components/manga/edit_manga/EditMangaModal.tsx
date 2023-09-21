@@ -12,8 +12,9 @@ import { useState } from "react";
 import React from "react";
 import { GenreInput } from "./GenreInput";
 import { useMutation, useQueryClient } from "react-query";
-import { mangaAPI } from "../../../api";
+import { mangaAPI, mangaJikanAPI } from "../../../api";
 import AuthorInput from "./AuthorInput";
+import { log } from "console";
 
 interface Props {
   manga: Manga;
@@ -57,11 +58,7 @@ export default function EditMangaModal({ manga, onClose }: Props) {
     });
   };
 
-  const handleAuthorChange = (
-    index: number,
-    field: "name",
-    value: string
-  ) => {
+  const handleAuthorChange = (index: number, field: "name", value: string) => {
     setUpdatedManga((prevUpdatedManga) => {
       const updatedAuthors = prevUpdatedManga.authors.map((author, i) => {
         if (i === index) {
@@ -94,7 +91,7 @@ export default function EditMangaModal({ manga, onClose }: Props) {
 
   const addAuthor = () => {
     setUpdatedManga((prevUpdatedManga) => {
-      const newAuthor: Author = { id: 0, name: ""}; // You can set the initial values as needed
+      const newAuthor: Author = { id: 0, name: "" }; // You can set the initial values as needed
       return {
         ...prevUpdatedManga,
         authors: [...prevUpdatedManga.authors, newAuthor],
@@ -105,6 +102,21 @@ export default function EditMangaModal({ manga, onClose }: Props) {
   const handleSubmit = async () => {
     mutation.mutate(updatedManga);
     onClose();
+  };
+
+  const sendJikan = useMutation({
+    mutationFn: (manga: Manga) =>
+      mangaJikanAPI.updateMangaWithJikanJikanUpdatePut({
+        manga: manga,
+      }),
+    onSuccess: (data) => {
+      setUpdatedManga(data);
+      setCoverImage(data.coverImage);
+    },
+  });
+
+  const handleUpdate = async () => {
+    sendJikan.mutate(updatedManga);
   };
 
   const queryClient = useQueryClient();
@@ -247,6 +259,7 @@ export default function EditMangaModal({ manga, onClose }: Props) {
             }}
           >
             <Button onClick={addAuthor}>Add Author</Button>
+            <Button onClick={handleUpdate}>Update</Button>
             <Button onClick={handleSubmit}>Submit</Button>
           </Box>
         </Box>

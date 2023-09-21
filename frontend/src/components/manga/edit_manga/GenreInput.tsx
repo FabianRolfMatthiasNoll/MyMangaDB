@@ -24,12 +24,16 @@ export const GenreInput: React.FC<GenreInputProps> = ({
   const [existingGenres, setExistingGenres] = useState<string[]>([]);
 
   useEffect(() => {
-    const newGenres = genres.map((name, index) => ({ id: index + 1, name }));
-    onGenresChange(newGenres);
-  }, [genres, onGenresChange]);
+    const initialGenreNames = initialGenres.map((genre) => genre.name);
+    if (JSON.stringify(genres) !== JSON.stringify(initialGenreNames)) {
+      setGenres(initialGenreNames);
+    }
+  }, [initialGenres, genres]);
 
   const handleTagsChange = (event: any, newValue: string[]) => {
-    setGenres(newValue);
+    setGenres((prevGenres) => {
+      return newValue;
+    });
   };
 
   const handleInputChange = (
@@ -49,6 +53,7 @@ export const GenreInput: React.FC<GenreInputProps> = ({
     queryFn: () => mangaAPI.getAllGenreNamesMangaGenreGet(),
     onSuccess: (data) => setExistingGenres(data),
   });
+
   return (
     <Autocomplete
       multiple

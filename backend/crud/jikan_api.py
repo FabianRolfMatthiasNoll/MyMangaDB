@@ -26,8 +26,8 @@ def switch_names(name):
         return name
 
 
-def get_search_results_from_jikan(manga_title: str) -> List[Manga]:
-    search_url = f"https://api.jikan.moe/v4/manga?q={manga_title}&limit=10"
+def get_search_results_from_jikan(manga_title: str, result_amount: int) -> List[Manga]:
+    search_url = f"https://api.jikan.moe/v4/manga?q={manga_title}&limit={result_amount}"
     search_response = requests.get(search_url, verify=False)
     search_results = search_response.json().get("data", [])
     if len(search_results) == 0:

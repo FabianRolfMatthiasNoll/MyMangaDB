@@ -6,8 +6,8 @@ class Manga(Base):
     __tablename__ = "manga"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String)
-    description = Column(String)
+    title = Column(String, default="unknown")
+    description = Column(String, default="no description provided")
     total_volumes = Column(Integer, default=0)
     cover_image = Column(Text, default="")
     reading_status = Column(
