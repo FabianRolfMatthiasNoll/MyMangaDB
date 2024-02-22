@@ -28,23 +28,12 @@ Due to the varied nature of manga provider websites, the focus is on building an
 - [x] Adding Volumes with covers to the manga
 - [x] Excel list export and import
 
-## 📅 Planned Features for v1.0.0
-
-- [x] Excel list export and import -> most important feature!
-- [x] Enhanced collection management tools (sorting, sharing)
-- [x] Search bar with sorting and filtering options
-- [x] Genre and author/role-based filtering
-- [x] switch from MAL to Jikan
-- [x] add reader and collection status
-- [x] Distribution and Executable
-
 ## 🚀 Future Features
 
 - [ ] Automated manga cover search
-- [ ] Custom field addition (e.g., price)
+- [ ] Many more switchable attributes including custom notes
 - [ ] Adding ISBN to the Mangas
 - [ ] Automated server setup for personal hosting
-- [ ] Web service availability
 - [ ] Visual analytics for your collection
 - [ ] Add and Fetch Mangas from the Web by ISBN
 - [ ] multi language meta data fetching
@@ -53,17 +42,30 @@ Due to the varied nature of manga provider websites, the focus is on building an
 
 ### Release Version
 
-Just open the downloaded file of the realease. A window will open and the service is running. The App will generate a local database on your system. The Service will stop running as soon as you close the window. In the future there will be easy to install versions to host the service as a home server.
+To launch the application, simply open the downloaded release file. This action will prompt a window to appear, signifying that the service is now active. Upon initiation, the app will create a local database on your device. Note that the service will cease operation the moment the window is closed. Future updates will introduce user-friendly installation processes for setting up the service as a home server. The database location varies by operating system:
+
+- **Windows:** `User/Appdata/manga.db`
+- **Linux:** `user/.config/manga.db`
 
 ### Source Code
 
-To initialize both backend and frontend, please check the `vscode launch.json`. To make modifications to the database, navigate to `http://127.0.0.1:8000/docs` to engage with the backend. For now, the frontend fetches and lists all mangas from the database, functioning as a proof of concept. **Caution**: Avoid using the software intensively as database changes are impending.
-
+Setting up the development environment for the first time involves creating a virtual environment. Execute the following command to do so:  
+`python -m venv /path/to/new/virtual/environment`  
+  
+Afterward, navigate to the main directory and run the command below to install all required packages:  
+`pip install -r requirements.txt`  
+   
+**Note for Linux users:** Ensure you remove `PyQt5` from the requirements file before proceeding with the installation, to prevent any conflicts.  
+  
+In the `frontend` directory, you'll need to run:  `npm install`  
+This is necessary to install all Node modules for the frontend.  
+  
+To initiate both the backend and frontend, refer to the settings provided in the `vscode launch.json`. If you need to make database alterations, you can do so by visiting `http://localhost:8000/docs`, which allows direct interaction with the backend. Currently, the frontend is designed to retrieve and display all manga entries from the database, serving as a preliminary demonstration. **Please exercise caution** in using the application extensively, as future updates may introduce changes to the database schema.
+  
 **Generate API:**
-
 ```bash
 cd frontend/src/api
-npx openapi-generator-cli generate -i http://127.0.0.1:8000/openapi.json -g typescript-fetch
+npx openapi-generator-cli generate -i http://<Address of the Backend>:8000/openapi.json -g typescript-fetch
 ```
 
 ## 📸 Sneak Preview (Pre v1.0.0)
