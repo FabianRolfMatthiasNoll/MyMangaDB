@@ -18,6 +18,7 @@ import { useState } from "react";
 import VolumesModal from "./VolumeModal";
 import { useQueryClient } from "react-query";
 import EditMangaModal from "../edit_manga/EditMangaModal";
+import { useAuth } from '../../../AuthContext';
 
 interface Props {
   manga: Manga;
@@ -54,6 +55,7 @@ export default function MangaModal({ manga, open, onClose }: Props) {
     editOpen: false,
     deleteOpen: false,
   });
+  const { isLoggedIn } = useAuth();
   const queryClient = useQueryClient();
 
   const handleDelete = async () => {
@@ -83,14 +85,15 @@ export default function MangaModal({ manga, open, onClose }: Props) {
               transform: "scale(2)",
             }}
           >
-            <IconButton
+            {isLoggedIn &&  <IconButton
               aria-label="delete"
               onClick={() =>
                 setModalStates((prev) => ({ ...prev, deleteOpen: true }))
               }
             >
               <DeleteIcon />
-            </IconButton>
+            </IconButton>}
+           
           </Box>
           <Box sx={centerBoxStyles}>
             <img src={imageUrl} alt="mangacover" />
@@ -139,13 +142,14 @@ export default function MangaModal({ manga, open, onClose }: Props) {
               }
             />
           )}
-          <Button
+          {isLoggedIn && <Button
             onClick={() =>
               setModalStates((prev) => ({ ...prev, editOpen: true }))
             }
           >
             Edit
-          </Button>
+          </Button>}
+          
           {modalStates.editOpen && (
             <EditMangaModal
               manga={manga}
