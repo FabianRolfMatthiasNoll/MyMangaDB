@@ -69,7 +69,7 @@ To host the application you have to do several steps.
 1. Change the `BASE_PATH` in `frontend/src/api/runtime.ts` to the actual IP-Address of your Device hosting the Backend. **Dont change the Port!**
 
 2. If you want to host a Docker Container set DOCKER_MODE in backend/database.py to True
-  
+
 **Generate API:**
 ```bash
 cd frontend/src/api
