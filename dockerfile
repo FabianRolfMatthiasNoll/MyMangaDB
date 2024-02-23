@@ -1,9 +1,14 @@
 # Use an official Python runtime as a parent image
 FROM python:3.8
 
-# Install Node.js
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
-    && apt-get install -y nodejs
+# Install Node.js and npm in a more controlled manner
+RUN apt-get update && apt-get install -y curl gnupg && \
+    curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
+    apt-get install -y nodejs
+
+# Verify installation
+RUN node --version
+RUN npm --version
 
 # Set the working directory in the container
 WORKDIR /app
@@ -13,7 +18,7 @@ COPY ./frontend ./frontend
 COPY ./backend ./backend
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r backend/requirements.txt
+RUN pip install --no-cache-dir -r backend/requirements_linux.txt
 
 # Install frontend dependencies
 WORKDIR /app/frontend
