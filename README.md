@@ -68,9 +68,7 @@ To initiate both the backend and frontend, refer to the settings provided in the
 To host the application you have to do several steps. 
 1. Change the `BASE_PATH` in `frontend/src/api/runtime.ts` to the actual IP-Address of your Device hosting the Backend. **Dont change the Port!**
 
-2. Forward the Ports on your Router
-
-3. Profit or Work in Progress. One does not simply have a complete guide!
+2. If you want to host a Docker Container set DOCKER_MODE in backend/database.py to True
   
 **Generate API:**
 ```bash
