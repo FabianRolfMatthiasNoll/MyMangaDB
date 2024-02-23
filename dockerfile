@@ -1,14 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.8
-
-# Install Node.js and npm in a more controlled manner
-RUN apt-get update && apt-get install -y curl gnupg && \
-    curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
-    apt-get install -y nodejs
-
-# Verify installation
-RUN node --version
-RUN npm --version
+FROM nikolaik/python-nodejs:latest
 
 # Set the working directory in the container
 WORKDIR /app
@@ -37,3 +28,6 @@ WORKDIR /app/backend
 # Install Supervisor
 RUN apt-get update && apt-get install -y supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Use CMD to start Supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
