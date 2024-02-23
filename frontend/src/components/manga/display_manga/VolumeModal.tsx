@@ -11,6 +11,7 @@ import {
 import VolumeCard from "./VolumeCard";
 import AddVolume from "../adding_components/AddVolume";
 import React from "react";
+import { useAuth } from '../../../AuthContext';
 
 interface Props {
   manga: Manga;
@@ -60,6 +61,7 @@ function CardView({ volumes }: { volumes: Volume[] }) {
 export default function VolumesModal({ manga, onClose }: Props) {
   const [isAddVolumeOpen, setIsAddVolumeOpen] = React.useState(false);
   const [isListView, setIsListView] = React.useState(false);
+  const { isLoggedIn } = useAuth();
 
   const handleAddVolumeClose = () => {
     setIsAddVolumeOpen(false);
@@ -98,14 +100,14 @@ export default function VolumesModal({ manga, onClose }: Props) {
             )}
           </>
           {/* Button to trigger the AddVolume component */}
-          <Button
+          {isLoggedIn &&  <Button
             variant="contained"
             color="primary"
             onClick={() => setIsAddVolumeOpen(true)}
             style={{ marginTop: "20px" }}
           >
             Add New Volume
-          </Button>
+          </Button>}
         </Paper>
         {/* AddVolume modal */}
         {isAddVolumeOpen && (

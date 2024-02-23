@@ -7,8 +7,10 @@
             "request": "launch",
             "module": "uvicorn",
             "args": [
-                "backend.main:app"
-                , "--reload"
+                "backend.main:app",
+                "--reload",
+                "--host",
+                "0.0.0.0"
             ],
             "jinja": true,
             "justMyCode": true
@@ -33,7 +35,10 @@
     "compounds": [
         {
             "name": "Full Stack",
-            "configurations": ["Python: FastAPI", "React: npm start"]
+            "configurations": [
+                "Python: FastAPI",
+                "React: npm start"
+            ]
         }
     ]
 }

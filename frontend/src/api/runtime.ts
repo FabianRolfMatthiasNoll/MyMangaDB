@@ -12,7 +12,8 @@
  * Do not edit the class manually.
  */
 
-export const BASE_PATH = "http://localhost:8000".replace(/\/+$/, "");
+/* Its important to enter the actual address of the raspberry pi */
+export const BASE_PATH = "http://192.168.1.160:8000".replace(/\/+$/, "");
 
 export interface ConfigurationParameters {
   basePath?: string; // override base path

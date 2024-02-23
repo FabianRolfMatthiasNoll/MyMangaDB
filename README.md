@@ -27,6 +27,7 @@ Due to the varied nature of manga provider websites, the focus is on building an
 - [x] Flexible manga cover management (manual and automatic)
 - [x] Adding Volumes with covers to the manga
 - [x] Excel list export and import
+- [x] Simple Authorization Manager (For hosting purpouses)
 
 ## 🚀 Future Features
 
@@ -61,7 +62,14 @@ In the `frontend` directory, you'll need to run:  `npm install`
 This is necessary to install all Node modules for the frontend.  
   
 To initiate both the backend and frontend, refer to the settings provided in the `vscode launch.json`. If you need to make database alterations, you can do so by visiting `http://localhost:8000/docs`, which allows direct interaction with the backend. Currently, the frontend is designed to retrieve and display all manga entries from the database, serving as a preliminary demonstration. **Please exercise caution** in using the application extensively, as future updates may introduce changes to the database schema.
-  
+
+### Hosting
+
+To host the application you have to do several steps. 
+1. Change the `BASE_PATH` in `frontend/src/api/runtime.ts` to the actual IP-Address of your Device hosting the Backend. **Dont change the Port!**
+
+2. If you want to host a Docker Container set DOCKER_MODE in backend/database.py to True
+
 **Generate API:**
 ```bash
 cd frontend/src/api
