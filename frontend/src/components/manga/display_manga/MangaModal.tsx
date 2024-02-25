@@ -18,7 +18,7 @@ import { useState } from "react";
 import VolumesModal from "./VolumeModal";
 import { useQueryClient } from "react-query";
 import EditMangaModal from "../edit_manga/EditMangaModal";
-import { useAuth } from '../../../AuthContext';
+import { useAuth } from "../../../AuthContext";
 
 interface Props {
   manga: Manga;
@@ -33,7 +33,7 @@ const paperStyles = {
   transform: "translate(-50%, -50%)",
   bgcolor: "background.paper",
   boxShadow: 24,
-  p: 4,
+  p: { xs: 2, sm: 4 },
   borderRadius: 5,
   overflow: "auto",
   maxWidth: "95vw",
@@ -85,32 +85,41 @@ export default function MangaModal({ manga, open, onClose }: Props) {
               transform: "scale(2)",
             }}
           >
-            {isLoggedIn &&  <IconButton
-              aria-label="delete"
-              onClick={() =>
-                setModalStates((prev) => ({ ...prev, deleteOpen: true }))
-              }
-            >
-              <DeleteIcon />
-            </IconButton>}
-           
+            {isLoggedIn && (
+              <IconButton
+                aria-label="delete"
+                onClick={() =>
+                  setModalStates((prev) => ({ ...prev, deleteOpen: true }))
+                }
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
           </Box>
           <Box sx={centerBoxStyles}>
-            <img src={imageUrl} alt="mangacover" />
+            {/*
+              <img src={imageUrl} alt="manga cover" />
+            */}
+
             <Box sx={{ ml: 5 }}>
               <Typography
                 id="manga-modal-title"
                 variant="h2"
                 component="h2"
                 gutterBottom
+                sx={{
+                  fontSize: {
+                    xs: "1.5rem",
+                    sm: "2rem",
+                    md: "2.5rem",
+                  },
+                }}
               >
                 {manga.title}
               </Typography>
               <Typography component="p" mb={1}>
                 <strong>Authors:</strong>{" "}
-                {manga.authors
-                  .map((author) => `${author.name}`)
-                  .join(", ")}
+                {manga.authors.map((author) => `${author.name}`).join(", ")}
               </Typography>
               <Typography component="p" mb={1}>
                 <strong>Genres:</strong>{" "}
@@ -142,14 +151,16 @@ export default function MangaModal({ manga, open, onClose }: Props) {
               }
             />
           )}
-          {isLoggedIn && <Button
-            onClick={() =>
-              setModalStates((prev) => ({ ...prev, editOpen: true }))
-            }
-          >
-            Edit
-          </Button>}
-          
+          {isLoggedIn && (
+            <Button
+              onClick={() =>
+                setModalStates((prev) => ({ ...prev, editOpen: true }))
+              }
+            >
+              Edit
+            </Button>
+          )}
+
           {modalStates.editOpen && (
             <EditMangaModal
               manga={manga}
