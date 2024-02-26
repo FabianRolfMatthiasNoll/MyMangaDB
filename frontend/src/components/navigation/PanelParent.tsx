@@ -1,15 +1,10 @@
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import Link from "@mui/material/Link";
 import MangaList from "../dashboard/MangaList";
 import SettingsMenu from "../settings_menu/SettingsMenu";
 import { useUI } from "./UIContext";
 import AuthorMenu from "../author_panel/AuthorMenu";
 import GenreMenu from "../genre_panel/GenreMenu";
 import StatisticMenu from "../statistic_panel/StatisticMenu";
+import { Typography, Link, Box, Toolbar, Container, Grid } from "@mui/material";
 
 function Copyright(props: any) {
   return (
@@ -46,10 +41,7 @@ export default function PanelParent() {
       }}
     >
       <Toolbar />
-      <Container
-        maxWidth={false}
-        sx={{ mt: 7, mb: 4, ml: 4}}
-      >
+      <Container maxWidth={false} sx={{ mt: 7, mb: 4, ml: 4 }}>
         <Grid container spacing={3}>
           {activeComponent === "dashboard" && <MangaList />}
           {activeComponent === "settings" && <SettingsMenu />}

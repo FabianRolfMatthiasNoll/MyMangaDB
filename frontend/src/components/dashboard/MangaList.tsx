@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
-import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
-import IconButton from "@mui/material/IconButton";
 import SortByAlphaIcon from "@mui/icons-material/SortByAlpha";
 import SortByAlphaRoundedIcon from "@mui/icons-material/SortByAlphaRounded";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import { mangaAPI } from "../../api";
 import { Manga } from "../../api/models";
 import MangaCard from "../manga/display_manga/MangaCard";
+import { Grid, TextField, IconButton } from "@mui/material";
 
 const MangaList: React.FC = () => {
   const [mangas, setMangas] = useState<Manga[]>([]);
