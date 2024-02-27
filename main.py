@@ -17,7 +17,7 @@ def start_frontend():
     else:
         base_path = os.path.dirname(os.path.abspath(__file__))
 
-    html_path = os.path.join(base_path, "build", "index.html")
+    html_path = os.path.join(base_path, "dist", "index.html")
 
     webview.create_window("MyMangaDB", html_path, maximized=True)
     webview.start()  # debug=True
