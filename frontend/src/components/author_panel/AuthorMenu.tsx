@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { useQuery } from "react-query";
-import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
 import { mangaAPI } from "../../api";
 import { Manga } from "../../api/models";
 import MangaList from "./AuthorMangaList";
+import { Grid, Button } from "@mui/material";
 
 const AuthorMenu: React.FC = () => {
   const [selectedAuthor, setSelectedAuthor] = useState<string | null>(null);

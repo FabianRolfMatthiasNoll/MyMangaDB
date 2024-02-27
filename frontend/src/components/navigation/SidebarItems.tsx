@@ -1,12 +1,10 @@
 import * as React from "react";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import PeopleIcon from "@mui/icons-material/People";
 import BookIcon from "@mui/icons-material/Book";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
 import { useUI } from "./UIContext";
+import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 
 export default function SidebarItems() {
   const { activeComponent, setActiveComponent } = useUI();

@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
-import IconButton from "@mui/material/IconButton";
 import SortByAlphaIcon from "@mui/icons-material/SortByAlpha";
 import SortByAlphaRoundedIcon from "@mui/icons-material/SortByAlphaRounded";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import MangaCard from "../manga/display_manga/MangaCard";
 import { Manga } from "../../api/models";
-import { Button } from "@mui/material";
+import { Button, Grid, IconButton, TextField } from "@mui/material";
 
 const MangaList: React.FC<{ mangas: Manga[]; onBackToAuthors: () => void }> = ({
   mangas,

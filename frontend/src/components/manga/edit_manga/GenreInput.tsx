@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import Autocomplete, {
   AutocompleteInputChangeReason,
 } from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
 import { Genre } from "../../../api/models";
-import { Chip } from "@mui/material";
+import { Chip, TextField } from "@mui/material";
 import { useQuery } from "react-query";
 import { mangaAPI } from "../../../api";
 

@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { useQuery } from "react-query";
-import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
 import { mangaAPI } from "../../api";
 import { Manga } from "../../api/models";
 import GenreMangaList from "./GenreMangaList";
+import { Grid, Button } from "@mui/material";
 
 const GenreMenu: React.FC = () => {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
@@ -43,14 +42,20 @@ const GenreMenu: React.FC = () => {
   }
 
   if (selectedGenre) {
-    return <GenreMangaList mangas={mangas} onBackToGenres={handleBackToGenres} />;
+    return (
+      <GenreMangaList mangas={mangas} onBackToGenres={handleBackToGenres} />
+    );
   }
 
   return (
     <Grid container spacing={2}>
       {GenreQuery.data?.map((genre, index) => (
         <Grid item key={index} xs={6} md={3} lg={2.3} xl={2}>
-          <Button variant="outlined" onClick={() => setSelectedGenre(genre)} fullWidth>
+          <Button
+            variant="outlined"
+            onClick={() => setSelectedGenre(genre)}
+            fullWidth
+          >
             {genre}
           </Button>
         </Grid>
@@ -60,4 +65,3 @@ const GenreMenu: React.FC = () => {
 };
 
 export default GenreMenu;
-

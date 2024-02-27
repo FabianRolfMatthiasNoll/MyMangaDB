@@ -14,7 +14,6 @@ import { GenreInput } from "./GenreInput";
 import { useMutation, useQueryClient } from "react-query";
 import { mangaAPI, mangaJikanAPI } from "../../../api";
 import AuthorInput from "./AuthorInput";
-import { log } from "console";
 
 interface Props {
   manga: Manga;
