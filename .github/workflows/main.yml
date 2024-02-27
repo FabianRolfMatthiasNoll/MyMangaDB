@@ -56,9 +56,9 @@ jobs:
         run: |
           pip freeze
           if ("${{ runner.os }}" -eq 'Windows') {
-            pyinstaller main.py --onefile --noconsole --add-data="./frontend/build;build" --name MyMangaDB
+            pyinstaller main.py --onefile --noconsole --add-data="./frontend/dist;dist" --name MyMangaDB
           } else {
-            pyinstaller main.py --onefile --noconsole --add-data="./frontend/build:build" --name MyMangaDB
+            pyinstaller main.py --onefile --noconsole --add-data="./frontend/dist:dist" --name MyMangaDB
           }
         shell: pwsh
 
