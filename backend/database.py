@@ -8,7 +8,7 @@ docker_mode_value = os.getenv("DOCKER_MODE", "")
 DOCKER_MODE = False if not docker_mode_value else docker_mode_value.lower() == "true"
 
 if DOCKER_MODE:
-    SQLALCHEMY_DATABASE_URL = "sqlite:///./manga.db"
+    SQLALCHEMY_DATABASE_URL = "sqlite:///./data/manga.db"
 else:
     if sys.platform == "win32":  # For Windows
         appdata_path = os.getenv("APPDATA")  # Get APPDATA(Roaming) path
