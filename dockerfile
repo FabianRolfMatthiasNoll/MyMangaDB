@@ -4,12 +4,17 @@ FROM nikolaik/python-nodejs:latest
 # Set the working directory in the container
 WORKDIR /app
 
+# Set ENV
+ENV [DOCKER_MODE]=[true]
+ENV [Backend_Base_Path]=[http://localhost:8000]
+ENV [Manga_API_Key]=[helloworld]
+
 # Copy both frontend and backend directories into the container
 COPY ./frontend ./frontend
 COPY ./backend ./backend
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r backend/requirements_linux.txt
+RUN pip install --no-cache-dir -r backend/requirements.txt
 
 # Install frontend dependencies
 WORKDIR /app/frontend

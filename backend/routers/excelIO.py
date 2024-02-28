@@ -149,7 +149,11 @@ async def import_mangas_from_excel(
 
         # Process Volumes
         specific_volumes_str = row[5] if row[5] else ""
-        volume_nums = [int(vol.strip()) for vol in specific_volumes_str.split(",")] if specific_volumes_str else []
+        volume_nums = (
+            [int(vol.strip()) for vol in specific_volumes_str.split(",")]
+            if specific_volumes_str
+            else []
+        )
 
         for volume_num in volume_nums:
             volume = Volume(

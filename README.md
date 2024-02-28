@@ -55,8 +55,8 @@ Setting up the development environment for the first time involves creating a vi
   
 Afterward, navigate to the main directory and run the command below to install all required packages:  
 `pip install -r requirements.txt`  
-   
-**Note for Linux users:** Ensure you remove `PyQt5` from the requirements file before proceeding with the installation, to prevent any conflicts.  
+  
+**Note for RaspberryPi users:** use the `requirements_linux.txt`. Because `PyQt5` is making compatibility issues.  
   
 In the `frontend` directory, you'll need to run:  `npm install`  
 This is necessary to install all Node modules for the frontend.  
@@ -65,12 +65,14 @@ To initiate both the backend and frontend, refer to the settings provided in the
 
 ### Hosting
 
-To host the application you have to do several steps. 
+To host the application you have to do several steps.  
+
 1. Change the `BASE_PATH` in `frontend/src/api/runtime.ts` to the actual IP-Address of your Device hosting the Backend. **Dont change the Port!**
 
 2. If you want to host a Docker Container set DOCKER_MODE in backend/database.py to True
 
 **Generate API:**
+
 ```bash
 cd frontend/src/api
 npx openapi-generator-cli generate -i http://<Address of the Backend>:8000/openapi.json -g typescript-fetch
