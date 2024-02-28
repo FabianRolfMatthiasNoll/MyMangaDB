@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 DOCKER_MODE = True  # Change this to True if you want to activate debug mode
 
 if DOCKER_MODE:
-    SQLALCHEMY_DATABASE_URL = "sqlite:///./manga.db"
+    SQLALCHEMY_DATABASE_URL = "sqlite:///./data/manga.db"
 else:
     if sys.platform == "win32":  # For Windows
         appdata_path = os.getenv("APPDATA")  # Get APPDATA(Roaming) path
