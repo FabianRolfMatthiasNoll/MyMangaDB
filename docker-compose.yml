@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: ./frontend/
+    ports:
+      - 80:80
+    environment:
+      API_TOKEN: "SOME_TOKEN_HERE"
+      API_URL: "http://backend:80"
+
+  backend:
+    build:
+      context: ./backend/
+    ports:
+      - 8000:80
+    environment:
+      API_TOKEN: "SOME_TOKEN_HERE"
+      DOCKER_MODE: "true"

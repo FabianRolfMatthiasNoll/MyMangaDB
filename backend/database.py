@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-DOCKER_MODE = False  # Change this to True if you want to activate debug mode
+DOCKER_MODE = True  # Change this to True if you want to activate debug mode
 
 if DOCKER_MODE:
     SQLALCHEMY_DATABASE_URL = "sqlite:///./manga.db"
