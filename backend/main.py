@@ -1,3 +1,4 @@
+import os
 from fastapi import Request, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend import models
@@ -5,7 +6,7 @@ from backend.database import engine
 from backend.routers import manga, jikan, excelIO
 from starlette.responses import JSONResponse
 
-API_KEY = "helloworld"
+API_KEY = os.getenv("API_TOKEN")
 API_KEY_NAME = "manga-api-key"
 
 app = FastAPI()

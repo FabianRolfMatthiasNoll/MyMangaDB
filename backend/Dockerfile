@@ -3,8 +3,8 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Using docker image layers for faster builds
-COPY requirements_linux.txt ./
-RUN pip install --no-cache-dir --upgrade -r requirements_linux.txt
+COPY requirements.txt ./
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 COPY ./ ./backend
 

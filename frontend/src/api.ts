@@ -6,7 +6,8 @@ import {
 } from "./api/runtime.ts";
 import { ExcelInOutApi, JikanApi, MangaApi } from "./api/apis";
 
-const apiKey = "helloworld";
+//@ts-ignore
+const apiKey = window._env_.API_TOKEN;
 const apiKeyHeaderName = "manga-api-key";
 
 const apiKeyMiddleware: Middleware = {
@@ -24,7 +25,8 @@ const apiKeyMiddleware: Middleware = {
 };
 
 const openRpConfigParams: ConfigurationParameters = {
-  basePath: "http://localhost:8000",
+  //@ts-ignore
+  basePath: window._env_.API_URL,
   middleware: [apiKeyMiddleware],
 };
 
