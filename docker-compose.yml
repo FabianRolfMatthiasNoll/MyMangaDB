@@ -1,0 +1,26 @@
+version: "3.8"
+
+volumes:
+  database:
+
+services:
+  frontend:
+    build:
+      context: ./frontend/
+    ports:
+      - 80:80
+    environment:
+      API_TOKEN: "SOME_TOKEN_HERE"
+      API_URL: "http://localhost:8000"
+      AUTH_PWD: "mymangadb"
+
+  backend:
+    build:
+      context: ./backend/
+    ports:
+      - 8000:80
+    environment:
+      API_TOKEN: "SOME_TOKEN_HERE"
+      DOCKER_MODE: "true"
+    volumes:
+      - database:/app/data

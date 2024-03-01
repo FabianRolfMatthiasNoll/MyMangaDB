@@ -29,7 +29,8 @@ const AuthorizationModal: React.FC<AuthorizationModalProps> = ({
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    if (password === "mymangadb") {
+    //@ts-ignore
+    if (password === window._env_.AUTH_PWD) {
       setIsAuthorized(true);
       setIsLoggedIn(true);
       onClose();
