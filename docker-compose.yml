@@ -12,7 +12,7 @@ services:
     environment:
       API_TOKEN: "SOME_TOKEN_HERE"
       API_URL: "http://localhost:8000"
-      AUTH_PWD: "mymangadb1996"
+      AUTH_PWD: "mymangadb"
 
   backend:
     build:
