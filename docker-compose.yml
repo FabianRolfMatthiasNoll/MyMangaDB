@@ -2,23 +2,54 @@ version: "3.8"
 
 volumes:
   database:
+  letsencrypt:
 
 services:
+  traefik:
+    image: "traefik:v2.11"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=<MyEmail>"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
   frontend:
     build:
       context: ./frontend/
-    ports:
-      - 80:80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`<FrontendDomain>`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
     environment:
       API_TOKEN: "SOME_TOKEN_HERE"
-      API_URL: "http://localhost:8000"
-      AUTH_PWD: "mymangadb"
+      API_URL: "https://<BackendDomain>"
+      AUTH_PWD: "<SomePassword>"
 
   backend:
     build:
       context: ./backend/
-    ports:
-      - 8000:80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`<BackendDomain>`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=myresolver"
     environment:
       API_TOKEN: "SOME_TOKEN_HERE"
       DOCKER_MODE: "true"
