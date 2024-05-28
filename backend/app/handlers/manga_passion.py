@@ -1,3 +1,5 @@
+# type: ignore
+
 import os
 from bs4 import BeautifulSoup
 import requests
@@ -11,14 +13,21 @@ from typing import List, Dict
 import time
 
 from backend.app import settings
-from backend.app.schema import AuthorCreate, GenreCreate, MangaCreate
+from backend.app.schemas import AuthorCreate, Category, GenreCreate, MangaCreate
 
 from .base import BaseHandler
 
 
 class MangaPassionHandler(BaseHandler):
-    def __init__(self, base_url: str, driver_path: str):
+    def __init__(self, base_url: str):
         super().__init__(base_url)
+
+        chrome_driver_path = os.path.join(os.getcwd(), "chromedriver")
+        if not os.path.exists(chrome_driver_path):
+            raise FileNotFoundError(
+                "ChromeDriver not found. Please run the download_chromedriver.py script."
+            )
+
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
@@ -26,7 +35,7 @@ class MangaPassionHandler(BaseHandler):
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--window-size=1920x1080")
         self.driver = webdriver.Chrome(
-            service=Service(driver_path), options=chrome_options
+            service=Service(chrome_driver_path), options=chrome_options
         )
 
     def search(self, search_term: str) -> List[Dict[str, str]]:
@@ -129,6 +138,8 @@ class MangaPassionHandler(BaseHandler):
             title=title,
             japanese_title=None,
             summary=summary,
+            star_rating=None,
+            category=Category.manga,
             cover_image=image_filename,
             authors=[AuthorCreate(name=author) for author in authors],
             genres=[GenreCreate(name=genre) for genre in genres],
