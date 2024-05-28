@@ -8,19 +8,21 @@ docker_mode_value = os.getenv("DOCKER_MODE", "")
 DOCKER_MODE = docker_mode_value.lower() == "true"
 
 if DOCKER_MODE:
-    SQLALCHEMY_DATABASE_URL = "sqlite:///./data/manga.db"
+    SQLALCHEMY_DATABASE_URL = "sqlite:///./data/MyMangaDB.db"
 else:
     if sys.platform == "win32":  # For Windows
         appdata_path = os.getenv("APPDATA")
         if not appdata_path:
             raise EnvironmentError("APPDATA environment variable is not set.")
-        db_path = os.path.join(appdata_path, "manga.db")
+        db_path = os.path.join(appdata_path, "MyMangaDB.db")
     elif sys.platform == "darwin":  # For macOS
         home_path = os.path.expanduser("~")
-        db_path = os.path.join(home_path, "Library", "Application Support", "manga.db")
+        db_path = os.path.join(
+            home_path, "Library", "Application Support", "MyMangaDB.db"
+        )
     else:  # For Linux and others
         home_path = os.path.expanduser("~")
-        db_path = os.path.join(home_path, ".config", "manga.db")
+        db_path = os.path.join(home_path, ".config", "MyMangaDB.db")
 
     SQLALCHEMY_DATABASE_URL = f"sqlite:///{db_path}"
 

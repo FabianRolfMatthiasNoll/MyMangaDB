@@ -6,7 +6,7 @@
       "type": "python",
       "request": "launch",
       "module": "uvicorn",
-      "args": ["backend.main:app", "--reload", "--host", "0.0.0.0"],
+      "args": ["backend.app.main:app", "--reload", "--host", "0.0.0.0"],
       "jinja": true,
       "justMyCode": true
     },

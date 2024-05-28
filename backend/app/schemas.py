@@ -38,7 +38,6 @@ class Author(AuthorBase):
     id: int
 
     class Config:
-        orm_mode = True
         from_attributes = True
 
 
@@ -54,7 +53,6 @@ class Genre(GenreBase):
     id: int
 
     class Config:
-        orm_mode = True
         from_attributes = True
 
 
@@ -70,7 +68,6 @@ class ListModel(ListBase):
     id: int
 
     class Config:
-        orm_mode = True
         from_attributes = True
 
 
@@ -88,7 +85,6 @@ class Volume(VolumeBase):
     manga_id: int
 
     class Config:
-        orm_mode = True
         from_attributes = True
 
 
@@ -119,7 +115,6 @@ class Manga(MangaBase):
     volumes: List[Volume]
 
     class Config:
-        orm_mode = True
         from_attributes = True
 
 
@@ -135,5 +130,4 @@ class Source(SourceBase):
     id: int
 
     class Config:
-        orm_mode = True
         from_attributes = True
