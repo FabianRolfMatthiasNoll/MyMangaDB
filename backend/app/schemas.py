@@ -39,6 +39,7 @@ class Author(AuthorBase):
 
     class Config:
         orm_mode = True
+        from_attributes = True
 
 
 class GenreBase(BaseModel):
@@ -54,6 +55,7 @@ class Genre(GenreBase):
 
     class Config:
         orm_mode = True
+        from_attributes = True
 
 
 class ListBase(BaseModel):
@@ -69,6 +71,7 @@ class ListModel(ListBase):
 
     class Config:
         orm_mode = True
+        from_attributes = True
 
 
 class VolumeBase(BaseModel):
@@ -86,6 +89,7 @@ class Volume(VolumeBase):
 
     class Config:
         orm_mode = True
+        from_attributes = True
 
 
 class MangaBase(BaseModel):
@@ -116,6 +120,7 @@ class Manga(MangaBase):
 
     class Config:
         orm_mode = True
+        from_attributes = True
 
 
 class SourceBase(BaseModel):
@@ -131,3 +136,4 @@ class Source(SourceBase):
 
     class Config:
         orm_mode = True
+        from_attributes = True
