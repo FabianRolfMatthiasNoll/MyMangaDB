@@ -101,6 +101,7 @@ class Source(Base):
     __tablename__ = "sources"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
+    language = Column(String)
 
 
 Author.mangas = relationship("Manga", secondary=manga_author, back_populates="authors")

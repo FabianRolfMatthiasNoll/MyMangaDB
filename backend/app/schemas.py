@@ -120,6 +120,7 @@ class Manga(MangaBase):
 
 class SourceBase(BaseModel):
     name: str
+    language: str
 
 
 class SourceCreate(SourceBase):
