@@ -1,8 +1,12 @@
 # type: ignore
 
 import os
-from bs4 import BeautifulSoup
+import time
+import platform
 import requests
+
+from urllib.parse import urljoin
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -10,10 +14,10 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from typing import List, Dict
-import time
 
 from backend.app import settings
 from backend.app.schemas import AuthorCreate, Category, GenreCreate, MangaCreate
+from backend.app.chromedriver_util import download_and_extract_chromedriver
 
 from .base import BaseHandler
 
@@ -22,11 +26,12 @@ class MangaPassionHandler(BaseHandler):
     def __init__(self, base_url: str):
         super().__init__(base_url)
 
-        chrome_driver_path = os.path.join(os.getcwd(), "chromedriver")
+        chrome_driver_path = os.path.join(
+            os.getcwd(),
+            "chromedriver" + (".exe" if platform.system() == "Windows" else ""),
+        )
         if not os.path.exists(chrome_driver_path):
-            raise FileNotFoundError(
-                "ChromeDriver not found. Please run the download_chromedriver.py script."
-            )
+            download_and_extract_chromedriver()
 
         chrome_options = Options()
         chrome_options.add_argument("--headless")
@@ -122,6 +127,10 @@ class MangaPassionHandler(BaseHandler):
             raise ValueError("Cover image not found on the page")
         cover_image_url = cover_image_element["src"]
 
+        # Ensure the cover_image_url has the scheme
+        if not cover_image_url.startswith("http"):
+            cover_image_url = urljoin(self.base_url, cover_image_url)
+
         image_save_path = settings.IMAGE_SAVE_PATH
         if not os.path.exists(image_save_path):
             os.makedirs(image_save_path)
@@ -141,7 +150,7 @@ class MangaPassionHandler(BaseHandler):
             star_rating=None,
             category=Category.manga,
             cover_image=image_filename,
-            authors=[AuthorCreate(name=author) for author in authors],
+            authors=[AuthorCreate(name=author) for author in list(set(authors))],
             genres=[GenreCreate(name=genre) for genre in genres],
             lists=[],
             volumes=[],
