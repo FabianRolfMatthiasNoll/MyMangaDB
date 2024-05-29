@@ -16,9 +16,11 @@
     "@mui/material": "^5.15.18",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-router-dom": "^6.23.1"
   },
   "devDependencies": {
+    "@types/node": "^20.12.13",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
