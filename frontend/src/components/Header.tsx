@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded";
 import LightModeIcon from "@mui/icons-material/LightMode";
+import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
   Box,
   IconButton,
+  Menu,
   MenuItem,
   Toolbar,
   Typography,
   useTheme,
+  useMediaQuery,
 } from "@mui/material";
 
 interface NavBarProps {
@@ -17,6 +21,49 @@ interface NavBarProps {
 
 const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
   const theme = useTheme();
+  const location = useLocation();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const menuItems = [
+    { text: "Dashboard", path: "/" },
+    { text: "Authors", path: "/authors" },
+    { text: "Genres", path: "/genres" },
+    { text: "Settings", path: "/settings" },
+  ];
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const mobileMenu = (
+    <Menu
+      anchorEl={anchorEl}
+      anchorOrigin={{ vertical: "top", horizontal: "left" }}
+      keepMounted
+      transformOrigin={{ vertical: "top", horizontal: "left" }}
+      open={Boolean(anchorEl)}
+      onClose={handleMenuClose}
+      sx={{ marginTop: 5 }}
+    >
+      {menuItems.map((item) => (
+        <MenuItem
+          key={item.text}
+          component={Link}
+          to={item.path}
+          selected={location.pathname === item.path}
+          onClick={handleMenuClose}
+        >
+          {item.text}
+        </MenuItem>
+      ))}
+    </Menu>
+  );
+
   return (
     <AppBar position="static">
       <Toolbar>
@@ -38,29 +85,82 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
               gap: 1.5,
             }}
           >
-            <Typography
-              variant="h6"
-              sx={{
-                mr: 2,
-                display: { xs: "flex", md: "flex" },
-                fontFamily: "monospace",
-                fontWeight: 700,
-                letterSpacing: ".1rem",
-                color: "inherit",
-                textDecoration: "none",
-              }}
-            >
-              MyMangaDB
-            </Typography>
-            <MenuItem>
-              <Typography textAlign="center">Dashboard</Typography>
-            </MenuItem>
-            <MenuItem>
-              <Typography textAlign="center">Authors</Typography>
-            </MenuItem>
-            <MenuItem>
-              <Typography textAlign="center">Genres</Typography>
-            </MenuItem>
+            {isMobile ? (
+              <>
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  onClick={handleMenuOpen}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mr: 2,
+                    display: { xs: "flex", md: "flex" },
+                    fontFamily: "monospace",
+                    fontWeight: 700,
+                    letterSpacing: ".1rem",
+                    color: "inherit",
+                    textDecoration: "none",
+                  }}
+                >
+                  MyMangaDB
+                </Typography>
+              </>
+            ) : (
+              <>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mr: 2,
+                    display: { xs: "flex", md: "flex" },
+                    fontFamily: "monospace",
+                    fontWeight: 700,
+                    letterSpacing: ".1rem",
+                    color: "inherit",
+                    textDecoration: "none",
+                  }}
+                >
+                  MyMangaDB
+                </Typography>
+                {menuItems.map((item) => (
+                  <MenuItem
+                    key={item.text}
+                    component={Link}
+                    to={item.path}
+                    selected={location.pathname === item.path}
+                    sx={{
+                      borderRadius: 2,
+                      "&.Mui-selected": {
+                        backgroundColor:
+                          theme.palette.mode === "dark"
+                            ? theme.palette.primary.dark
+                            : theme.palette.primary.light,
+                        color: theme.palette.primary.contrastText,
+                      },
+                      "&.Mui-selected:hover": {
+                        backgroundColor:
+                          theme.palette.mode === "dark"
+                            ? theme.palette.primary.dark
+                            : theme.palette.primary.light,
+                      },
+                      "&:hover": {
+                        backgroundColor:
+                          theme.palette.mode === "dark"
+                            ? theme.palette.primary.main
+                            : theme.palette.primary.light,
+                        color: theme.palette.primary.contrastText,
+                      },
+                    }}
+                  >
+                    <Typography textAlign="center">{item.text}</Typography>
+                  </MenuItem>
+                ))}
+              </>
+            )}
           </Box>
           <Box
             sx={{
@@ -70,9 +170,6 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
               gap: 1.5,
             }}
           >
-            <MenuItem>
-              <Typography textAlign="center">Settings</Typography>
-            </MenuItem>
             <IconButton onClick={toggleThemeMode} sx={{ alignSelf: "center" }}>
               {theme.palette.mode === "dark" ? (
                 <LightModeIcon />
@@ -83,6 +180,7 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
           </Box>
         </Box>
       </Toolbar>
+      {isMobile && mobileMenu}
     </AppBar>
   );
 };
