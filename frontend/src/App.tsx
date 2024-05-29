@@ -12,7 +12,7 @@ import { useMemo, useState } from "react";
 import { deDE } from "@mui/material/locale";
 
 function App() {
-  const [mode, setMode] = useState<"light" | "dark">("light");
+  const [mode, setMode] = useState<"light" | "dark">("dark");
 
   const toggleThemeMode = () => {
     setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
