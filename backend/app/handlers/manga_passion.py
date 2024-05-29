@@ -2,6 +2,7 @@
 
 import os
 import time
+import uuid
 import platform
 import requests
 
@@ -135,10 +136,13 @@ class MangaPassionHandler(BaseHandler):
         if not os.path.exists(image_save_path):
             os.makedirs(image_save_path)
 
-        image_filename = os.path.join(image_save_path, f"{title}.jpg")
+        unique_id = str(uuid.uuid4())
+        image_filename = f"{unique_id}.jpg"
+        image_file_path = os.path.join(image_save_path, image_filename)
+
         response = requests.get(cover_image_url)
         if response.status_code == 200:
-            with open(image_filename, "wb") as f:
+            with open(image_file_path, "wb") as f:
                 f.write(response.content)
         else:
             raise ValueError("Failed to download cover image")
