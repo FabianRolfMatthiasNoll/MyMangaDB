@@ -1,9 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Container, Grid, Box, CircularProgress } from "@mui/material";
+import {
+  Container,
+  Grid,
+  Box,
+  CircularProgress,
+  useMediaQuery,
+  List,
+  ListItem,
+  ListItemText,
+  Card,
+  CardContent,
+} from "@mui/material";
 import MangaCard from "../components/MangaCard";
 import { getMangas, getMangaCoverImageUrl } from "../services/apiService";
 import { Manga } from "../api/models";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useTheme } from "@mui/material/styles";
 
 const Dashboard: React.FC = () => {
   const [mangas, setMangas] = useState<Manga[]>([]);
@@ -11,6 +23,9 @@ const Dashboard: React.FC = () => {
   const [hasMore, setHasMore] = useState<boolean>(true);
 
   const limit = 10;
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     const fetchInitialMangas = async () => {
@@ -44,7 +59,10 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <Container maxWidth={false} sx={{ marginTop: 5 }}>
+    <Container
+      maxWidth={false}
+      sx={{ marginTop: { xs: 0, md: 5, lg: 5, xl: 5 } }}
+    >
       <InfiniteScroll
         dataLength={mangas.length}
         next={fetchMoreMangas}
@@ -66,13 +84,32 @@ const Dashboard: React.FC = () => {
           </p>
         }
       >
-        <Grid container spacing={2}>
-          {mangas.map((manga) => (
-            <Grid item xs={12} sm={6} md={4} lg={2} key={manga.id}>
-              <MangaCard manga={manga} getImageUrl={getMangaCoverImageUrl} />
-            </Grid>
-          ))}
-        </Grid>
+        {isMobile ? (
+          <List>
+            {mangas.map((manga) => (
+              <ListItem key={manga.id}>
+                <Card sx={{ width: "100%" }}>
+                  <CardContent>
+                    <ListItemText
+                      primary={manga.title}
+                      secondary={manga.authors
+                        .map((author) => author.name)
+                        .join(", ")}
+                    />
+                  </CardContent>
+                </Card>
+              </ListItem>
+            ))}
+          </List>
+        ) : (
+          <Grid container spacing={2}>
+            {mangas.map((manga) => (
+              <Grid item xs={12} sm={6} md={4} lg={2} key={manga.id}>
+                <MangaCard manga={manga} getImageUrl={getMangaCoverImageUrl} />
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </InfiniteScroll>
     </Container>
   );

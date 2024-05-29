@@ -21,10 +21,10 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, getImageUrl }) => {
     position: "relative",
     "&:hover": {
       "& .MuiCardMedia-root": {
-        transform: "scale(1.05)", // Enlarge image on hover
+        transform: "scale(1.05)",
       },
       "& .textOverlay": {
-        display: "none", // Hide text on hover
+        display: "none",
       },
     },
   };
@@ -41,7 +41,7 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, getImageUrl }) => {
   };
 
   const cardMediaWrapperStyle = {
-    paddingTop: "150%", // Manga Cover Aspect Ratio
+    paddingTop: "150%",
     position: "relative",
     width: "100%",
   };
@@ -52,8 +52,8 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, getImageUrl }) => {
     left: 0,
     width: "100%",
     height: "100%",
-    objectFit: "cover", // Adjust as needed to 'contain' or 'cover' based on desired appearance
-    transition: "transform 0.3s ease", // Smooth transition for hover effect
+    objectFit: "cover",
+    transition: "transform 0.3s ease",
   };
 
   return (
@@ -82,7 +82,6 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, getImageUrl }) => {
           >
             {manga.title}
           </Typography>
-
           {manga.authors.map((author) => author.name).join(", ")}
         </Box>
       </CardActionArea>
