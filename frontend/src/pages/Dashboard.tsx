@@ -44,7 +44,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <Container sx={{ marginTop: 5 }}>
+    <Container maxWidth={false} sx={{ marginTop: 5 }}>
       <InfiniteScroll
         dataLength={mangas.length}
         next={fetchMoreMangas}
@@ -66,9 +66,9 @@ const Dashboard: React.FC = () => {
           </p>
         }
       >
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           {mangas.map((manga) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={manga.id}>
+            <Grid item xs={12} sm={6} md={4} lg={2} key={manga.id}>
               <MangaCard manga={manga} getImageUrl={getMangaCoverImageUrl} />
             </Grid>
           ))}
