@@ -6,5 +6,5 @@ class HandlerFactory:
     @staticmethod
     def get_handler(source: str):
         if source == "MangaPassion":
-            return MangaPassionHandler("https://www.manga-passion.de")
+            return MangaPassionHandler("https://api.manga-passion.de")
         raise ValueError(f"Handler for source '{source}' not found")
