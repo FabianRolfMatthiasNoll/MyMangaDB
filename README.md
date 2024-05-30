@@ -30,14 +30,10 @@ Due to the varied nature of manga provider websites, the focus is on building an
 - [x] Protected Editing / Viewing Mode for hosting and sharing with friends
 - [x] Out-of-the-Box working Docker setup
 
-## 🚀 Future Features
+## 🤝 Acknowledgements
 
-- [ ] Automated manga cover search
-- [ ] Many more switchable attributes including custom notes
-- [ ] Adding ISBN to the Mangas
-- [ ] Visual analytics for your collection
-- [ ] Add and Fetch Mangas from the Web by ISBN
-- [ ] multi language meta data fetching
+- **Manga Passion:** Special thanks to Manga Passion for providing the API to fetch metadata for German mangas.
+  <img src="https://media.manga-passion.de/hosting/img/logo/logo.svg" alt="Manga Passion Logo" width="150"/>
 
 ## 🛠️ How to Use (WIP)
 
