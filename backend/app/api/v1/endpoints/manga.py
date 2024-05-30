@@ -16,6 +16,13 @@ def create_manga(manga: MangaCreate, db: Session = Depends(get_db)):
     return MangaRepository.create(db, manga)
 
 
+@router.post(
+    "/create-list", response_model=List[Manga], status_code=status.HTTP_201_CREATED
+)
+def create_manga_list(mangas: List[MangaCreate], db: Session = Depends(get_db)):
+    return MangaRepository.create_list(db, mangas)
+
+
 @router.get("/getAll", response_model=List[Manga])
 def get_mangas(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return MangaRepository.get_all(db, skip=skip, limit=limit)

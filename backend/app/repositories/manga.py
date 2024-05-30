@@ -1,5 +1,8 @@
 from typing import List, Optional
 from sqlalchemy.orm import Session
+import os
+import uuid
+import requests
 from backend.app.models import (
     Manga as MangaModel,
     Author as AuthorModel,
@@ -7,6 +10,7 @@ from backend.app.models import (
     Volume as VolumeModel,
 )
 from backend.app.schemas import MangaCreate, Manga
+from backend.app import settings
 
 
 class MangaRepository:
@@ -15,6 +19,25 @@ class MangaRepository:
         authors = [AuthorModel(**author.model_dump()) for author in manga.authors]
         genres = [GenreModel(**genre.model_dump()) for genre in manga.genres]
         volumes = [VolumeModel(**volume.model_dump()) for volume in manga.volumes]
+
+        # Download and save the cover image
+        cover_image_url = manga.cover_image
+        if cover_image_url:
+            unique_id = str(uuid.uuid4())
+            image_filename = f"{unique_id}.jpg"
+            image_save_path = os.path.join(settings.IMAGE_SAVE_PATH, image_filename)
+
+            # Ensure the directory exists
+            os.makedirs(settings.IMAGE_SAVE_PATH, exist_ok=True)
+
+            response = requests.get(cover_image_url)
+            if response.status_code == 200:
+                with open(image_save_path, "wb") as f:
+                    f.write(response.content)
+            else:
+                raise ValueError("Failed to download cover image")
+        else:
+            image_filename = None
 
         db_manga = MangaModel(
             title=manga.title,
@@ -25,7 +48,7 @@ class MangaRepository:
             language=manga.language,
             category=manga.category,
             summary=manga.summary,
-            cover_image=manga.cover_image,
+            cover_image=image_filename,  # Save the filename in the database
             authors=authors,
             genres=genres,
             volumes=volumes,
@@ -34,6 +57,14 @@ class MangaRepository:
         db.commit()
         db.refresh(db_manga)
         return Manga.model_validate(db_manga)
+
+    @staticmethod
+    def create_list(db: Session, mangas: List[MangaCreate]) -> List[Manga]:
+        db_mangas = []
+        for manga in mangas:
+            db_manga = MangaRepository.create(db, manga)
+            db_mangas.append(db_manga)
+        return db_mangas
 
     @staticmethod
     def get_all(db: Session, skip: int = 0, limit: int = 10) -> List[Manga]:
@@ -91,6 +122,12 @@ class MangaRepository:
     def delete(db: Session, manga_id: int) -> Optional[Manga]:
         db_manga = db.query(MangaModel).filter(MangaModel.id == manga_id).first()
         if db_manga:
+            # Delete the cover image
+            cover_image_path = os.path.join(
+                str(settings.IMAGE_SAVE_PATH), str(db_manga.cover_image)
+            )
+            if os.path.exists(cover_image_path):
+                os.remove(cover_image_path)
             db.delete(db_manga)
             db.commit()
             return Manga.model_validate(db_manga)
