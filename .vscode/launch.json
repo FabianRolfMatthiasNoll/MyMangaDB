@@ -19,7 +19,7 @@
       },
       "cwd": "${workspaceFolder}/frontend",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["start"],
+      "runtimeArgs": ["run", "dev", "--host"],
       "console": "integratedTerminal"
     }
   ],
