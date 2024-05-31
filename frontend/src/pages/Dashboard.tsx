@@ -1,26 +1,26 @@
 import React, { useEffect, useState } from "react";
-import {
-  Container,
-  Grid,
-  Box,
-  useMediaQuery,
-  List,
-  ListItem,
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-} from "@mui/material";
-import MangaCard from "../components/MangaCard";
-import { getMangas, getMangaCoverImageUrl } from "../services/apiService";
+import { Container, useMediaQuery } from "@mui/material";
+import { getMangas } from "../services/apiService";
 import { Manga } from "../api/models";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useTheme } from "@mui/material/styles";
+import SearchBar from "../components/SearchBar";
+import AdvancedFilters from "../components/AdvancedFilters";
+import MangaList from "../components/MangaList";
 
 const Dashboard: React.FC = () => {
   const [mangas, setMangas] = useState<Manga[]>([]);
+  const [filteredMangas, setFilteredMangas] = useState<Manga[]>([]);
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<string>("asc");
+  const [showAdvancedFilters, setShowAdvancedFilters] =
+    useState<boolean>(false);
+  const [filterCategory, setFilterCategory] = useState<string[]>([]);
+  const [filterReadingStatus, setFilterReadingStatus] = useState<string[]>([]);
+  const [filterOverallStatus, setFilterOverallStatus] = useState<string[]>([]);
+  const [ratingRange, setRatingRange] = useState<number[]>([0, 5]);
 
   const limit = 10;
 
@@ -58,82 +58,118 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    let filtered = [...mangas];
+
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (manga) =>
+          manga.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          manga.authors.some((author) =>
+            author.name.toLowerCase().includes(searchQuery.toLowerCase())
+          ) ||
+          manga.summary?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          manga.genres.some((genre) =>
+            genre.name.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+      );
+    }
+
+    if (filterCategory.length) {
+      filtered = filtered.filter(
+        (manga) => manga.category && filterCategory.includes(manga.category)
+      );
+    }
+
+    if (filterReadingStatus.length) {
+      filtered = filtered.filter(
+        (manga) =>
+          manga.readingStatus &&
+          filterReadingStatus.includes(manga.readingStatus)
+      );
+    }
+
+    if (filterOverallStatus.length) {
+      filtered = filtered.filter(
+        (manga) =>
+          manga.overallStatus &&
+          filterOverallStatus.includes(manga.overallStatus)
+      );
+    }
+
+    filtered = filtered.filter(
+      (manga) =>
+        (manga.starRating ?? 0) >= ratingRange[0] &&
+        (manga.starRating ?? 0) <= ratingRange[1]
+    );
+
+    filtered.sort((a, b) => {
+      const fieldA = a.title;
+      const fieldB = b.title;
+
+      if (typeof fieldA === "string" && typeof fieldB === "string") {
+        return sortOrder === "asc"
+          ? fieldA.localeCompare(fieldB)
+          : fieldB.localeCompare(fieldA);
+      }
+
+      return 0;
+    });
+
+    setFilteredMangas(filtered);
+  }, [
+    mangas,
+    searchQuery,
+    sortOrder,
+    filterCategory,
+    filterReadingStatus,
+    filterOverallStatus,
+    ratingRange,
+  ]);
+
+  const resetFilters = () => {
+    setFilterCategory([]);
+    setFilterReadingStatus([]);
+    setFilterOverallStatus([]);
+    setRatingRange([0, 5]);
+  };
+
   return (
     <Container
       maxWidth={false}
       sx={{ marginTop: { xs: 0, md: 2, lg: 2, xl: 2 } }}
     >
+      <SearchBar
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
+        toggleAdvancedFilters={() =>
+          setShowAdvancedFilters(!showAdvancedFilters)
+        }
+      />
+      {showAdvancedFilters && (
+        <AdvancedFilters
+          filterCategory={filterCategory}
+          setFilterCategory={setFilterCategory}
+          filterReadingStatus={filterReadingStatus}
+          setFilterReadingStatus={setFilterReadingStatus}
+          filterOverallStatus={filterOverallStatus}
+          setFilterOverallStatus={setFilterOverallStatus}
+          ratingRange={ratingRange}
+          setRatingRange={setRatingRange}
+          resetFilters={resetFilters}
+        />
+      )}
       <InfiniteScroll
-        dataLength={mangas.length}
+        dataLength={filteredMangas.length}
         next={fetchMoreMangas}
         hasMore={hasMore}
         scrollThreshold={0.9}
         loader={<></>}
-        // loader={
-        //   <Box
-        //     sx={{
-        //       display: "flex",
-        //       justifyContent: "center",
-        //       alignItems: "center",
-        //     }}
-        //   >
-        //     <CircularProgress />
-        //   </Box>
-        // }
-        // endMessage={
-        //   <p style={{ textAlign: "center" }}>
-        //     <b>You have seen it all</b>
-        //   </p>
-        // }
         height="100vh"
       >
-        {isMobile ? (
-          <List>
-            {mangas.map((manga) => (
-              <ListItem key={manga.id}>
-                <Card sx={{ width: "100%", display: "flex", height: "100px" }}>
-                  <CardMedia
-                    component="img"
-                    image={getMangaCoverImageUrl(manga.coverImage || "")}
-                    alt="manga cover"
-                    sx={{ width: "auto", height: "100px" }}
-                  />
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      ml: 2,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <CardContent
-                      sx={{
-                        flex: "1 0 auto",
-                        padding: "8px 0",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Typography variant="body1" noWrap>
-                        {manga.title}
-                      </Typography>
-                      <Typography variant="body2" noWrap>
-                        {manga.authors.map((author) => author.name).join(", ")}
-                      </Typography>
-                    </CardContent>
-                  </Box>
-                </Card>
-              </ListItem>
-            ))}
-          </List>
-        ) : (
-          <Grid container spacing={2}>
-            {mangas.map((manga) => (
-              <Grid item xs={12} sm={6} md={4} lg={2} key={manga.id}>
-                <MangaCard manga={manga} getImageUrl={getMangaCoverImageUrl} />
-              </Grid>
-            ))}
-          </Grid>
-        )}
+        <MangaList mangas={filteredMangas} isMobile={isMobile} />
       </InfiniteScroll>
     </Container>
   );
