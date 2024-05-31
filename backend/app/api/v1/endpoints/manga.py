@@ -57,11 +57,11 @@ def get_mangas_by_star_rating(rating: float, db: Session = Depends(get_db)):
 
 
 @router.put("/{manga_id}", response_model=Manga)
-def update_manga(manga_id: int, manga: MangaCreate, db: Session = Depends(get_db)):
-    db_manga = MangaRepository.get_by_id(db, manga_id=manga_id)
+def update_manga(manga: Manga, db: Session = Depends(get_db)):
+    db_manga = MangaRepository.get_by_id(db, manga.id)
     if db_manga is None:
         raise HTTPException(status_code=404, detail="Manga not found")
-    return MangaRepository.update(db, manga_id=manga_id, manga=manga)
+    return MangaRepository.update(db, manga=manga)
 
 
 @router.delete("/{manga_id}", response_model=Manga)

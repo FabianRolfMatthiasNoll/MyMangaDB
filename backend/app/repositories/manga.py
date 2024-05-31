@@ -136,10 +136,63 @@ class MangaRepository:
         return [Manga.model_validate(db_manga) for db_manga in db_mangas]
 
     @staticmethod
-    def update(db: Session, manga_id: int, manga: MangaCreate) -> Manga:
-        db_manga = db.query(MangaModel).filter(MangaModel.id == manga_id).first()
-        for key, value in manga.dict(exclude_unset=True).items():
-            setattr(db_manga, key, value)
+    def update(db: Session, manga: Manga) -> Manga:
+        db_manga = db.query(MangaModel).filter(MangaModel.id == manga.id).first()
+        if not db_manga:
+            raise ValueError("Manga not found")
+
+        # Update basic fields
+        # The download and change of the name will be handled by a different method called from the API
+        fields_to_update = [
+            "title",
+            "japanese_title",
+            "reading_status",
+            "overall_status",
+            "star_rating",
+            "language",
+            "category",
+            "summary",
+            "cover_image",
+        ]
+        for field in fields_to_update:
+            setattr(db_manga, field, getattr(manga, field))
+
+        # Update authors
+        db_manga.authors.clear()
+        for author in manga.authors:
+            existing_author = (
+                db.query(AuthorModel).filter(AuthorModel.name == author.name).first()
+            )
+            if existing_author:
+                db_manga.authors.append(existing_author)
+            else:
+                new_author = AuthorModel(**author.model_dump())
+                db.add(new_author)
+                db.commit()
+                db.refresh(new_author)
+                db_manga.authors.append(new_author)
+
+        # Update genres
+        db_manga.genres.clear()
+        for genre in manga.genres:
+            existing_genre = (
+                db.query(GenreModel).filter(GenreModel.name == genre.name).first()
+            )
+            if existing_genre:
+                db_manga.genres.append(existing_genre)
+            else:
+                new_genre = GenreModel(**genre.model_dump())
+                db.add(new_genre)
+                db.commit()
+                db.refresh(new_genre)
+                db_manga.genres.append(new_genre)
+
+        # Update volumes
+        db_manga.volumes.clear()
+        for volume in manga.volumes:
+            new_volume = VolumeModel(**volume.model_dump())
+            db_manga.volumes.append(new_volume)
+
         db.commit()
         db.refresh(db_manga)
         return Manga.model_validate(db_manga)
