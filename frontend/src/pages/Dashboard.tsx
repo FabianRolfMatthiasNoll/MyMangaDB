@@ -3,13 +3,13 @@ import {
   Container,
   Grid,
   Box,
-  CircularProgress,
   useMediaQuery,
   List,
   ListItem,
-  ListItemText,
   Card,
   CardContent,
+  CardMedia,
+  Typography,
 } from "@mui/material";
 import MangaCard from "../components/MangaCard";
 import { getMangas, getMangaCoverImageUrl } from "../services/apiService";
@@ -61,42 +61,66 @@ const Dashboard: React.FC = () => {
   return (
     <Container
       maxWidth={false}
-      sx={{ marginTop: { xs: 0, md: 5, lg: 5, xl: 5 } }}
+      sx={{ marginTop: { xs: 0, md: 2, lg: 2, xl: 2 } }}
     >
       <InfiniteScroll
         dataLength={mangas.length}
         next={fetchMoreMangas}
         hasMore={hasMore}
-        loader={
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <CircularProgress />
-          </Box>
-        }
-        endMessage={
-          <p style={{ textAlign: "center" }}>
-            <b>You have seen it all</b>
-          </p>
-        }
+        scrollThreshold={0.9}
+        loader={<></>}
+        // loader={
+        //   <Box
+        //     sx={{
+        //       display: "flex",
+        //       justifyContent: "center",
+        //       alignItems: "center",
+        //     }}
+        //   >
+        //     <CircularProgress />
+        //   </Box>
+        // }
+        // endMessage={
+        //   <p style={{ textAlign: "center" }}>
+        //     <b>You have seen it all</b>
+        //   </p>
+        // }
+        height="100vh"
       >
         {isMobile ? (
           <List>
             {mangas.map((manga) => (
               <ListItem key={manga.id}>
-                <Card sx={{ width: "100%" }}>
-                  <CardContent>
-                    <ListItemText
-                      primary={manga.title}
-                      secondary={manga.authors
-                        .map((author) => author.name)
-                        .join(", ")}
-                    />
-                  </CardContent>
+                <Card sx={{ width: "100%", display: "flex", height: "100px" }}>
+                  <CardMedia
+                    component="img"
+                    image={getMangaCoverImageUrl(manga.coverImage || "")}
+                    alt="manga cover"
+                    sx={{ width: "auto", height: "100px" }}
+                  />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      ml: 2,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <CardContent
+                      sx={{
+                        flex: "1 0 auto",
+                        padding: "8px 0",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <Typography variant="body1" noWrap>
+                        {manga.title}
+                      </Typography>
+                      <Typography variant="body2" noWrap>
+                        {manga.authors.map((author) => author.name).join(", ")}
+                      </Typography>
+                    </CardContent>
+                  </Box>
                 </Card>
               </ListItem>
             ))}
