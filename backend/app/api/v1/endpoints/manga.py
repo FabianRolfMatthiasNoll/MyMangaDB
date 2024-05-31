@@ -56,7 +56,7 @@ def get_mangas_by_star_rating(rating: float, db: Session = Depends(get_db)):
     return MangaRepository.get_by_star_rating(db, rating)
 
 
-@router.put("/{manga_id}", response_model=Manga)
+@router.put("/update", response_model=Manga)
 def update_manga(manga: Manga, db: Session = Depends(get_db)):
     db_manga = MangaRepository.get_by_id(db, manga.id)
     if db_manga is None:

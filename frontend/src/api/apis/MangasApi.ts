@@ -32,6 +32,10 @@ export interface CreateMangaApiV1MangasCreatePostRequest {
     mangaCreate: MangaCreate;
 }
 
+export interface CreateMangaListApiV1MangasCreateListPostRequest {
+    mangaCreate: Array<MangaCreate>;
+}
+
 export interface DeleteMangaApiV1MangasMangaIdDeleteRequest {
     mangaId: number;
 }
@@ -61,9 +65,8 @@ export interface GetMangasByStarRatingApiV1MangasByRatingRatingGetRequest {
     rating: number;
 }
 
-export interface UpdateMangaApiV1MangasMangaIdPutRequest {
-    mangaId: number;
-    mangaCreate: MangaCreate;
+export interface UpdateMangaApiV1MangasUpdatePutRequest {
+    manga: Manga;
 }
 
 /**
@@ -104,6 +107,42 @@ export class MangasApi extends runtime.BaseAPI {
      */
     async createMangaApiV1MangasCreatePost(requestParameters: CreateMangaApiV1MangasCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Manga> {
         const response = await this.createMangaApiV1MangasCreatePostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Create Manga List
+     */
+    async createMangaListApiV1MangasCreateListPostRaw(requestParameters: CreateMangaListApiV1MangasCreateListPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
+        if (requestParameters['mangaCreate'] == null) {
+            throw new runtime.RequiredError(
+                'mangaCreate',
+                'Required parameter "mangaCreate" was null or undefined when calling createMangaListApiV1MangasCreateListPost().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/v1/mangas/create-list`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: requestParameters['mangaCreate']!.map(MangaCreateToJSON),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(MangaFromJSON));
+    }
+
+    /**
+     * Create Manga List
+     */
+    async createMangaListApiV1MangasCreateListPost(requestParameters: CreateMangaListApiV1MangasCreateListPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Manga>> {
+        const response = await this.createMangaListApiV1MangasCreateListPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -342,18 +381,11 @@ export class MangasApi extends runtime.BaseAPI {
     /**
      * Update Manga
      */
-    async updateMangaApiV1MangasMangaIdPutRaw(requestParameters: UpdateMangaApiV1MangasMangaIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Manga>> {
-        if (requestParameters['mangaId'] == null) {
+    async updateMangaApiV1MangasUpdatePutRaw(requestParameters: UpdateMangaApiV1MangasUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Manga>> {
+        if (requestParameters['manga'] == null) {
             throw new runtime.RequiredError(
-                'mangaId',
-                'Required parameter "mangaId" was null or undefined when calling updateMangaApiV1MangasMangaIdPut().'
-            );
-        }
-
-        if (requestParameters['mangaCreate'] == null) {
-            throw new runtime.RequiredError(
-                'mangaCreate',
-                'Required parameter "mangaCreate" was null or undefined when calling updateMangaApiV1MangasMangaIdPut().'
+                'manga',
+                'Required parameter "manga" was null or undefined when calling updateMangaApiV1MangasUpdatePut().'
             );
         }
 
@@ -364,11 +396,11 @@ export class MangasApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/api/v1/mangas/{manga_id}`.replace(`{${"manga_id"}}`, encodeURIComponent(String(requestParameters['mangaId']))),
+            path: `/api/v1/mangas/update`,
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: MangaCreateToJSON(requestParameters['mangaCreate']),
+            body: MangaToJSON(requestParameters['manga']),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => MangaFromJSON(jsonValue));
@@ -377,8 +409,8 @@ export class MangasApi extends runtime.BaseAPI {
     /**
      * Update Manga
      */
-    async updateMangaApiV1MangasMangaIdPut(requestParameters: UpdateMangaApiV1MangasMangaIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Manga> {
-        const response = await this.updateMangaApiV1MangasMangaIdPutRaw(requestParameters, initOverrides);
+    async updateMangaApiV1MangasUpdatePut(requestParameters: UpdateMangaApiV1MangasUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Manga> {
+        const response = await this.updateMangaApiV1MangasUpdatePutRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
