@@ -12,6 +12,7 @@ import {
 import { Manga } from "../api/models";
 import MangaCard from "./MangaCard";
 import { getMangaCoverImageUrl } from "../services/apiService";
+import { Link } from "react-router-dom";
 
 interface MangaListProps {
   mangas: Manga[];
@@ -25,7 +26,11 @@ const MangaList: React.FC<MangaListProps> = ({ mangas, isMobile }) => {
         <List>
           {mangas.map((manga) => (
             <ListItem key={manga.id}>
-              <Card sx={{ width: "100%", display: "flex", height: "100px" }}>
+              <Card
+                sx={{ width: "100%", display: "flex", height: "100px" }}
+                component={Link}
+                to={`/manga/${manga.id}`}
+              >
                 <CardMedia
                   component="img"
                   image={getMangaCoverImageUrl(manga.coverImage || "")}
@@ -62,7 +67,7 @@ const MangaList: React.FC<MangaListProps> = ({ mangas, isMobile }) => {
       ) : (
         <Grid container spacing={2}>
           {mangas.map((manga) => (
-            <Grid item xs={12} sm={6} md={4} lg={2} key={manga.id}>
+            <Grid item xs={12} sm={4} md={3} lg={2} key={manga.id}>
               <MangaCard manga={manga} getImageUrl={getMangaCoverImageUrl} />
             </Grid>
           ))}

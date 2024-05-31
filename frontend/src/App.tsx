@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import { useMemo, useState } from "react";
 import { deDE } from "@mui/material/locale";
 import Dashboard from "./pages/Dashboard";
+import MangaDetails from "./pages/MangaDetails";
 
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("dark");
@@ -42,7 +43,7 @@ function App() {
         <Box style={{ display: "flex" }}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/manga/:id" element={<NotFound />} />
+            <Route path="/manga/:id" element={<MangaDetails />} />
             <Route path="/authors" element={<NotFound />} />
             <Route path="/genres" element={<NotFound />} />
             <Route path="*" element={<NotFound />} />

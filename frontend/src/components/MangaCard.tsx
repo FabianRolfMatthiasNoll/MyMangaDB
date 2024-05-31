@@ -7,6 +7,7 @@ import {
   CardActionArea,
 } from "@mui/material";
 import { Manga } from "../api/models";
+import { Link } from "react-router-dom";
 
 interface MangaCardProps {
   manga: Manga;
@@ -57,7 +58,7 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, getImageUrl }) => {
   };
 
   return (
-    <Card sx={cardStyles}>
+    <Card sx={cardStyles} component={Link} to={`/manga/${manga.id}`}>
       <CardActionArea>
         <Box sx={cardMediaWrapperStyle}>
           <CardMedia
@@ -72,6 +73,7 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, getImageUrl }) => {
             gutterBottom
             variant="h5"
             component="div"
+            noWrap
             sx={{
               fontSize: {
                 xs: "1rem",

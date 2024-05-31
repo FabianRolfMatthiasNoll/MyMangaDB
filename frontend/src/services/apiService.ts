@@ -19,3 +19,12 @@ export const getMangas = async (page: number, limit: number) => {
 export const getMangaCoverImageUrl = (filepath: string) => {
   return `http://localhost:8000/api/v1/images/manga/${filepath}`;
 };
+
+export const getMangaDetails = async (mangaId: number) => {
+  const response = await mangasApi.getMangaByIdApiV1MangasMangaIdGet({
+    mangaId,
+  });
+  return response;
+};
+
+export const updateManga = async
