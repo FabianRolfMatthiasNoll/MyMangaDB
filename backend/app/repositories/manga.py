@@ -16,8 +16,34 @@ from backend.app import settings
 class MangaRepository:
     @staticmethod
     def create(db: Session, manga: MangaCreate) -> Manga:
-        authors = [AuthorModel(**author.model_dump()) for author in manga.authors]
-        genres = [GenreModel(**genre.model_dump()) for genre in manga.genres]
+        authors = []
+        for author in manga.authors:
+            existing_author = (
+                db.query(AuthorModel).filter(AuthorModel.name == author.name).first()
+            )
+            if existing_author:
+                authors.append(existing_author)
+            else:
+                new_author = AuthorModel(**author.model_dump())
+                db.add(new_author)
+                db.commit()
+                db.refresh(new_author)
+                authors.append(new_author)
+
+        genres = []
+        for genre in manga.genres:
+            existing_genre = (
+                db.query(GenreModel).filter(GenreModel.name == genre.name).first()
+            )
+            if existing_genre:
+                genres.append(existing_genre)
+            else:
+                new_genre = GenreModel(**genre.model_dump())
+                db.add(new_genre)
+                db.commit()
+                db.refresh(new_genre)
+                genres.append(new_genre)
+
         volumes = [VolumeModel(**volume.model_dump()) for volume in manga.volumes]
 
         # Download and save the cover image
@@ -48,7 +74,7 @@ class MangaRepository:
             language=manga.language,
             category=manga.category,
             summary=manga.summary,
-            cover_image=image_filename,  # Save the filename in the database
+            cover_image=image_filename,
             authors=authors,
             genres=genres,
             volumes=volumes,
