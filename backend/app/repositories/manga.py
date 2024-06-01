@@ -9,6 +9,8 @@ from backend.app.models import (
     Genre as GenreModel,
     Volume as VolumeModel,
 )
+from backend.app.repositories.author import AuthorRepository
+from backend.app.repositories.genre import GenreRepository
 from backend.app.schemas import MangaCreate, Manga
 from backend.app import settings
 
@@ -24,10 +26,7 @@ class MangaRepository:
             if existing_author:
                 authors.append(existing_author)
             else:
-                new_author = AuthorModel(**author.model_dump())
-                db.add(new_author)
-                db.commit()
-                db.refresh(new_author)
+                new_author = AuthorRepository.create(db, author)
                 authors.append(new_author)
 
         genres = []
@@ -38,10 +37,7 @@ class MangaRepository:
             if existing_genre:
                 genres.append(existing_genre)
             else:
-                new_genre = GenreModel(**genre.model_dump())
-                db.add(new_genre)
-                db.commit()
-                db.refresh(new_genre)
+                new_genre = GenreRepository.create(db, genre)
                 genres.append(new_genre)
 
         volumes = [VolumeModel(**volume.model_dump()) for volume in manga.volumes]
