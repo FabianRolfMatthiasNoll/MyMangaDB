@@ -1,4 +1,5 @@
-import { MangasApi } from "../api/apis";
+import { Manga } from "../api";
+import { AuthorsApi, GenresApi, MangasApi } from "../api/apis";
 import { Configuration, ConfigurationParameters } from "../api/runtime";
 
 const configurationParams: ConfigurationParameters = {
@@ -7,6 +8,8 @@ const configurationParams: ConfigurationParameters = {
 const configuration = new Configuration(configurationParams);
 
 const mangasApi = new MangasApi(configuration);
+const authorApi = new AuthorsApi(configuration);
+const genresApi = new GenresApi(configuration);
 
 export const getMangas = async (page: number, limit: number) => {
   const response = await mangasApi.getMangasApiV1MangasGetAllGet({
@@ -27,4 +30,19 @@ export const getMangaDetails = async (mangaId: number) => {
   return response;
 };
 
-export const updateManga = async
+export const updateMangaDetails = async (manga: Manga) => {
+  const response = await mangasApi.updateMangaApiV1MangasUpdatePut({
+    manga: manga,
+  });
+  return response;
+};
+
+export const getAvailableAuthors = async () => {
+  const response = await authorApi.getAllAuthorsApiV1AuthorsGetAllGet();
+  return response;
+};
+
+export const getAvailableGenres = async () => {
+  const response = await genresApi.getAllGenresApiV1GenresGetAllGet();
+  return response;
+};
