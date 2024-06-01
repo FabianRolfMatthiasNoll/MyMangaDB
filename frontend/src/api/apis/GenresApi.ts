@@ -16,16 +16,62 @@
 import * as runtime from '../runtime';
 import type {
   Genre,
+  GenreCreate,
+  HTTPValidationError,
 } from '../models/index';
 import {
     GenreFromJSON,
     GenreToJSON,
+    GenreCreateFromJSON,
+    GenreCreateToJSON,
+    HTTPValidationErrorFromJSON,
+    HTTPValidationErrorToJSON,
 } from '../models/index';
+
+export interface CreateGenreApiV1GenresCreatePostRequest {
+    genreCreate: GenreCreate;
+}
 
 /**
  * 
  */
 export class GenresApi extends runtime.BaseAPI {
+
+    /**
+     * Create Genre
+     */
+    async createGenreApiV1GenresCreatePostRaw(requestParameters: CreateGenreApiV1GenresCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Genre>> {
+        if (requestParameters['genreCreate'] == null) {
+            throw new runtime.RequiredError(
+                'genreCreate',
+                'Required parameter "genreCreate" was null or undefined when calling createGenreApiV1GenresCreatePost().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/v1/genres/create`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: GenreCreateToJSON(requestParameters['genreCreate']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GenreFromJSON(jsonValue));
+    }
+
+    /**
+     * Create Genre
+     */
+    async createGenreApiV1GenresCreatePost(requestParameters: CreateGenreApiV1GenresCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Genre> {
+        const response = await this.createGenreApiV1GenresCreatePostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Get All Genres

@@ -2,6 +2,7 @@ apis/AuthorsApi.ts
 apis/DefaultApi.ts
 apis/GenresApi.ts
 apis/ImagesApi.ts
+apis/ListsApi.ts
 apis/MangasApi.ts
 apis/SourcesApi.ts
 apis/index.ts

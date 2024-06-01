@@ -16,16 +16,62 @@
 import * as runtime from '../runtime';
 import type {
   Author,
+  AuthorCreate,
+  HTTPValidationError,
 } from '../models/index';
 import {
     AuthorFromJSON,
     AuthorToJSON,
+    AuthorCreateFromJSON,
+    AuthorCreateToJSON,
+    HTTPValidationErrorFromJSON,
+    HTTPValidationErrorToJSON,
 } from '../models/index';
+
+export interface CreateAuthorApiV1AuthorsCreatePostRequest {
+    authorCreate: AuthorCreate;
+}
 
 /**
  * 
  */
 export class AuthorsApi extends runtime.BaseAPI {
+
+    /**
+     * Create Author
+     */
+    async createAuthorApiV1AuthorsCreatePostRaw(requestParameters: CreateAuthorApiV1AuthorsCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Author>> {
+        if (requestParameters['authorCreate'] == null) {
+            throw new runtime.RequiredError(
+                'authorCreate',
+                'Required parameter "authorCreate" was null or undefined when calling createAuthorApiV1AuthorsCreatePost().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/v1/authors/create`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: AuthorCreateToJSON(requestParameters['authorCreate']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => AuthorFromJSON(jsonValue));
+    }
+
+    /**
+     * Create Author
+     */
+    async createAuthorApiV1AuthorsCreatePost(requestParameters: CreateAuthorApiV1AuthorsCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Author> {
+        const response = await this.createAuthorApiV1AuthorsCreatePostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Get All Authors
