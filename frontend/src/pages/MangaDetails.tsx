@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Container,
   Grid,
@@ -13,6 +13,7 @@ import {
   Rating,
   Button,
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   getMangaCoverImageUrl,
   getMangaDetails,
@@ -22,6 +23,8 @@ import { Manga } from "../api/models";
 import MangaForm from "../components/MangaForm";
 
 const MangaDetails: React.FC = () => {
+  const navigate = useNavigate();
+
   const { id } = useParams<{ id: string }>();
   const [manga, setManga] = useState<Manga | null>(null);
   const [editMode, setEditMode] = useState<boolean>(false);
@@ -52,8 +55,19 @@ const MangaDetails: React.FC = () => {
     alert("Changes saved successfully!");
   };
 
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
   return (
     <Container sx={{ mt: 4 }}>
+      <Button
+        startIcon={<ArrowBackIcon />}
+        onClick={handleBackClick}
+        sx={{ my: 2 }}
+      >
+        Zurück
+      </Button>
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>
           {manga.coverImage ? (
