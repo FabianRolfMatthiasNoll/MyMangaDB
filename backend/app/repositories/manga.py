@@ -162,7 +162,7 @@ class MangaRepository:
             if existing_author:
                 db_manga.authors.append(existing_author)
             else:
-                new_author = AuthorModel(**author.model_dump())
+                new_author = AuthorModel(name=author.name)
                 db.add(new_author)
                 db.commit()
                 db.refresh(new_author)
@@ -177,7 +177,7 @@ class MangaRepository:
             if existing_genre:
                 db_manga.genres.append(existing_genre)
             else:
-                new_genre = GenreModel(**genre.model_dump())
+                new_genre = GenreModel(name=genre.name)
                 db.add(new_genre)
                 db.commit()
                 db.refresh(new_genre)
