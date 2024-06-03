@@ -1,5 +1,5 @@
-import { Manga } from "../api";
-import { AuthorsApi, GenresApi, MangasApi } from "../api/apis";
+import { Manga, MangaCreate } from "../api";
+import { AuthorsApi, GenresApi, MangasApi, SourcesApi } from "../api/apis";
 import { Configuration, ConfigurationParameters } from "../api/runtime";
 
 const configurationParams: ConfigurationParameters = {
@@ -10,6 +10,7 @@ const configuration = new Configuration(configurationParams);
 const mangasApi = new MangasApi(configuration);
 const authorApi = new AuthorsApi(configuration);
 const genresApi = new GenresApi(configuration);
+const sourcesApi = new SourcesApi(configuration);
 
 export const getMangas = async (page: number, limit: number) => {
   const response = await mangasApi.getMangasApiV1MangasGetAllGet({
@@ -34,6 +35,26 @@ export const updateMangaDetails = async (manga: Manga) => {
   const response = await mangasApi.updateMangaApiV1MangasUpdatePut({
     manga: manga,
   });
+  return response;
+};
+
+export const createManga = async (mangaCreate: MangaCreate) => {
+  const response = await mangasApi.createMangaApiV1MangasCreatePost({
+    mangaCreate,
+  });
+  return response;
+};
+
+export const getSearchResults = async (title: string, sourceName: string) => {
+  const response = await sourcesApi.searchMangaApiV1SourcesSearchPost({
+    title,
+    sourceName,
+  });
+  return response;
+};
+
+export const getSources = async () => {
+  const response = await sourcesApi.getSourcesApiV1SourcesGetAllGet();
   return response;
 };
 
