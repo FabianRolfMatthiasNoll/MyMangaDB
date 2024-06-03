@@ -56,7 +56,7 @@ const MangaDetails: React.FC = () => {
   };
 
   const handleBackClick = () => {
-    navigate(-1);
+    navigate("/");
   };
 
   return (
@@ -66,7 +66,7 @@ const MangaDetails: React.FC = () => {
         onClick={handleBackClick}
         sx={{ my: 2 }}
       >
-        Zurück
+        Back to Dashboard
       </Button>
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>

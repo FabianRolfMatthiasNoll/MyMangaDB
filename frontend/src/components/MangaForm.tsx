@@ -108,6 +108,7 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
         fullWidth
         onChange={(e) => handleChange("japaneseTitle", e.target.value)}
       />
+      {/* TODO:  Correctly filter out duplicates*/}
       <Autocomplete
         multiple
         freeSolo
