@@ -151,7 +151,9 @@ const Dashboard: React.FC = () => {
   return (
     <Container
       maxWidth={false}
-      sx={{ marginTop: { xs: 0, md: 2, lg: 2, xl: 2 } }}
+      sx={{
+        marginTop: { xs: 0, md: 2, lg: 2, xl: 2 },
+      }}
     >
       <SearchBar
         searchQuery={searchQuery}
@@ -175,16 +177,18 @@ const Dashboard: React.FC = () => {
           resetFilters={resetFilters}
         />
       )}
-      <InfiniteScroll
-        dataLength={filteredMangas.length}
-        next={fetchMoreMangas}
-        hasMore={hasMore}
-        scrollThreshold={0.9}
-        loader={<></>}
-        height="100vh"
-      >
-        <MangaList mangas={filteredMangas} isMobile={isMobile} />
-      </InfiniteScroll>
+      <Box sx={{ overflowY: "auto", height: "100vh" }}>
+        <InfiniteScroll
+          dataLength={filteredMangas.length}
+          next={fetchMoreMangas}
+          hasMore={hasMore}
+          scrollThreshold={0.9}
+          loader={<></>}
+          scrollableTarget="scrollableDiv"
+        >
+          <MangaList mangas={filteredMangas} isMobile={isMobile} />
+        </InfiniteScroll>
+      </Box>
 
       <Box
         sx={{

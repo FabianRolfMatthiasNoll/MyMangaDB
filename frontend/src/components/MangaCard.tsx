@@ -17,13 +17,8 @@ interface MangaCardProps {
 const MangaCard: React.FC<MangaCardProps> = ({ manga, getImageUrl }) => {
   const cardStyles = {
     maxWidth: 350,
-    margin: 0,
-    padding: 0,
     position: "relative",
     "&:hover": {
-      "& .MuiCardMedia-root": {
-        transform: "scale(1.05)",
-      },
       "& .textOverlay": {
         display: "none",
       },
