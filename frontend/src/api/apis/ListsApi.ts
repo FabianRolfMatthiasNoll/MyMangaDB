@@ -32,11 +32,6 @@ export interface CreateListApiV1ListsCreatePostRequest {
     listCreate: ListCreate;
 }
 
-export interface GetMangasApiV1ListsGetAllGetRequest {
-    skip?: number;
-    limit?: number;
-}
-
 /**
  * 
  */
@@ -79,18 +74,10 @@ export class ListsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get Mangas
+     * Get Lists
      */
-    async getMangasApiV1ListsGetAllGetRaw(requestParameters: GetMangasApiV1ListsGetAllGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ListModel>>> {
+    async getListsApiV1ListsGetAllGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ListModel>>> {
         const queryParameters: any = {};
-
-        if (requestParameters['skip'] != null) {
-            queryParameters['skip'] = requestParameters['skip'];
-        }
-
-        if (requestParameters['limit'] != null) {
-            queryParameters['limit'] = requestParameters['limit'];
-        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -105,10 +92,10 @@ export class ListsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get Mangas
+     * Get Lists
      */
-    async getMangasApiV1ListsGetAllGet(requestParameters: GetMangasApiV1ListsGetAllGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ListModel>> {
-        const response = await this.getMangasApiV1ListsGetAllGetRaw(requestParameters, initOverrides);
+    async getListsApiV1ListsGetAllGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ListModel>> {
+        const response = await this.getListsApiV1ListsGetAllGetRaw(initOverrides);
         return await response.value();
     }
 

@@ -8,6 +8,7 @@ from backend.app.models import (
     Author as AuthorModel,
     Genre as GenreModel,
     Volume as VolumeModel,
+    List as ListModel,
 )
 from backend.app.repositories.author import AuthorRepository
 from backend.app.repositories.genre import GenreRepository
@@ -48,6 +49,20 @@ class MangaRepository:
 
         volumes = [VolumeModel(**volume.model_dump()) for volume in manga.volumes]
 
+        lists = []
+        for list in manga.lists:
+            existing_list = (
+                db.query(ListModel).filter(ListModel.name == list.name).first()
+            )
+            if existing_list:
+                lists.append(existing_list)
+            else:
+                new_list = ListModel(**list.model_dump())
+                db.add(new_list)
+                db.commit()
+                db.refresh(new_list)
+                lists.append(new_list)
+
         # Download and save the cover image
         cover_image_url = manga.cover_image
         if cover_image_url:
@@ -77,6 +92,7 @@ class MangaRepository:
             category=manga.category,
             summary=manga.summary,
             cover_image=image_filename,
+            lists=lists,
             authors=authors,
             genres=genres,
             volumes=volumes,
@@ -194,6 +210,21 @@ class MangaRepository:
         for volume in manga.volumes:
             new_volume = VolumeModel(**volume.model_dump())
             db_manga.volumes.append(new_volume)
+
+        # Update lists
+        db_manga.lists.clear()
+        for list in manga.lists:
+            existing_list = (
+                db.query(ListModel).filter(ListModel.name == list.name).first()
+            )
+            if existing_list:
+                db_manga.lists.append(existing_list)
+            else:
+                new_list = ListModel(name=list.name)
+                db.add(new_list)
+                db.commit()
+                db.refresh(new_list)
+                db_manga.lists.append(new_list)
 
         db.commit()
         db.refresh(db_manga)

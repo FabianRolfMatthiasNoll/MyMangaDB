@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.get("/getAll", response_model=List[ListModel])
-def get_mangas(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+def get_lists(db: Session = Depends(get_db)):
     return ListRepository.get_all(db)
 
 

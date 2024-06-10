@@ -1,5 +1,11 @@
-import { Manga, MangaCreate } from "../api";
-import { AuthorsApi, GenresApi, MangasApi, SourcesApi } from "../api/apis";
+import { ListModel, Manga, MangaCreate } from "../api";
+import {
+  AuthorsApi,
+  GenresApi,
+  MangasApi,
+  SourcesApi,
+  ListsApi,
+} from "../api/apis";
 import { Configuration, ConfigurationParameters } from "../api/runtime";
 
 const configurationParams: ConfigurationParameters = {
@@ -11,6 +17,7 @@ const mangasApi = new MangasApi(configuration);
 const authorApi = new AuthorsApi(configuration);
 const genresApi = new GenresApi(configuration);
 const sourcesApi = new SourcesApi(configuration);
+const listsApi = new ListsApi(configuration);
 
 export const getMangas = async (page: number, limit: number) => {
   const response = await mangasApi.getMangasApiV1MangasGetAllGet({
@@ -27,6 +34,13 @@ export const getMangaCoverImageUrl = (filepath: string) => {
 export const getMangaDetails = async (mangaId: number) => {
   const response = await mangasApi.getMangaByIdApiV1MangasMangaIdGet({
     mangaId,
+  });
+  return response;
+};
+
+export const getMangasByListId = async (listId: number) => {
+  const response = await mangasApi.getMangasByListApiV1MangasByListListIdGet({
+    listId,
   });
   return response;
 };
@@ -66,4 +80,24 @@ export const getAvailableAuthors = async () => {
 export const getAvailableGenres = async () => {
   const response = await genresApi.getAllGenresApiV1GenresGetAllGet();
   return response;
+};
+
+export const getAvailableLists = async () => {
+  const response = await listsApi.getListsApiV1ListsGetAllGet();
+  return response;
+};
+
+//TODO: Implement Endpoint that does this directly
+export const getListsWithCounts = async () => {
+  const listsResponse = await listsApi.getListsApiV1ListsGetAllGet();
+  const listsWithCounts = await Promise.all(
+    listsResponse.map(async (list: ListModel) => {
+      const mangas = await getMangasByListId(list.id);
+      return {
+        ...list,
+        mangaCount: mangas.length,
+      };
+    })
+  );
+  return listsWithCounts;
 };
