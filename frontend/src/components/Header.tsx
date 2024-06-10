@@ -27,6 +27,7 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
 
   const menuItems = [
     { text: "Dashboard", path: "/" },
+    { text: "Lists", path: "/lists" },
     { text: "Authors", path: "/authors" },
     { text: "Genres", path: "/genres" },
     { text: "Settings", path: "/settings" },

@@ -12,11 +12,12 @@ import {
   InputLabel,
   Typography,
 } from "@mui/material";
-import { Author, Genre, Manga } from "../api/models";
+import { Author, Genre, Manga, ListModel } from "../api/models"; // Import ListModel
 import { OverallStatus, ReadingStatus } from "../api/models";
 import {
   getAvailableAuthors,
   getAvailableGenres,
+  getAvailableLists,
 } from "../services/apiService";
 
 interface MangaFormProps {
@@ -29,6 +30,7 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
   const [editableManga, setEditableManga] = useState<Manga>(manga);
   const [availableAuthors, setAvailableAuthors] = useState<Author[]>([]);
   const [availableGenres, setAvailableGenres] = useState<Genre[]>([]);
+  const [availableLists, setAvailableLists] = useState<ListModel[]>([]);
 
   useEffect(() => {
     const getAuthors = async () => {
@@ -41,8 +43,14 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
       setAvailableGenres(genres);
     };
 
+    const getLists = async () => {
+      const lists = await getAvailableLists();
+      setAvailableLists(lists);
+    };
+
     getAuthors();
     getGenres();
+    getLists();
   }, []);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -92,6 +100,26 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
       return acc;
     }, []);
     handleChange("genres", genres);
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleListsChange = (_: any, newValue: any[]) => {
+    const lists = newValue.reduce((acc, option) => {
+      if (typeof option === "string") {
+        const existingList = availableLists.find(
+          (list) => list.name.toLowerCase() === option.toLowerCase()
+        );
+        if (existingList) {
+          acc.push(existingList);
+        } else {
+          acc.push({ id: 0, name: option });
+        }
+      } else {
+        acc.push(option);
+      }
+      return acc;
+    }, []);
+    handleChange("lists", lists);
   };
 
   return (
@@ -152,6 +180,34 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
             {...params}
             label="Genres"
             placeholder="Add genres"
+            fullWidth
+          />
+        )}
+        renderTags={(tagValue, getTagProps) =>
+          tagValue.map((option, index) => (
+            <Chip
+              label={option.name}
+              {...getTagProps({ index })}
+              key={option.id}
+            />
+          ))
+        }
+      />
+      <Autocomplete
+        multiple
+        freeSolo
+        options={availableLists}
+        getOptionLabel={(option) =>
+          typeof option === "string" ? option : option.name
+        }
+        filterSelectedOptions
+        value={editableManga.lists}
+        onChange={handleListsChange}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Lists"
+            placeholder="Add lists"
             fullWidth
           />
         )}
