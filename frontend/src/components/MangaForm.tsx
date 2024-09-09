@@ -12,7 +12,7 @@ import {
   InputLabel,
   Typography,
 } from "@mui/material";
-import { Author, Genre, Manga, ListModel } from "../api/models"; // Import ListModel
+import { Author, Genre, Manga, ListModel, Category } from "../api/models"; // Import ListModel
 import { OverallStatus, ReadingStatus } from "../api/models";
 import {
   getAvailableAuthors,
@@ -235,16 +235,24 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
         fullWidth
         onChange={(e) => handleChange("language", e.target.value)}
       />
-      <TextField
-        label="Category"
-        value={editableManga.category || ""}
-        fullWidth
-        onChange={(e) => handleChange("category", e.target.value)}
-      />
+      <FormControl fullWidth>
+        <InputLabel>Category</InputLabel>
+        <Select
+          label="Category"
+          value={editableManga.category || ""}
+          onChange={(e) => handleChange("category", e.target.value)}
+        >
+          {Object.entries(Category).map(([key, value]) => (
+            <MenuItem key={key} value={value}>
+              {key}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       <FormControl fullWidth>
         <InputLabel>Reading Status</InputLabel>
         <Select
-          label=""
+          label="Reading Status"
           value={editableManga.readingStatus || ""}
           onChange={(e) => handleChange("readingStatus", e.target.value)}
         >
@@ -258,6 +266,7 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
       <FormControl fullWidth>
         <InputLabel>Overall Status</InputLabel>
         <Select
+          label="Overall Status"
           value={editableManga.overallStatus || ""}
           onChange={(e) => handleChange("overallStatus", e.target.value)}
         >
