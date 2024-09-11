@@ -10,105 +10,102 @@ from backend.app.models import (
     Volume as VolumeModel,
     List as ListModel,
 )
-from backend.app.repositories.author import AuthorRepository
-from backend.app.repositories.genre import GenreRepository
 from backend.app.schemas import MangaCreate, Manga
 from backend.app import settings
 
 
 class MangaRepository:
     @staticmethod
-    def create(db: Session, manga: MangaCreate) -> Manga:
-        authors = []
-        for author in manga.authors:
-            existing_author = (
-                db.query(AuthorModel).filter(AuthorModel.name == author.name).first()
-            )
-            if existing_author:
-                authors.append(existing_author)
-            else:
-                new_author = AuthorModel(**author.model_dump())
-                db.add(new_author)
-                db.commit()
-                db.refresh(new_author)
-                authors.append(new_author)
-
-        genres = []
-        for genre in manga.genres:
-            existing_genre = (
-                db.query(GenreModel).filter(GenreModel.name == genre.name).first()
-            )
-            if existing_genre:
-                genres.append(existing_genre)
-            else:
-                new_genre = GenreModel(**genre.model_dump())
-                db.add(new_genre)
-                db.commit()
-                db.refresh(new_genre)
-                genres.append(new_genre)
-
-        volumes = [VolumeModel(**volume.model_dump()) for volume in manga.volumes]
-
-        lists = []
-        for list in manga.lists:
-            existing_list = (
-                db.query(ListModel).filter(ListModel.name == list.name).first()
-            )
-            if existing_list:
-                lists.append(existing_list)
-            else:
-                new_list = ListModel(**list.model_dump())
-                db.add(new_list)
-                db.commit()
-                db.refresh(new_list)
-                lists.append(new_list)
-
-        # Download and save the cover image
-        cover_image_url = manga.cover_image
-        if cover_image_url:
-            unique_id = str(uuid.uuid4())
-            image_filename = f"{unique_id}.jpg"
-            image_save_path = os.path.join(settings.IMAGE_SAVE_PATH, image_filename)
-
-            # Ensure the directory exists
-            os.makedirs(settings.IMAGE_SAVE_PATH, exist_ok=True)
-
-            response = requests.get(cover_image_url)
-            if response.status_code == 200:
-                with open(image_save_path, "wb") as f:
-                    f.write(response.content)
-            else:
-                raise ValueError("Failed to download cover image")
-        else:
-            image_filename = None
-
-        db_manga = MangaModel(
-            title=manga.title,
-            japanese_title=manga.japanese_title,
-            reading_status=manga.reading_status,
-            overall_status=manga.overall_status,
-            star_rating=manga.star_rating,
-            language=manga.language,
-            category=manga.category,
-            summary=manga.summary,
-            cover_image=image_filename,
-            lists=lists,
-            authors=authors,
-            genres=genres,
-            volumes=volumes,
-        )
-        db.add(db_manga)
-        db.commit()
-        db.refresh(db_manga)
-        return Manga.model_validate(db_manga)
+    def find_or_create(db: Session, model, field, value):
+        existing_item = db.query(model).filter(field == value).first()
+        if existing_item:
+            return existing_item
+        new_item = model(**value.model_dump())
+        db.add(new_item)
+        db.flush()  # Delayed commit to avoid multiple commits
+        return new_item
 
     @staticmethod
-    def create_list(db: Session, mangas: List[MangaCreate]) -> List[Manga]:
-        db_mangas = []
-        for manga in mangas:
-            db_manga = MangaRepository.create(db, manga)
-            db_mangas.append(db_manga)
-        return db_mangas
+    def create(db: Session, manga: MangaCreate) -> Manga:
+        # Check for duplicate Manga before starting
+        existing_manga = (
+            db.query(MangaModel).filter(MangaModel.title == manga.title).first()
+        )
+        if existing_manga:
+            raise ValueError(f"Manga '{manga.title}' already exists")
+
+        try:
+            # Process authors
+            authors = [
+                MangaRepository.find_or_create(
+                    db, AuthorModel, AuthorModel.name, author
+                )
+                for author in manga.authors
+            ]
+
+            # Process genres
+            genres = [
+                MangaRepository.find_or_create(db, GenreModel, GenreModel.name, genre)
+                for genre in manga.genres
+            ]
+
+            # Process volumes
+            volumes = [VolumeModel(**volume.model_dump()) for volume in manga.volumes]
+
+            # Process lists
+            lists = [
+                MangaRepository.find_or_create(db, ListModel, ListModel.name, list_item)
+                for list_item in manga.lists
+            ]
+
+            # Download and save the cover image
+            cover_image_filename = MangaRepository._download_cover_image(
+                manga.cover_image or ""
+            )
+
+            db_manga = MangaModel(
+                title=manga.title,
+                japanese_title=manga.japanese_title,
+                reading_status=manga.reading_status,
+                overall_status=manga.overall_status,
+                star_rating=manga.star_rating,
+                language=manga.language,
+                category=manga.category,
+                summary=manga.summary,
+                cover_image=cover_image_filename,
+                lists=lists,
+                authors=authors,
+                genres=genres,
+                volumes=volumes,
+            )
+            db.add(db_manga)
+            db.commit()  # Only one commit at the end
+            db.refresh(db_manga)
+
+            return Manga.model_validate(db_manga)
+
+        except Exception as e:
+            db.rollback()  # Ensure rollback on failure
+            raise ValueError(f"Failed to create manga: {e}")
+
+    @staticmethod
+    def _download_cover_image(cover_image_url: str) -> Optional[str]:
+        if not cover_image_url:
+            return None
+
+        unique_id = str(uuid.uuid4())
+        image_filename = f"{unique_id}.jpg"
+        image_save_path = os.path.join(settings.IMAGE_SAVE_PATH, image_filename)
+
+        os.makedirs(settings.IMAGE_SAVE_PATH, exist_ok=True)
+
+        response = requests.get(cover_image_url)
+        if response.status_code == 200:
+            with open(image_save_path, "wb") as f:
+                f.write(response.content)
+            return image_filename
+        else:
+            raise ValueError("Failed to download cover image")
 
     @staticmethod
     def get_all(db: Session, skip: int = 0, limit: int = 10) -> List[Manga]:
@@ -154,13 +151,24 @@ class MangaRepository:
         return [Manga.model_validate(db_manga) for db_manga in db_mangas]
 
     @staticmethod
+    def create_list(db: Session, mangas: List[MangaCreate]) -> List[Manga]:
+        db_mangas = []
+        try:
+            for manga in mangas:
+                db_manga = MangaRepository.create(db, manga)
+                db_mangas.append(db_manga)
+            return db_mangas
+        except Exception as e:
+            db.rollback()
+            raise ValueError(f"Failed to create manga list: {e}")
+
+    @staticmethod
     def update(db: Session, manga: Manga) -> Manga:
         db_manga = db.query(MangaModel).filter(MangaModel.id == manga.id).first()
         if not db_manga:
             raise ValueError("Manga not found")
 
-        # Update basic fields
-        # The download and change of the name will be handled by a different method called from the API
+        # Update fields
         fields_to_update = [
             "title",
             "japanese_title",
@@ -175,56 +183,25 @@ class MangaRepository:
         for field in fields_to_update:
             setattr(db_manga, field, getattr(manga, field))
 
-        # Update authors
-        db_manga.authors.clear()
-        for author in manga.authors:
-            existing_author = (
-                db.query(AuthorModel).filter(AuthorModel.name == author.name).first()
-            )
-            if existing_author:
-                db_manga.authors.append(existing_author)
-            else:
-                new_author = AuthorModel(name=author.name)
-                db.add(new_author)
-                db.commit()
-                db.refresh(new_author)
-                db_manga.authors.append(new_author)
+        # Update related objects (authors, genres, volumes, lists)
+        db_manga.authors = [
+            MangaRepository.find_or_create(db, AuthorModel, AuthorModel.name, author)
+            for author in manga.authors
+        ]
 
-        # Update genres
-        db_manga.genres.clear()
-        for genre in manga.genres:
-            existing_genre = (
-                db.query(GenreModel).filter(GenreModel.name == genre.name).first()
-            )
-            if existing_genre:
-                db_manga.genres.append(existing_genre)
-            else:
-                new_genre = GenreModel(name=genre.name)
-                db.add(new_genre)
-                db.commit()
-                db.refresh(new_genre)
-                db_manga.genres.append(new_genre)
+        db_manga.genres = [
+            MangaRepository.find_or_create(db, GenreModel, GenreModel.name, genre)
+            for genre in manga.genres
+        ]
 
-        # Update volumes
-        db_manga.volumes.clear()
-        for volume in manga.volumes:
-            new_volume = VolumeModel(**volume.model_dump())
-            db_manga.volumes.append(new_volume)
+        db_manga.volumes = [
+            VolumeModel(**volume.model_dump()) for volume in manga.volumes
+        ]
 
-        # Update lists
-        db_manga.lists.clear()
-        for list in manga.lists:
-            existing_list = (
-                db.query(ListModel).filter(ListModel.name == list.name).first()
-            )
-            if existing_list:
-                db_manga.lists.append(existing_list)
-            else:
-                new_list = ListModel(name=list.name)
-                db.add(new_list)
-                db.commit()
-                db.refresh(new_list)
-                db_manga.lists.append(new_list)
+        db_manga.lists = [
+            MangaRepository.find_or_create(db, ListModel, ListModel.name, list_item)
+            for list_item in manga.lists
+        ]
 
         db.commit()
         db.refresh(db_manga)
@@ -234,7 +211,7 @@ class MangaRepository:
     def delete(db: Session, manga_id: int) -> Optional[Manga]:
         db_manga = db.query(MangaModel).filter(MangaModel.id == manga_id).first()
         if db_manga:
-            # Delete the cover image
+            # Delete cover image
             cover_image_path = os.path.join(
                 str(settings.IMAGE_SAVE_PATH), str(db_manga.cover_image)
             )
