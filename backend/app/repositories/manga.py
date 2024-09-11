@@ -17,23 +17,26 @@ from backend.app import settings
 class MangaRepository:
     @staticmethod
     def find_or_create(db: Session, model, field, value):
+        # 'value' should be a primitive type, like a string, not an entire object
         existing_item = db.query(model).filter(field == value).first()
         if existing_item:
             return existing_item
-        new_item = model(**value.model_dump())
+
+        # If value is an object (like Author), convert to dict with .model_dump()
+        if hasattr(value, "model_dump"):
+            value_dict = value.model_dump()
+            new_item = model(**value_dict)
+        else:
+            new_item = model(
+                **{field.key: value}
+            )  # Field is the SQLAlchemy column, value is its primitive
+
         db.add(new_item)
         db.flush()  # Delayed commit to avoid multiple commits
         return new_item
 
     @staticmethod
     def create(db: Session, manga: MangaCreate) -> Manga:
-        # Check for duplicate Manga before starting
-        existing_manga = (
-            db.query(MangaModel).filter(MangaModel.title == manga.title).first()
-        )
-        if existing_manga:
-            raise ValueError(f"Manga '{manga.title}' already exists")
-
         try:
             # Process authors
             authors = [
@@ -185,12 +188,14 @@ class MangaRepository:
 
         # Update related objects (authors, genres, volumes, lists)
         db_manga.authors = [
-            MangaRepository.find_or_create(db, AuthorModel, AuthorModel.name, author)
+            MangaRepository.find_or_create(
+                db, AuthorModel, AuthorModel.name, author.name
+            )
             for author in manga.authors
         ]
 
         db_manga.genres = [
-            MangaRepository.find_or_create(db, GenreModel, GenreModel.name, genre)
+            MangaRepository.find_or_create(db, GenreModel, GenreModel.name, genre.name)
             for genre in manga.genres
         ]
 
@@ -199,7 +204,9 @@ class MangaRepository:
         ]
 
         db_manga.lists = [
-            MangaRepository.find_or_create(db, ListModel, ListModel.name, list_item)
+            MangaRepository.find_or_create(
+                db, ListModel, ListModel.name, list_item.name
+            )
             for list_item in manga.lists
         ]
 
