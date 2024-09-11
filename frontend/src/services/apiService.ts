@@ -127,16 +127,15 @@ export const getListsWithCounts = async () => {
 // Centralized error handling
 const handleApiError = async (error: unknown) => {
   const responseError = error as ResponseError;
-  console.error("API Error:", error); // Log the error for debugging
+  // console.error("API Error:", responseError);
 
   if (responseError.response && responseError.response.json) {
-    // Attempt to parse the actual response payload
     const errorData: HTTPValidationError = await responseError.response.json();
 
     if (errorData && errorData.detail) {
       // If it's a simple string message
       if (typeof errorData.detail === "string") {
-        alert(errorData.detail); // Display the error message in an alert
+        alert(errorData.detail);
         return;
       }
 
@@ -144,12 +143,12 @@ const handleApiError = async (error: unknown) => {
       if (Array.isArray(errorData.detail)) {
         const validationErrors = errorData.detail
           .map((err: ValidationError) => {
-            const location = err.loc ? err.loc.join(" -> ") : ""; // Format error location
-            return `${location}: ${err.msg}`; // Return error message with location
+            const location = err.loc ? err.loc.join(" -> ") : "";
+            return `${location}: ${err.msg}`;
           })
           .join("\n");
 
-        alert(`Validation failed:\n${validationErrors}`); // Display validation errors
+        alert(`Validation failed:\n${validationErrors}`);
         return;
       }
     }
