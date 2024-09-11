@@ -1,4 +1,10 @@
-import { ListModel, Manga, MangaCreate } from "../api";
+import {
+  HTTPValidationError,
+  ListModel,
+  Manga,
+  MangaCreate,
+  ValidationError,
+} from "../api";
 import {
   AuthorsApi,
   GenresApi,
@@ -6,7 +12,11 @@ import {
   SourcesApi,
   ListsApi,
 } from "../api/apis";
-import { Configuration, ConfigurationParameters } from "../api/runtime";
+import {
+  Configuration,
+  ConfigurationParameters,
+  ResponseError,
+} from "../api/runtime";
 
 const configurationParams: ConfigurationParameters = {
   basePath: "http://localhost:8000",
@@ -33,7 +43,6 @@ const apiCallWrapper = async <T>(apiCall: () => Promise<T>, fallback: T) => {
   }
 };
 
-// Manga-related API calls
 export const getMangas = async (page: number, limit: number) =>
   apiCallWrapper(
     () =>
@@ -74,7 +83,6 @@ export const getMangasByListId = async (listId: number) =>
     []
   );
 
-// Search-related API calls
 export const getSearchResults = async (title: string, sourceName: string) =>
   apiCallWrapper(
     () =>
@@ -88,14 +96,12 @@ export const getSearchResults = async (title: string, sourceName: string) =>
 export const getSources = async () =>
   apiCallWrapper(() => sourcesApi.getSourcesApiV1SourcesGetAllGet(), []);
 
-// Author and genre API calls
 export const getAvailableAuthors = async () =>
   apiCallWrapper(() => authorApi.getAllAuthorsApiV1AuthorsGetAllGet(), []);
 
 export const getAvailableGenres = async () =>
   apiCallWrapper(() => genresApi.getAllGenresApiV1GenresGetAllGet(), []);
 
-// List-related API calls
 export const getAvailableLists = async () =>
   apiCallWrapper(() => listsApi.getListsApiV1ListsGetAllGet(), []);
 
@@ -119,12 +125,13 @@ export const getListsWithCounts = async () => {
 };
 
 // Centralized error handling
-const handleApiError = async (error: any) => {
+const handleApiError = async (error: unknown) => {
+  const responseError = error as ResponseError;
   console.error("API Error:", error); // Log the error for debugging
 
-  if (error.response && error.response.json) {
+  if (responseError.response && responseError.response.json) {
     // Attempt to parse the actual response payload
-    const errorData = await error.response.json();
+    const errorData: HTTPValidationError = await responseError.response.json();
 
     if (errorData && errorData.detail) {
       // If it's a simple string message
@@ -136,7 +143,7 @@ const handleApiError = async (error: any) => {
       // If it's a validation error with an array of details
       if (Array.isArray(errorData.detail)) {
         const validationErrors = errorData.detail
-          .map((err: any) => {
+          .map((err: ValidationError) => {
             const location = err.loc ? err.loc.join(" -> ") : ""; // Format error location
             return `${location}: ${err.msg}`; // Return error message with location
           })
