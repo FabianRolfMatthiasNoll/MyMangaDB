@@ -53,15 +53,33 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
   }, []);
 
   const handleSearch = async () => {
+    if (searchQuery === "") {
+      alert("Please enter a search query.");
+      return;
+    }
+
     if (selectedSource) {
       const results = await getSearchResults(searchQuery, selectedSource.name);
       setSearchResults(results);
+    } else {
+      alert("Please select a source to search from.");
     }
   };
 
   const handleCreateManga = async (manga: MangaCreate) => {
     const createdManga = await createManga(manga);
+    if (!createdManga) {
+      alert("Failed to create manga.");
+      return;
+    }
     navigate(`/manga/${createdManga.id}`);
+    handleModalClose();
+  };
+
+  const handleModalClose = () => {
+    setSearchQuery("");
+    setSelectedSource(null);
+    setSearchResults([]);
     onClose();
   };
 
@@ -181,7 +199,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={handleModalClose}>Close</Button>
       </DialogActions>
     </Dialog>
   );
