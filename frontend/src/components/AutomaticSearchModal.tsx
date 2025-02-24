@@ -61,6 +61,9 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
     if (selectedSource) {
       const results = await getSearchResults(searchQuery, selectedSource.name);
       setSearchResults(results);
+      if (results.length === 0) {
+        alert("No results found.");
+      }
     } else {
       alert("Please select a source to search from.");
     }
