@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from backend.app.schemas import MangaCreate, Manga
 from backend.app.database import get_db
-from backend.app.repositories.manga import MangaRepository
+from backend.app.repositories import MangaRepository, ListRepository
 
 router = APIRouter()
 
@@ -21,7 +21,7 @@ def create_manga(manga: MangaCreate, db: Session = Depends(get_db)):
 )
 def create_manga_list(mangas: List[MangaCreate], db: Session = Depends(get_db)):
     try:
-        return MangaRepository.create_list(db, mangas)
+        return MangaRepository.create_batch(db, mangas)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -85,7 +85,7 @@ def update_manga(manga: Manga, db: Session = Depends(get_db)):
         db_manga = MangaRepository.get_by_id(db, manga.id)
         if db_manga is None:
             raise HTTPException(status_code=404, detail="Manga not found")
-        return MangaRepository.update(db, manga=manga)
+        return MangaRepository.update(db, manga_data=manga)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

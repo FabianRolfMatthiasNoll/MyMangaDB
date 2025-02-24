@@ -2,7 +2,7 @@ from typing import List
 from sqlalchemy.orm import Session
 from backend.app.models import Genre as GenreModel
 from backend.app.schemas import Genre, GenreCreate
-
+from .base import BaseRepository, RepositoryError
 
 class GenreRepository:
     @staticmethod
@@ -12,19 +12,11 @@ class GenreRepository:
 
     @staticmethod
     def create(db: Session, genre: GenreCreate) -> Genre:
-        # Check for duplicate genre
-        existing_genre = (
-            db.query(GenreModel).filter(GenreModel.name == genre.name).first()
-        )
-        if existing_genre:
-            raise ValueError(f"Genre '{genre.name}' already exists")
-
-        try:
-            new_genre = GenreModel(**genre.model_dump())
-            db.add(new_genre)
-            db.commit()
-            db.refresh(new_genre)
-            return Genre.model_validate(new_genre)
-        except Exception as e:
-            db.rollback()
-            raise ValueError(f"Failed to create genre: {e}")
+        existing = db.query(GenreModel).filter(GenreModel.name == genre.name).first()
+        if existing:
+            raise RepositoryError(f"Genre '{genre.name}' already exists")
+        new_genre = GenreModel(**genre.model_dump())
+        db.add(new_genre)
+        BaseRepository.commit_session(db)
+        db.refresh(new_genre)
+        return Genre.model_validate(new_genre)
