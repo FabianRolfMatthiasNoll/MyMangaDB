@@ -34,6 +34,29 @@ const listsApi = new ListsApi(configuration);
 export const getMangaCoverImageUrl = (filepath: string) =>
   `http://localhost:8000/api/v1/images/manga/${filepath}`;
 
+// Function to upload manga cover image
+export const uploadMangaCover = async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch("http://localhost:8000/api/v1/images/manga/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to upload image");
+    }
+
+    const data = await response.json();
+    return data.filename;
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    throw error;
+  }
+};
+
 // Generic API call handler to wrap API requests with error handling
 const apiCallWrapper = async <T>(apiCall: () => Promise<T>, fallback: T) => {
   try {

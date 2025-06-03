@@ -11,6 +11,7 @@ import {
   FormControl,
   InputLabel,
   Typography,
+  IconButton,
 } from "@mui/material";
 import { Author, Genre, Manga, ListModel, Category } from "../api/models"; // Import ListModel
 import { OverallStatus, ReadingStatus } from "../api/models";
@@ -19,10 +20,24 @@ import {
   getAvailableGenres,
   getAvailableLists,
 } from "../services/apiService";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { styled } from "@mui/material/styles";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 interface MangaFormProps {
   manga: Manga;
-  onSave: (manga: Manga) => void;
+  onSave: (manga: Manga, coverImage?: File) => void;
   onCancel: () => void;
 }
 
@@ -31,6 +46,8 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
   const [availableAuthors, setAvailableAuthors] = useState<Author[]>([]);
   const [availableGenres, setAvailableGenres] = useState<Genre[]>([]);
   const [availableLists, setAvailableLists] = useState<ListModel[]>([]);
+  const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
 
   useEffect(() => {
     const getAuthors = async () => {
@@ -58,8 +75,24 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
     setEditableManga({ ...editableManga, [field]: value });
   };
 
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setCoverImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = () => {
-    onSave(editableManga);
+    if (!editableManga.title.trim()) {
+      alert("Title is required");
+      return;
+    }
+    onSave(editableManga, coverImage || undefined);
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -128,6 +161,7 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
         label="Title"
         value={editableManga.title}
         fullWidth
+        required
         onChange={(e) => handleChange("title", e.target.value)}
       />
       <TextField
@@ -285,6 +319,29 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
           precision={0.5}
           onChange={(_e, newValue) => handleChange("starRating", newValue || 0)}
         />
+      </Box>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+        <Button
+          component="label"
+          variant="outlined"
+          startIcon={<CloudUploadIcon />}
+        >
+          Upload Cover Image
+          <VisuallyHiddenInput type="file" onChange={handleImageChange} accept="image/*" />
+        </Button>
+        {previewUrl && (
+          <Box
+            component="img"
+            src={previewUrl}
+            alt="Cover preview"
+            sx={{
+              maxWidth: "200px",
+              maxHeight: "300px",
+              objectFit: "contain",
+              alignSelf: "center",
+            }}
+          />
+        )}
       </Box>
       <Box sx={{ display: "flex", gap: 2 }}>
         <Button variant="contained" onClick={handleSave}>

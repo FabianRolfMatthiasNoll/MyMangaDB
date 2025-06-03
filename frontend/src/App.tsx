@@ -15,6 +15,7 @@ import MangaDetails from "./pages/MangaDetails";
 import ListOverview from "./components/ListOverview";
 import MangaListByListId from "./components/MangaListByList";
 import SettingsPage from "./pages/SettingsPage";
+import CreateManga from "./pages/CreateManga";
 
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("dark");
@@ -47,6 +48,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/manga/:id" element={<MangaDetails />} />
+            <Route path="/create-manga" element={<CreateManga />} />
             <Route path="/lists" element={<ListOverview />} />
             <Route path="/list/:listId" element={<MangaListByListId />} />
             <Route path="/authors" element={<NotFound />} />

@@ -18,6 +18,7 @@ import SearchBar from "../components/SearchBar";
 import AdvancedFilters from "../components/AdvancedFilters";
 import MangaList from "../components/MangaList";
 import AutomaticSearchModal from "../components/AutomaticSearchModal";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard: React.FC = () => {
   const [mangas, setMangas] = useState<Manga[]>([]);
@@ -38,6 +39,7 @@ const Dashboard: React.FC = () => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
 
   const fetchMangas = async (reset = false) => {
     try {
@@ -150,6 +152,7 @@ const Dashboard: React.FC = () => {
                 opacity: 0,
                 transition: "visibility 0.2s, opacity 0.2s",
               }}
+              onClick={() => navigate("/create-manga")}
             >
               <EditIcon />
             </Fab>

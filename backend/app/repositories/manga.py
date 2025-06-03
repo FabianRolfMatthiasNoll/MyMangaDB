@@ -121,7 +121,18 @@ class MangaRepository(BaseRepository):
         if not db_manga:
             raise RepositoryError("Manga not found")
 
-        # Update scalar fields.
+        # Handle cover image update
+        if manga_data.cover_image != db_manga.cover_image:
+            # Remove old cover image if it exists
+            if db_manga.cover_image is not None:
+                old_cover_path = os.path.join(settings.IMAGE_SAVE_PATH, str(db_manga.cover_image))
+                if os.path.exists(old_cover_path):
+                    try:
+                        os.remove(old_cover_path)
+                    except Exception as e:
+                        logger.warning("Failed to remove old cover image: %s", e)
+
+        # Update scalar fields
         for field in [
             "title",
             "japanese_title",
@@ -135,7 +146,7 @@ class MangaRepository(BaseRepository):
         ]:
             setattr(db_manga, field, getattr(manga_data, field))
 
-        # Update relationships.
+        # Update relationships
         db_manga.authors = [
             BaseRepository.find_or_create(
                 db, AuthorModel, AuthorModel.name, author.name
@@ -216,16 +227,22 @@ class MangaRepository(BaseRepository):
     def _handle_cover_image(cover_image_url: Optional[str]) -> Optional[str]:
         if not cover_image_url:
             return None
-        unique_id = str(uuid.uuid4())
-        filename = f"{unique_id}.jpg"
-        save_path = os.path.join(settings.IMAGE_SAVE_PATH, filename)
-        os.makedirs(settings.IMAGE_SAVE_PATH, exist_ok=True)
-        try:
-            response = requests.get(cover_image_url)
-            response.raise_for_status()
-            with open(save_path, "wb") as f:
-                f.write(response.content)
-            return filename
-        except Exception as e:
-            logger.warning("Failed to download cover image: %s", e)
-            return None
+            
+        # If it's a URL (from Mangapassion), download it
+        if cover_image_url.startswith(('http://', 'https://')):
+            unique_id = str(uuid.uuid4())
+            filename = f"{unique_id}.jpg"
+            save_path = os.path.join(settings.IMAGE_SAVE_PATH, filename)
+            os.makedirs(settings.IMAGE_SAVE_PATH, exist_ok=True)
+            try:
+                response = requests.get(cover_image_url)
+                response.raise_for_status()
+                with open(save_path, "wb") as f:
+                    f.write(response.content)
+                return filename
+            except Exception as e:
+                logger.warning("Failed to download cover image: %s", e)
+                return None
+        # If it's a filename (from direct upload), just return it
+        else:
+            return cover_image_url

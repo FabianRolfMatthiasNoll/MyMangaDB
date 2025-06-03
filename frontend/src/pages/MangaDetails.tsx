@@ -61,11 +61,50 @@ const MangaDetails: React.FC = () => {
     setEditMode(!editMode);
   };
 
-  const handleSaveChanges = async (updatedManga: Manga) => {
-    const savedManga = await updateMangaDetails(updatedManga);
-    setManga(savedManga);
-    setEditMode(false);
-    alert("Changes saved successfully!");
+  const handleSaveChanges = async (updatedManga: Manga, coverImage?: File) => {
+    try {
+      let coverImagePath = updatedManga.coverImage;
+      if (coverImage) {
+        // Create a unique filename using UUID and .jpg extension
+        const uniqueFilename = `${crypto.randomUUID()}.jpg`;
+        coverImagePath = uniqueFilename;
+
+        // Save the file to the backend's image directory
+        const formData = new FormData();
+        formData.append('file', coverImage);
+        formData.append('filename', uniqueFilename);
+
+        const response = await fetch('http://localhost:8000/api/v1/images/manga/save', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to save cover image');
+        }
+
+        // Wait for the response to ensure the file is saved
+        const result = await response.json();
+        if (!result.filename) {
+          throw new Error('Failed to get filename from server');
+        }
+        coverImagePath = result.filename;
+      }
+
+      // Update the manga with the new cover image path
+      const mangaToUpdate = {
+        ...updatedManga,
+        coverImage: coverImagePath
+      };
+
+      const savedManga = await updateMangaDetails(mangaToUpdate);
+      setManga(savedManga);
+      setEditMode(false);
+      alert("Changes saved successfully!");
+    } catch (error) {
+      console.error("Error updating manga:", error);
+      alert("Failed to update manga. Please try again.");
+    }
   };
 
   const handleBackClick = () => {
