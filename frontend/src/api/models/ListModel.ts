@@ -57,10 +57,15 @@ export function ListModelFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     };
 }
 
-export function ListModelToJSON(value?: ListModel | null): any {
+export function ListModelToJSON(json: any): ListModel {
+    return ListModelToJSONTyped(json, false);
+}
+
+export function ListModelToJSONTyped(value?: ListModel | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'name': value['name'],

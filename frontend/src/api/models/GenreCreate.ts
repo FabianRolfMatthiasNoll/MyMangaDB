@@ -49,10 +49,15 @@ export function GenreCreateFromJSONTyped(json: any, ignoreDiscriminator: boolean
     };
 }
 
-export function GenreCreateToJSON(value?: GenreCreate | null): any {
+export function GenreCreateToJSON(json: any): GenreCreate {
+    return GenreCreateToJSONTyped(json, false);
+}
+
+export function GenreCreateToJSONTyped(value?: GenreCreate | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'name': value['name'],

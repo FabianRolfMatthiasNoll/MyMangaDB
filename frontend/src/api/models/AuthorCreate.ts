@@ -49,10 +49,15 @@ export function AuthorCreateFromJSONTyped(json: any, ignoreDiscriminator: boolea
     };
 }
 
-export function AuthorCreateToJSON(value?: AuthorCreate | null): any {
+export function AuthorCreateToJSON(json: any): AuthorCreate {
+    return AuthorCreateToJSONTyped(json, false);
+}
+
+export function AuthorCreateToJSONTyped(value?: AuthorCreate | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'name': value['name'],

@@ -29,7 +29,7 @@ export type OverallStatus = typeof OverallStatus[keyof typeof OverallStatus];
 export function instanceOfOverallStatus(value: any): boolean {
     for (const key in OverallStatus) {
         if (Object.prototype.hasOwnProperty.call(OverallStatus, key)) {
-            if (OverallStatus[key] === value) {
+            if (OverallStatus[key as keyof typeof OverallStatus] === value) {
                 return true;
             }
         }
@@ -47,5 +47,9 @@ export function OverallStatusFromJSONTyped(json: any, ignoreDiscriminator: boole
 
 export function OverallStatusToJSON(value?: OverallStatus | null): any {
     return value as any;
+}
+
+export function OverallStatusToJSONTyped(value: any, ignoreDiscriminator: boolean): OverallStatus {
+    return value as OverallStatus;
 }
 

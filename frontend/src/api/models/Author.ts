@@ -57,10 +57,15 @@ export function AuthorFromJSONTyped(json: any, ignoreDiscriminator: boolean): Au
     };
 }
 
-export function AuthorToJSON(value?: Author | null): any {
+export function AuthorToJSON(json: any): Author {
+    return AuthorToJSONTyped(json, false);
+}
+
+export function AuthorToJSONTyped(value?: Author | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'name': value['name'],

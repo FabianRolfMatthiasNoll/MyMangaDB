@@ -11,7 +11,7 @@ class MangaPassionHandler(BaseHandler):
 
     def search(self, search_term: str) -> List[Dict[str, str]]:
         search_url = (
-            f"{self.base_url}/editions?search[desc]={search_term}&itemsPerPage=5&page=1"
+            f"{self.base_url}/editions?search[desc]={search_term}&itemsPerPage=10&page=1"
         )
         response = requests.get(search_url)
         response.raise_for_status()

@@ -1,4 +1,5 @@
 from typing import List as TypedList, Optional
+from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 from backend.app.models import (
     Manga as MangaModel,
@@ -30,10 +31,32 @@ class MangaRepository(BaseRepository):
         return Manga.model_validate(manga) if manga else None
 
     @staticmethod
-    def get_all(db: Session, skip: int = 0, limit: int = 10) -> TypedList[Manga]:
-        mangas = db.query(MangaModel).offset(skip).limit(limit).all()
-        return [Manga.model_validate(manga) for manga in mangas]
-    
+    def get_all(
+        db: Session,
+        skip: int = 0,
+        limit: int = 10,
+        search: Optional[str] = None,
+        sort: Optional[str] = "asc",
+    ) -> TypedList[Manga]:
+        """
+        Holt Mangas mit Paging. Optional: Filter nach Titel (ILIKE '%search%'), Sortierung.
+        """
+        query = db.query(MangaModel)
+
+        # Volltextsuche (case-insensitive) im Titel
+        if search:
+            ilike_term = f"%{search}%"
+            query = query.filter(MangaModel.title.ilike(ilike_term))
+
+        # Sortierung nach Titel
+        if sort == "asc":
+            query = query.order_by(asc(MangaModel.title))
+        else:
+            query = query.order_by(desc(MangaModel.title))
+
+        mangas = query.offset(skip).limit(limit).all()
+        return [Manga.model_validate(m) for m in mangas]
+
     @staticmethod
     def create_batch(db: Session, mangas: TypedList[MangaCreate]) -> TypedList[Manga]:
         db_mangas = []

@@ -65,10 +65,15 @@ export function SourceFromJSONTyped(json: any, ignoreDiscriminator: boolean): So
     };
 }
 
-export function SourceToJSON(value?: Source | null): any {
+export function SourceToJSON(json: any): Source {
+    return SourceToJSONTyped(json, false);
+}
+
+export function SourceToJSONTyped(value?: Source | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'name': value['name'],

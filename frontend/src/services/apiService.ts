@@ -4,6 +4,7 @@ import {
   Manga,
   MangaCreate,
   ValidationError,
+  SourceCreate,
 } from "../api";
 import {
   AuthorsApi,
@@ -43,12 +44,19 @@ const apiCallWrapper = async <T>(apiCall: () => Promise<T>, fallback: T) => {
   }
 };
 
-export const getMangas = async (page: number, limit: number) =>
+export const getMangas = async (
+  page: number,
+  limit: number,
+  search?: string,
+  sort?: string
+) =>
   apiCallWrapper(
     () =>
       mangasApi.getMangasApiV1MangasGetAllGet({
         skip: (page - 1) * limit,
         limit,
+        search: search || undefined,
+        sort: sort || undefined,
       }),
     []
   );
@@ -123,6 +131,12 @@ export const getListsWithCounts = async () => {
     return [];
   }
 };
+
+export const createSource = async (sourceCreate: SourceCreate) =>
+  apiCallWrapper(
+    () => sourcesApi.createSourceApiV1SourcesCreatePost({ sourceCreate }),
+    null
+  );
 
 // Centralized error handling
 const handleApiError = async (error: unknown) => {

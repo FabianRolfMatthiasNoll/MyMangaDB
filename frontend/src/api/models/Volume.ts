@@ -30,7 +30,7 @@ export interface Volume {
      * @type {string}
      * @memberof Volume
      */
-    coverImage?: string;
+    coverImage?: string | null;
     /**
      * 
      * @type {number}
@@ -72,10 +72,15 @@ export function VolumeFromJSONTyped(json: any, ignoreDiscriminator: boolean): Vo
     };
 }
 
-export function VolumeToJSON(value?: Volume | null): any {
+export function VolumeToJSON(json: any): Volume {
+    return VolumeToJSONTyped(json, false);
+}
+
+export function VolumeToJSONTyped(value?: Volume | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'volume_number': value['volumeNumber'],

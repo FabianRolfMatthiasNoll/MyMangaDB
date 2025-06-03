@@ -30,7 +30,7 @@ export type ReadingStatus = typeof ReadingStatus[keyof typeof ReadingStatus];
 export function instanceOfReadingStatus(value: any): boolean {
     for (const key in ReadingStatus) {
         if (Object.prototype.hasOwnProperty.call(ReadingStatus, key)) {
-            if (ReadingStatus[key] === value) {
+            if (ReadingStatus[key as keyof typeof ReadingStatus] === value) {
                 return true;
             }
         }
@@ -48,5 +48,9 @@ export function ReadingStatusFromJSONTyped(json: any, ignoreDiscriminator: boole
 
 export function ReadingStatusToJSON(value?: ReadingStatus | null): any {
     return value as any;
+}
+
+export function ReadingStatusToJSONTyped(value: any, ignoreDiscriminator: boolean): ReadingStatus {
+    return value as ReadingStatus;
 }
 

@@ -57,10 +57,15 @@ export function GenreFromJSONTyped(json: any, ignoreDiscriminator: boolean): Gen
     };
 }
 
-export function GenreToJSON(value?: Genre | null): any {
+export function GenreToJSON(json: any): Genre {
+    return GenreToJSONTyped(json, false);
+}
+
+export function GenreToJSONTyped(value?: Genre | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'name': value['name'],

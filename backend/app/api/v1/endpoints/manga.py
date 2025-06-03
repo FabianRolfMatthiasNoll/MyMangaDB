@@ -1,5 +1,5 @@
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from backend.app.schemas import MangaCreate, Manga
 from backend.app.database import get_db
@@ -28,11 +28,29 @@ def create_manga_list(mangas: List[MangaCreate], db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="An unexpected error occurred")
 
 
-@router.get("/getAll", response_model=List[Manga])
-def get_mangas(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+@router.get(
+    "/getAll",
+    response_model=List[Manga],
+    summary="Get mangas with server-side paging, search and sort",
+)
+def get_mangas(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    search: Optional[str] = Query(None, description="Search term for title"),
+    sort: Optional[str] = Query(
+        "asc", regex="^(asc|desc)$", description="Sort by title"
+    ),
+    db: Session = Depends(get_db),
+):
+    """
+    Liefert eine paginierte Liste von Mangas zurück. Optional können
+    Suchbegriff (title LIKE) und Sortierreihenfolge angegeben werden.
+    """
     try:
-        return MangaRepository.get_all(db, skip=skip, limit=limit)
-    except Exception as e:
+        return MangaRepository.get_all(
+            db, skip=skip, limit=limit, search=search, sort=sort
+        )  # Implementierung in Repository
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to fetch mangas")
 
 

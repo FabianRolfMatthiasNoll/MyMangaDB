@@ -49,10 +49,15 @@ export function ListCreateFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     };
 }
 
-export function ListCreateToJSON(value?: ListCreate | null): any {
+export function ListCreateToJSON(json: any): ListCreate {
+    return ListCreateToJSONTyped(json, false);
+}
+
+export function ListCreateToJSONTyped(value?: ListCreate | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'name': value['name'],

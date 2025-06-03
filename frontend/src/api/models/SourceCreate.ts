@@ -57,10 +57,15 @@ export function SourceCreateFromJSONTyped(json: any, ignoreDiscriminator: boolea
     };
 }
 
-export function SourceCreateToJSON(value?: SourceCreate | null): any {
+export function SourceCreateToJSON(json: any): SourceCreate {
+    return SourceCreateToJSONTyped(json, false);
+}
+
+export function SourceCreateToJSONTyped(value?: SourceCreate | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'name': value['name'],

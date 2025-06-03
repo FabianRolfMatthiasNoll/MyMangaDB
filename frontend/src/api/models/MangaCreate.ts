@@ -18,42 +18,49 @@ import {
     CategoryFromJSON,
     CategoryFromJSONTyped,
     CategoryToJSON,
+    CategoryToJSONTyped,
 } from './Category';
 import type { ReadingStatus } from './ReadingStatus';
 import {
     ReadingStatusFromJSON,
     ReadingStatusFromJSONTyped,
     ReadingStatusToJSON,
+    ReadingStatusToJSONTyped,
 } from './ReadingStatus';
 import type { ListCreate } from './ListCreate';
 import {
     ListCreateFromJSON,
     ListCreateFromJSONTyped,
     ListCreateToJSON,
+    ListCreateToJSONTyped,
 } from './ListCreate';
 import type { GenreCreate } from './GenreCreate';
 import {
     GenreCreateFromJSON,
     GenreCreateFromJSONTyped,
     GenreCreateToJSON,
+    GenreCreateToJSONTyped,
 } from './GenreCreate';
 import type { AuthorCreate } from './AuthorCreate';
 import {
     AuthorCreateFromJSON,
     AuthorCreateFromJSONTyped,
     AuthorCreateToJSON,
+    AuthorCreateToJSONTyped,
 } from './AuthorCreate';
 import type { OverallStatus } from './OverallStatus';
 import {
     OverallStatusFromJSON,
     OverallStatusFromJSONTyped,
     OverallStatusToJSON,
+    OverallStatusToJSONTyped,
 } from './OverallStatus';
 import type { VolumeCreate } from './VolumeCreate';
 import {
     VolumeCreateFromJSON,
     VolumeCreateFromJSONTyped,
     VolumeCreateToJSON,
+    VolumeCreateToJSONTyped,
 } from './VolumeCreate';
 
 /**
@@ -73,31 +80,31 @@ export interface MangaCreate {
      * @type {string}
      * @memberof MangaCreate
      */
-    japaneseTitle?: string;
+    japaneseTitle?: string | null;
     /**
      * 
      * @type {ReadingStatus}
      * @memberof MangaCreate
      */
-    readingStatus?: ReadingStatus;
+    readingStatus?: ReadingStatus | null;
     /**
      * 
      * @type {OverallStatus}
      * @memberof MangaCreate
      */
-    overallStatus?: OverallStatus;
+    overallStatus?: OverallStatus | null;
     /**
      * 
      * @type {number}
      * @memberof MangaCreate
      */
-    starRating?: number;
+    starRating?: number | null;
     /**
      * 
      * @type {string}
      * @memberof MangaCreate
      */
-    language?: string;
+    language?: string | null;
     /**
      * 
      * @type {Category}
@@ -109,13 +116,13 @@ export interface MangaCreate {
      * @type {string}
      * @memberof MangaCreate
      */
-    summary?: string;
+    summary?: string | null;
     /**
      * 
      * @type {string}
      * @memberof MangaCreate
      */
-    coverImage?: string;
+    coverImage?: string | null;
     /**
      * 
      * @type {Array<AuthorCreate>}
@@ -141,6 +148,8 @@ export interface MangaCreate {
      */
     volumes: Array<VolumeCreate>;
 }
+
+
 
 /**
  * Check if a given object implements the MangaCreate interface.
@@ -181,10 +190,15 @@ export function MangaCreateFromJSONTyped(json: any, ignoreDiscriminator: boolean
     };
 }
 
-export function MangaCreateToJSON(value?: MangaCreate | null): any {
+export function MangaCreateToJSON(json: any): MangaCreate {
+    return MangaCreateToJSONTyped(json, false);
+}
+
+export function MangaCreateToJSONTyped(value?: MangaCreate | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'title': value['title'],

@@ -28,7 +28,7 @@ export type Category = typeof Category[keyof typeof Category];
 export function instanceOfCategory(value: any): boolean {
     for (const key in Category) {
         if (Object.prototype.hasOwnProperty.call(Category, key)) {
-            if (Category[key] === value) {
+            if (Category[key as keyof typeof Category] === value) {
                 return true;
             }
         }
@@ -46,5 +46,9 @@ export function CategoryFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
 
 export function CategoryToJSON(value?: Category | null): any {
     return value as any;
+}
+
+export function CategoryToJSONTyped(value: any, ignoreDiscriminator: boolean): Category {
+    return value as Category;
 }
 

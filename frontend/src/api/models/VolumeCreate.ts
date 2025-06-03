@@ -30,7 +30,7 @@ export interface VolumeCreate {
      * @type {string}
      * @memberof VolumeCreate
      */
-    coverImage?: string;
+    coverImage?: string | null;
 }
 
 /**
@@ -56,10 +56,15 @@ export function VolumeCreateFromJSONTyped(json: any, ignoreDiscriminator: boolea
     };
 }
 
-export function VolumeCreateToJSON(value?: VolumeCreate | null): any {
+export function VolumeCreateToJSON(json: any): VolumeCreate {
+    return VolumeCreateToJSONTyped(json, false);
+}
+
+export function VolumeCreateToJSONTyped(value?: VolumeCreate | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'volume_number': value['volumeNumber'],

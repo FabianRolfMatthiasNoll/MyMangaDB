@@ -47,6 +47,8 @@ export interface GetMangaByIdApiV1MangasMangaIdGetRequest {
 export interface GetMangasApiV1MangasGetAllGetRequest {
     skip?: number;
     limit?: number;
+    search?: string | null;
+    sort?: string | null;
 }
 
 export interface GetMangasByAuthorApiV1MangasByAuthorAuthorIdGetRequest {
@@ -213,7 +215,8 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get Mangas
+     * Liefert eine paginierte Liste von Mangas zurück. Optional können Suchbegriff (title LIKE) und Sortierreihenfolge angegeben werden.
+     * Get mangas with server-side paging, search and sort
      */
     async getMangasApiV1MangasGetAllGetRaw(requestParameters: GetMangasApiV1MangasGetAllGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
         const queryParameters: any = {};
@@ -224,6 +227,14 @@ export class MangasApi extends runtime.BaseAPI {
 
         if (requestParameters['limit'] != null) {
             queryParameters['limit'] = requestParameters['limit'];
+        }
+
+        if (requestParameters['search'] != null) {
+            queryParameters['search'] = requestParameters['search'];
+        }
+
+        if (requestParameters['sort'] != null) {
+            queryParameters['sort'] = requestParameters['sort'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -239,7 +250,8 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get Mangas
+     * Liefert eine paginierte Liste von Mangas zurück. Optional können Suchbegriff (title LIKE) und Sortierreihenfolge angegeben werden.
+     * Get mangas with server-side paging, search and sort
      */
     async getMangasApiV1MangasGetAllGet(requestParameters: GetMangasApiV1MangasGetAllGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Manga>> {
         const response = await this.getMangasApiV1MangasGetAllGetRaw(requestParameters, initOverrides);

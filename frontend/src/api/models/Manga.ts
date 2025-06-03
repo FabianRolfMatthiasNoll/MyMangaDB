@@ -18,42 +18,49 @@ import {
     CategoryFromJSON,
     CategoryFromJSONTyped,
     CategoryToJSON,
+    CategoryToJSONTyped,
 } from './Category';
 import type { ReadingStatus } from './ReadingStatus';
 import {
     ReadingStatusFromJSON,
     ReadingStatusFromJSONTyped,
     ReadingStatusToJSON,
+    ReadingStatusToJSONTyped,
 } from './ReadingStatus';
 import type { Volume } from './Volume';
 import {
     VolumeFromJSON,
     VolumeFromJSONTyped,
     VolumeToJSON,
+    VolumeToJSONTyped,
 } from './Volume';
 import type { ListModel } from './ListModel';
 import {
     ListModelFromJSON,
     ListModelFromJSONTyped,
     ListModelToJSON,
+    ListModelToJSONTyped,
 } from './ListModel';
 import type { Author } from './Author';
 import {
     AuthorFromJSON,
     AuthorFromJSONTyped,
     AuthorToJSON,
+    AuthorToJSONTyped,
 } from './Author';
 import type { Genre } from './Genre';
 import {
     GenreFromJSON,
     GenreFromJSONTyped,
     GenreToJSON,
+    GenreToJSONTyped,
 } from './Genre';
 import type { OverallStatus } from './OverallStatus';
 import {
     OverallStatusFromJSON,
     OverallStatusFromJSONTyped,
     OverallStatusToJSON,
+    OverallStatusToJSONTyped,
 } from './OverallStatus';
 
 /**
@@ -73,31 +80,31 @@ export interface Manga {
      * @type {string}
      * @memberof Manga
      */
-    japaneseTitle?: string;
+    japaneseTitle?: string | null;
     /**
      * 
      * @type {ReadingStatus}
      * @memberof Manga
      */
-    readingStatus?: ReadingStatus;
+    readingStatus?: ReadingStatus | null;
     /**
      * 
      * @type {OverallStatus}
      * @memberof Manga
      */
-    overallStatus?: OverallStatus;
+    overallStatus?: OverallStatus | null;
     /**
      * 
      * @type {number}
      * @memberof Manga
      */
-    starRating?: number;
+    starRating?: number | null;
     /**
      * 
      * @type {string}
      * @memberof Manga
      */
-    language?: string;
+    language?: string | null;
     /**
      * 
      * @type {Category}
@@ -109,13 +116,13 @@ export interface Manga {
      * @type {string}
      * @memberof Manga
      */
-    summary?: string;
+    summary?: string | null;
     /**
      * 
      * @type {string}
      * @memberof Manga
      */
-    coverImage?: string;
+    coverImage?: string | null;
     /**
      * 
      * @type {number}
@@ -147,6 +154,8 @@ export interface Manga {
      */
     volumes: Array<Volume>;
 }
+
+
 
 /**
  * Check if a given object implements the Manga interface.
@@ -189,10 +198,15 @@ export function MangaFromJSONTyped(json: any, ignoreDiscriminator: boolean): Man
     };
 }
 
-export function MangaToJSON(value?: Manga | null): any {
+export function MangaToJSON(json: any): Manga {
+    return MangaToJSONTyped(json, false);
+}
+
+export function MangaToJSONTyped(value?: Manga | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
+
     return {
         
         'title': value['title'],
