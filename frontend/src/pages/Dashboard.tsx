@@ -21,13 +21,11 @@ import AutomaticSearchModal from "../components/AutomaticSearchModal";
 
 const Dashboard: React.FC = () => {
   const [mangas, setMangas] = useState<Manga[]>([]);
-  const [filteredMangas, setFilteredMangas] = useState<Manga[]>([]);
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<string>("asc");
-  const [showAdvancedFilters, setShowAdvancedFilters] =
-    useState<boolean>(false);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState<boolean>(false);
   const [filterCategory, setFilterCategory] = useState<string[]>([]);
   const [filterReadingStatus, setFilterReadingStatus] = useState<string[]>([]);
   const [filterOverallStatus, setFilterOverallStatus] = useState<string[]>([]);
@@ -41,111 +39,44 @@ const Dashboard: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  useEffect(() => {
-    const fetchInitialMangas = async () => {
-      try {
-        const initialMangas = await getMangas(1, limit);
-        setMangas(initialMangas);
-        setPage(2);
-        if (initialMangas.length < limit) {
-          setHasMore(false);
-        }
-      } catch (error) {
-        console.error("Failed to fetch mangas", error);
-      }
-    };
-
-    fetchInitialMangas();
-  }, []);
-
-  const fetchMoreMangas = async () => {
+  const fetchMangas = async (reset = false) => {
     try {
-      const newMangas = await getMangas(page, limit);
-      setMangas((prevMangas) => [...prevMangas, ...newMangas]);
-      setPage(page + 1);
+      const nextPage = reset ? 1 : page;
+      const newMangas = await getMangas(nextPage, limit, searchQuery, sortOrder);
+      setMangas((prevMangas) =>
+        reset ? newMangas : [...prevMangas, ...newMangas]
+      );
+      setPage(nextPage + 1);
       if (newMangas.length < limit) {
         setHasMore(false);
+      } else {
+        setHasMore(true);
       }
     } catch (error) {
-      console.error("Failed to fetch more mangas", error);
+      console.error("Failed to fetch mangas", error);
       setHasMore(false);
     }
   };
 
   useEffect(() => {
-    let filtered = [...mangas];
+    setMangas([]);
+    setPage(1);
+    setHasMore(true);
+    fetchMangas(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, sortOrder]);
 
-    if (searchQuery) {
-      filtered = filtered.filter(
-        (manga) =>
-          manga.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          manga.authors.some((author) =>
-            author.name.toLowerCase().includes(searchQuery.toLowerCase())
-          ) ||
-          manga.summary?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          manga.genres.some((genre) =>
-            genre.name.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-      );
-    }
-
-    if (filterCategory.length) {
-      filtered = filtered.filter(
-        (manga) => manga.category && filterCategory.includes(manga.category)
-      );
-    }
-
-    if (filterReadingStatus.length) {
-      filtered = filtered.filter(
-        (manga) =>
-          manga.readingStatus &&
-          filterReadingStatus.includes(manga.readingStatus)
-      );
-    }
-
-    if (filterOverallStatus.length) {
-      filtered = filtered.filter(
-        (manga) =>
-          manga.overallStatus &&
-          filterOverallStatus.includes(manga.overallStatus)
-      );
-    }
-
-    filtered = filtered.filter(
-      (manga) =>
-        (manga.starRating ?? 0) >= ratingRange[0] &&
-        (manga.starRating ?? 0) <= ratingRange[1]
-    );
-
-    filtered.sort((a, b) => {
-      const fieldA = a.title;
-      const fieldB = b.title;
-
-      if (typeof fieldA === "string" && typeof fieldB === "string") {
-        return sortOrder === "asc"
-          ? fieldA.localeCompare(fieldB)
-          : fieldB.localeCompare(fieldA);
-      }
-
-      return 0;
-    });
-
-    setFilteredMangas(filtered);
-  }, [
-    mangas,
-    searchQuery,
-    sortOrder,
-    filterCategory,
-    filterReadingStatus,
-    filterOverallStatus,
-    ratingRange,
-  ]);
+  const fetchMoreMangas = async () => {
+    fetchMangas();
+  };
 
   const resetFilters = () => {
     setFilterCategory([]);
     setFilterReadingStatus([]);
     setFilterOverallStatus([]);
     setRatingRange([0, 5]);
+    setSearchQuery("");
+    setSortOrder("asc");
   };
 
   return (
@@ -179,14 +110,13 @@ const Dashboard: React.FC = () => {
       )}
       <Box sx={{ overflowY: "auto", height: "100vh" }}>
         <InfiniteScroll
-          dataLength={filteredMangas.length}
+          dataLength={mangas.length}
           next={fetchMoreMangas}
           hasMore={hasMore}
           scrollThreshold={0.9}
           loader={<></>}
-          scrollableTarget="scrollableDiv"
         >
-          <MangaList mangas={filteredMangas} isMobile={isMobile} />
+          <MangaList mangas={mangas} isMobile={isMobile} />
         </InfiniteScroll>
       </Box>
 
