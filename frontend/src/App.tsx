@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import MangaDetails from "./pages/MangaDetails";
 import ListOverview from "./components/ListOverview";
 import MangaListByListId from "./components/MangaListByList";
+import SettingsPage from "./pages/SettingsPage";
 
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("dark");
@@ -50,6 +51,7 @@ function App() {
             <Route path="/list/:listId" element={<MangaListByListId />} />
             <Route path="/authors" element={<NotFound />} />
             <Route path="/genres" element={<NotFound />} />
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Box>
