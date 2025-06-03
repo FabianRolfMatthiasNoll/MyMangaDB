@@ -1,5 +1,9 @@
 /* tslint:disable */
 /* eslint-disable */
-export * from './ExcelInOutApi';
-export * from './JikanApi';
-export * from './MangaApi';
+export * from './AuthorsApi';
+export * from './DefaultApi';
+export * from './GenresApi';
+export * from './ImagesApi';
+export * from './ListsApi';
+export * from './MangasApi';
+export * from './SourcesApi';

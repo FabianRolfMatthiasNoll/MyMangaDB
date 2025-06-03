@@ -14,17 +14,29 @@
 
 
 /**
- * An enumeration.
+ * 
  * @export
  */
 export const ReadingStatus = {
-    NotSet: 'not_set',
-    Reading: 'reading',
+    NotStarted: 'not_started',
+    InProgress: 'in_progress',
     Completed: 'completed',
-    Canceled: 'canceled'
+    OnHold: 'on_hold',
+    Dropped: 'dropped'
 } as const;
 export type ReadingStatus = typeof ReadingStatus[keyof typeof ReadingStatus];
 
+
+export function instanceOfReadingStatus(value: any): boolean {
+    for (const key in ReadingStatus) {
+        if (Object.prototype.hasOwnProperty.call(ReadingStatus, key)) {
+            if (ReadingStatus[key as keyof typeof ReadingStatus] === value) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 export function ReadingStatusFromJSON(json: any): ReadingStatus {
     return ReadingStatusFromJSONTyped(json, false);
@@ -36,5 +48,9 @@ export function ReadingStatusFromJSONTyped(json: any, ignoreDiscriminator: boole
 
 export function ReadingStatusToJSON(value?: ReadingStatus | null): any {
     return value as any;
+}
+
+export function ReadingStatusToJSONTyped(value: any, ignoreDiscriminator: boolean): ReadingStatus {
+    return value as ReadingStatus;
 }
 

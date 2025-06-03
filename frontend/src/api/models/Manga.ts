@@ -12,37 +12,56 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { Author } from './Author';
+import { mapValues } from '../runtime';
+import type { Category } from './Category';
 import {
-    AuthorFromJSON,
-    AuthorFromJSONTyped,
-    AuthorToJSON,
-} from './Author';
-import type { CollectionStatus } from './CollectionStatus';
-import {
-    CollectionStatusFromJSON,
-    CollectionStatusFromJSONTyped,
-    CollectionStatusToJSON,
-} from './CollectionStatus';
-import type { Genre } from './Genre';
-import {
-    GenreFromJSON,
-    GenreFromJSONTyped,
-    GenreToJSON,
-} from './Genre';
+    CategoryFromJSON,
+    CategoryFromJSONTyped,
+    CategoryToJSON,
+    CategoryToJSONTyped,
+} from './Category';
 import type { ReadingStatus } from './ReadingStatus';
 import {
     ReadingStatusFromJSON,
     ReadingStatusFromJSONTyped,
     ReadingStatusToJSON,
+    ReadingStatusToJSONTyped,
 } from './ReadingStatus';
 import type { Volume } from './Volume';
 import {
     VolumeFromJSON,
     VolumeFromJSONTyped,
     VolumeToJSON,
+    VolumeToJSONTyped,
 } from './Volume';
+import type { ListModel } from './ListModel';
+import {
+    ListModelFromJSON,
+    ListModelFromJSONTyped,
+    ListModelToJSON,
+    ListModelToJSONTyped,
+} from './ListModel';
+import type { Author } from './Author';
+import {
+    AuthorFromJSON,
+    AuthorFromJSONTyped,
+    AuthorToJSON,
+    AuthorToJSONTyped,
+} from './Author';
+import type { Genre } from './Genre';
+import {
+    GenreFromJSON,
+    GenreFromJSONTyped,
+    GenreToJSON,
+    GenreToJSONTyped,
+} from './Genre';
+import type { OverallStatus } from './OverallStatus';
+import {
+    OverallStatusFromJSON,
+    OverallStatusFromJSONTyped,
+    OverallStatusToJSON,
+    OverallStatusToJSONTyped,
+} from './OverallStatus';
 
 /**
  * 
@@ -50,12 +69,6 @@ import {
  * @interface Manga
  */
 export interface Manga {
-    /**
-     * 
-     * @type {number}
-     * @memberof Manga
-     */
-    id: number;
     /**
      * 
      * @type {string}
@@ -67,19 +80,55 @@ export interface Manga {
      * @type {string}
      * @memberof Manga
      */
-    description: string;
+    japaneseTitle?: string | null;
+    /**
+     * 
+     * @type {ReadingStatus}
+     * @memberof Manga
+     */
+    readingStatus?: ReadingStatus | null;
+    /**
+     * 
+     * @type {OverallStatus}
+     * @memberof Manga
+     */
+    overallStatus?: OverallStatus | null;
     /**
      * 
      * @type {number}
      * @memberof Manga
      */
-    totalVolumes: number;
+    starRating?: number | null;
     /**
      * 
-     * @type {Array<Volume>}
+     * @type {string}
      * @memberof Manga
      */
-    volumes: Array<Volume>;
+    language?: string | null;
+    /**
+     * 
+     * @type {Category}
+     * @memberof Manga
+     */
+    category: Category;
+    /**
+     * 
+     * @type {string}
+     * @memberof Manga
+     */
+    summary?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof Manga
+     */
+    coverImage?: string | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof Manga
+     */
+    id: number;
     /**
      * 
      * @type {Array<Author>}
@@ -94,41 +143,32 @@ export interface Manga {
     genres: Array<Genre>;
     /**
      * 
-     * @type {string}
+     * @type {Array<ListModel>}
      * @memberof Manga
      */
-    coverImage: string;
+    lists: Array<ListModel>;
     /**
      * 
-     * @type {ReadingStatus}
+     * @type {Array<Volume>}
      * @memberof Manga
      */
-    readingStatus: ReadingStatus;
-    /**
-     * 
-     * @type {CollectionStatus}
-     * @memberof Manga
-     */
-    collectionStatus: CollectionStatus;
+    volumes: Array<Volume>;
 }
+
+
 
 /**
  * Check if a given object implements the Manga interface.
  */
-export function instanceOfManga(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "id" in value;
-    isInstance = isInstance && "title" in value;
-    isInstance = isInstance && "description" in value;
-    isInstance = isInstance && "totalVolumes" in value;
-    isInstance = isInstance && "volumes" in value;
-    isInstance = isInstance && "authors" in value;
-    isInstance = isInstance && "genres" in value;
-    isInstance = isInstance && "coverImage" in value;
-    isInstance = isInstance && "readingStatus" in value;
-    isInstance = isInstance && "collectionStatus" in value;
-
-    return isInstance;
+export function instanceOfManga(value: object): value is Manga {
+    if (!('title' in value) || value['title'] === undefined) return false;
+    if (!('category' in value) || value['category'] === undefined) return false;
+    if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('authors' in value) || value['authors'] === undefined) return false;
+    if (!('genres' in value) || value['genres'] === undefined) return false;
+    if (!('lists' in value) || value['lists'] === undefined) return false;
+    if (!('volumes' in value) || value['volumes'] === undefined) return false;
+    return true;
 }
 
 export function MangaFromJSON(json: any): Manga {
@@ -136,43 +176,53 @@ export function MangaFromJSON(json: any): Manga {
 }
 
 export function MangaFromJSONTyped(json: any, ignoreDiscriminator: boolean): Manga {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': json['id'],
         'title': json['title'],
-        'description': json['description'],
-        'totalVolumes': json['total_volumes'],
-        'volumes': ((json['volumes'] as Array<any>).map(VolumeFromJSON)),
+        'japaneseTitle': json['japanese_title'] == null ? undefined : json['japanese_title'],
+        'readingStatus': json['reading_status'] == null ? undefined : ReadingStatusFromJSON(json['reading_status']),
+        'overallStatus': json['overall_status'] == null ? undefined : OverallStatusFromJSON(json['overall_status']),
+        'starRating': json['star_rating'] == null ? undefined : json['star_rating'],
+        'language': json['language'] == null ? undefined : json['language'],
+        'category': CategoryFromJSON(json['category']),
+        'summary': json['summary'] == null ? undefined : json['summary'],
+        'coverImage': json['cover_image'] == null ? undefined : json['cover_image'],
+        'id': json['id'],
         'authors': ((json['authors'] as Array<any>).map(AuthorFromJSON)),
         'genres': ((json['genres'] as Array<any>).map(GenreFromJSON)),
-        'coverImage': json['cover_image'],
-        'readingStatus': ReadingStatusFromJSON(json['reading_status']),
-        'collectionStatus': CollectionStatusFromJSON(json['collection_status']),
+        'lists': ((json['lists'] as Array<any>).map(ListModelFromJSON)),
+        'volumes': ((json['volumes'] as Array<any>).map(VolumeFromJSON)),
     };
 }
 
-export function MangaToJSON(value?: Manga | null): any {
-    if (value === undefined) {
-        return undefined;
+export function MangaToJSON(json: any): Manga {
+    return MangaToJSONTyped(json, false);
+}
+
+export function MangaToJSONTyped(value?: Manga | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'title': value.title,
-        'description': value.description,
-        'total_volumes': value.totalVolumes,
-        'volumes': ((value.volumes as Array<any>).map(VolumeToJSON)),
-        'authors': ((value.authors as Array<any>).map(AuthorToJSON)),
-        'genres': ((value.genres as Array<any>).map(GenreToJSON)),
-        'cover_image': value.coverImage,
-        'reading_status': ReadingStatusToJSON(value.readingStatus),
-        'collection_status': CollectionStatusToJSON(value.collectionStatus),
+        'title': value['title'],
+        'japanese_title': value['japaneseTitle'],
+        'reading_status': ReadingStatusToJSON(value['readingStatus']),
+        'overall_status': OverallStatusToJSON(value['overallStatus']),
+        'star_rating': value['starRating'],
+        'language': value['language'],
+        'category': CategoryToJSON(value['category']),
+        'summary': value['summary'],
+        'cover_image': value['coverImage'],
+        'id': value['id'],
+        'authors': ((value['authors'] as Array<any>).map(AuthorToJSON)),
+        'genres': ((value['genres'] as Array<any>).map(GenreToJSON)),
+        'lists': ((value['lists'] as Array<any>).map(ListModelToJSON)),
+        'volumes': ((value['volumes'] as Array<any>).map(VolumeToJSON)),
     };
 }
 

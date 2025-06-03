@@ -1,6 +1,6 @@
 # MyMangaDB
 
-**MyMangaDB** aims to become the quintessential application for manga collectors. Say goodbye to using Excel sheets or makeshift solutions for managing your manga collection. With **MyMangaDB**, simply input the manga's title and the application will automatically populate your collection with details like the author(s), description, available volumes, cover art, genres, and more without any manual input from your end. **Currently only available for english mangas. If someone wants to enhance the manga grabbing process and add german mangas and more feel free to do it :)**
+**MyMangaDB** aims to become the quintessential application for manga collectors. Say goodbye to using Excel sheets or makeshift solutions for managing your manga collection. With **MyMangaDB**, simply input the manga's title and the application will automatically populate your collection with details like the author(s), description, available volumes, cover art, genres, and more without any manual input from your end. **Currently only available for german mangas. English via Jikan Api will be soon reimplemented. If someone wants to enhance the manga grabbing process and add german mangas and more feel free to do it :)**
 
 ## 🔔 Disclaimer
 
@@ -13,31 +13,15 @@ And i am happy to announce that Version 1.0.0 is finally released.
 - **Framework:** FastAPI.
 - **Database Management:** SQLAlchemy, as recommended by FastAPI, is used for data management. All data is stored in a local SQLite3 database.
 - **Data Sources:**
-  - The primary data, including author details, genres, and descriptions, are sourced from the Jikan API.
+  - The primary data, including author details, genres, and descriptions, are sourced from the Jikan API and MangaPassion.
   - Plans are in place to integrate more data sources for book covers and other specifics.
 
 Due to the varied nature of manga provider websites, the focus is on building an intuitive user interface. This will allow users to efficiently manage their collection.
 
-## ✅ Current Features
+## 🤝 Acknowledgements
 
-- [x] Automated metadata retrieval (Author, Genres, Total Volumes, Description) // english mangas only currently
-- [x] Efficient manga collection management
-- [x] Support for multiple authors
-- [x] Genre addition and management
-- [x] Flexible manga cover management (manual and automatic)
-- [x] Adding Volumes with covers to the manga
-- [x] Excel list export and import
-- [x] Protected Editing / Viewing Mode for hosting and sharing with friends
-- [x] Out-of-the-Box working Docker setup
-
-## 🚀 Future Features
-
-- [ ] Automated manga cover search
-- [ ] Many more switchable attributes including custom notes
-- [ ] Adding ISBN to the Mangas
-- [ ] Visual analytics for your collection
-- [ ] Add and Fetch Mangas from the Web by ISBN
-- [ ] multi language meta data fetching
+- **Manga Passion:** Special thanks to Manga Passion for providing the API to fetch metadata for German mangas.
+  <img src="https://media.manga-passion.de/hosting/img/logo/logo.svg" alt="Manga Passion Logo" width="150"/>
 
 ## 🛠️ How to Use (WIP)
 
@@ -77,35 +61,22 @@ AUTH_PWD: "mymangadb" # Password for editing mode
 DOCKER_MODE: "true" # Changes database location to the mounted volume for persistence
 ```
 
-## 📸 Sneak Preview (v1.0.0)
+## 📸 Sneak Preview (v2.0.0)
 
 *Note: Images below are work-in-progress and might undergo changes.*
 
 ### Dashboard
 
-![Dashboard](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/master/screenshots/dashboard.png)
+![Dashboard](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/frontendRework/screenshots/dashboard.png)
 
 ### Manga Overview
 
-![Manga Overview](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/master/screenshots/manga_overview.png)
-
-### Volume Overview
-
-![Volume Overview](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/master/screenshots/volume_overview.png)
+![Manga Overview](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/frontendRework/screenshots/manga_overview.png)
 
 ### Editing Manga
 
-![Editing Manga](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/manga_editing.png?raw=true)
+![Editing Manga](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/frontendRework/screenshots/manga_editing.png?raw=true)
 
-### Manually Adding Mangas
+### Automatic Manga Fetching
 
-![Adding Manga Manually](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/adding_manga_manual.png?raw=true)
-
-### Searching for Mangas via MAL
-
-![MAL Search](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/myanimelist_search.png?raw=true)
-![MAL Search Preview](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/myanimelist_search_preview.png?raw=true)
-
-### Current Settings Menu
-
-![Exporting/Importing Library](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/master/screenshots/settings_menu.png?raw=true)
+![Automatic Manga Fetching](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/frontendRework/screenshots/automatic_manga_fetching.png?raw=true)

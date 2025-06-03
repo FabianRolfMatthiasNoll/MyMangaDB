@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
+import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -21,27 +21,25 @@ import { exists, mapValues } from '../runtime';
 export interface Genre {
     /**
      * 
-     * @type {number}
-     * @memberof Genre
-     */
-    id: number;
-    /**
-     * 
      * @type {string}
      * @memberof Genre
      */
     name: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof Genre
+     */
+    id: number;
 }
 
 /**
  * Check if a given object implements the Genre interface.
  */
-export function instanceOfGenre(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "id" in value;
-    isInstance = isInstance && "name" in value;
-
-    return isInstance;
+export function instanceOfGenre(value: object): value is Genre {
+    if (!('name' in value) || value['name'] === undefined) return false;
+    if (!('id' in value) || value['id'] === undefined) return false;
+    return true;
 }
 
 export function GenreFromJSON(json: any): Genre {
@@ -49,27 +47,29 @@ export function GenreFromJSON(json: any): Genre {
 }
 
 export function GenreFromJSONTyped(json: any, ignoreDiscriminator: boolean): Genre {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': json['id'],
         'name': json['name'],
+        'id': json['id'],
     };
 }
 
-export function GenreToJSON(value?: Genre | null): any {
-    if (value === undefined) {
-        return undefined;
+export function GenreToJSON(json: any): Genre {
+    return GenreToJSONTyped(json, false);
+}
+
+export function GenreToJSONTyped(value?: Genre | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'name': value.name,
+        'name': value['name'],
+        'id': value['id'],
     };
 }
 

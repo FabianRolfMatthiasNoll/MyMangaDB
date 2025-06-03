@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
+import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -21,27 +21,25 @@ import { exists, mapValues } from '../runtime';
 export interface Author {
     /**
      * 
-     * @type {number}
-     * @memberof Author
-     */
-    id: number;
-    /**
-     * 
      * @type {string}
      * @memberof Author
      */
     name: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof Author
+     */
+    id: number;
 }
 
 /**
  * Check if a given object implements the Author interface.
  */
-export function instanceOfAuthor(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "id" in value;
-    isInstance = isInstance && "name" in value;
-
-    return isInstance;
+export function instanceOfAuthor(value: object): value is Author {
+    if (!('name' in value) || value['name'] === undefined) return false;
+    if (!('id' in value) || value['id'] === undefined) return false;
+    return true;
 }
 
 export function AuthorFromJSON(json: any): Author {
@@ -49,27 +47,29 @@ export function AuthorFromJSON(json: any): Author {
 }
 
 export function AuthorFromJSONTyped(json: any, ignoreDiscriminator: boolean): Author {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': json['id'],
         'name': json['name'],
+        'id': json['id'],
     };
 }
 
-export function AuthorToJSON(value?: Author | null): any {
-    if (value === undefined) {
-        return undefined;
+export function AuthorToJSON(json: any): Author {
+    return AuthorToJSONTyped(json, false);
+}
+
+export function AuthorToJSONTyped(value?: Author | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'name': value.name,
+        'name': value['name'],
+        'id': value['id'],
     };
 }
 

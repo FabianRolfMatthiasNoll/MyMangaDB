@@ -12,13 +12,25 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
+import { mapValues } from '../runtime';
 /**
  * 
  * @export
  * @interface Volume
  */
 export interface Volume {
+    /**
+     * 
+     * @type {string}
+     * @memberof Volume
+     */
+    volumeNumber: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Volume
+     */
+    coverImage?: string | null;
     /**
      * 
      * @type {number}
@@ -30,32 +42,17 @@ export interface Volume {
      * @type {number}
      * @memberof Volume
      */
-    volumeNum: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof Volume
-     */
     mangaId: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof Volume
-     */
-    coverImage: string;
 }
 
 /**
  * Check if a given object implements the Volume interface.
  */
-export function instanceOfVolume(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "id" in value;
-    isInstance = isInstance && "volumeNum" in value;
-    isInstance = isInstance && "mangaId" in value;
-    isInstance = isInstance && "coverImage" in value;
-
-    return isInstance;
+export function instanceOfVolume(value: object): value is Volume {
+    if (!('volumeNumber' in value) || value['volumeNumber'] === undefined) return false;
+    if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('mangaId' in value) || value['mangaId'] === undefined) return false;
+    return true;
 }
 
 export function VolumeFromJSON(json: any): Volume {
@@ -63,31 +60,33 @@ export function VolumeFromJSON(json: any): Volume {
 }
 
 export function VolumeFromJSONTyped(json: any, ignoreDiscriminator: boolean): Volume {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
+        'volumeNumber': json['volume_number'],
+        'coverImage': json['cover_image'] == null ? undefined : json['cover_image'],
         'id': json['id'],
-        'volumeNum': json['volume_num'],
         'mangaId': json['manga_id'],
-        'coverImage': json['cover_image'],
     };
 }
 
-export function VolumeToJSON(value?: Volume | null): any {
-    if (value === undefined) {
-        return undefined;
+export function VolumeToJSON(json: any): Volume {
+    return VolumeToJSONTyped(json, false);
+}
+
+export function VolumeToJSONTyped(value?: Volume | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'volume_num': value.volumeNum,
-        'manga_id': value.mangaId,
-        'cover_image': value.coverImage,
+        'volume_number': value['volumeNumber'],
+        'cover_image': value['coverImage'],
+        'id': value['id'],
+        'manga_id': value['mangaId'],
     };
 }
 

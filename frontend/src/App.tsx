@@ -1,44 +1,63 @@
-import React, { useState } from "react";
-import { ReactQueryDevtools } from "react-query/devtools";
-import { QueryClient, QueryClientProvider } from "react-query";
-import PanelParent from "./components/navigation/PanelParent";
-import AddMangaButton from "./components/navigation/AddMangaButton";
-import Navigation from "./components/navigation/Navigation";
-import { UIProvider } from "./components/navigation/UIContext";
-import { useAuth } from "./AuthContext";
-import AuthorizationModal from "./components/AuthorizationModal";
-import { ThemeProvider } from "@emotion/react";
-import { createTheme, CssBaseline, Box } from "@mui/material";
+import {
+  Box,
+  CssBaseline,
+  ThemeProvider,
+  createTheme,
+  responsiveFontSizes,
+} from "@mui/material";
+import Header from "./components/Header";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import NotFound from "./pages/NotFound";
+import { useMemo, useState } from "react";
+import { deDE } from "@mui/material/locale";
+import Dashboard from "./pages/Dashboard";
+import MangaDetails from "./pages/MangaDetails";
+import ListOverview from "./components/ListOverview";
+import MangaListByListId from "./components/MangaListByList";
+import SettingsPage from "./pages/SettingsPage";
 
-const queryClient = new QueryClient();
-const mdTheme = createTheme({
-  palette: {
-    mode: "light",
-  },
-});
+function App() {
+  const [mode, setMode] = useState<"light" | "dark">("dark");
 
-export default function Dashboard() {
-  const { isAuthorized, isLoggedIn } = useAuth();
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(!isAuthorized);
-
-  const handleCloseModal = () => {
-    setIsAuthModalOpen(false);
+  const toggleThemeMode = () => {
+    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
   };
 
+  const theme = useMemo(
+    () =>
+      responsiveFontSizes(
+        createTheme(
+          {
+            palette: {
+              mode,
+            },
+          },
+          deDE
+        )
+      ),
+    [mode]
+  );
+
   return (
-    <UIProvider>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={mdTheme}>
-          <CssBaseline />
-          <Box sx={{ display: "flex" }}>
-            <Navigation />
-            <PanelParent />
-          </Box>
-          {isLoggedIn && <AddMangaButton />}
-        </ThemeProvider>
-        {isLoggedIn && <ReactQueryDevtools initialIsOpen={false} />}
-      </QueryClientProvider>
-      <AuthorizationModal isOpen={isAuthModalOpen} onClose={handleCloseModal} />
-    </UIProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <Header toggleThemeMode={toggleThemeMode} />
+        <Box style={{ display: "flex" }}>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/manga/:id" element={<MangaDetails />} />
+            <Route path="/lists" element={<ListOverview />} />
+            <Route path="/list/:listId" element={<MangaListByListId />} />
+            <Route path="/authors" element={<NotFound />} />
+            <Route path="/genres" element={<NotFound />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Box>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
+
+export default App;
