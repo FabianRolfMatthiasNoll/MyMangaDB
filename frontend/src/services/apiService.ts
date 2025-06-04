@@ -93,11 +93,61 @@ export const getMangaDetails = async (mangaId: number) =>
     null
   );
 
-export const updateMangaDetails = async (manga: Manga) =>
+export const deleteManga = async (mangaId: number) =>
   apiCallWrapper(
-    () => mangasApi.updateMangaApiV1MangasUpdatePut({ manga }),
+    () =>
+      mangasApi.deleteMangaApiV1MangasMangaIdDelete({
+        mangaId,
+      }),
     null
   );
+
+export const updateMangaDetails = async (manga: Manga, coverImage?: File) => {
+  try {
+    let coverImagePath = manga.coverImage;
+    if (coverImage) {
+      // TODO: Move this to backend some day
+      // Create a unique filename using UUID and .jpg extension
+      const uniqueFilename = `${crypto.randomUUID()}.jpg`;
+      coverImagePath = uniqueFilename;
+
+      // Save the file to the backend's image directory
+      const formData = new FormData();
+      formData.append('file', coverImage);
+      formData.append('filename', uniqueFilename);
+
+      const response = await fetch('http://localhost:8000/api/v1/images/manga/save', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save cover image');
+      }
+
+      // Wait for the response to ensure the file is saved
+      const result = await response.json();
+      if (!result.filename) {
+        throw new Error('Failed to get filename from server');
+      }
+      coverImagePath = result.filename;
+    }
+
+    // Update the manga with the new cover image path
+    const mangaToUpdate = {
+      ...manga,
+      coverImage: coverImagePath
+    };
+
+    return await apiCallWrapper(
+      () => mangasApi.updateMangaApiV1MangasUpdatePut({ manga: mangaToUpdate }),
+      null
+    );
+  } catch (error) {
+    console.error("Error updating manga:", error);
+    throw error;
+  }
+};
 
 export const createManga = async (mangaCreate: MangaCreate) =>
   apiCallWrapper(

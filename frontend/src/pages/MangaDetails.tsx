@@ -13,13 +13,19 @@ import {
   IconButton,
   useTheme,
   alpha,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   getMangaCoverImageUrl,
   getMangaDetails,
   updateMangaDetails,
+  deleteManga,
 } from "../services/apiService";
 import { Manga } from "../api/models";
 import MangaForm from "../components/MangaForm";
@@ -30,6 +36,7 @@ const MangaDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [manga, setManga] = useState<Manga | null>(null);
   const [editMode, setEditMode] = useState<boolean>(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchManga = async () => {
@@ -61,54 +68,42 @@ const MangaDetails: React.FC = () => {
     setEditMode(!editMode);
   };
 
-  const handleSaveChanges = async (updatedManga: Manga, coverImage?: File) => {
-    try {
-      let coverImagePath = updatedManga.coverImage;
-      if (coverImage) {
-        // Create a unique filename using UUID and .jpg extension
-        const uniqueFilename = `${crypto.randomUUID()}.jpg`;
-        coverImagePath = uniqueFilename;
+  const handleBackClick = () => {
+    navigate(-1);
+  };
 
-        // Save the file to the backend's image directory
-        const formData = new FormData();
-        formData.append('file', coverImage);
-        formData.append('filename', uniqueFilename);
+  const handleDeleteClick = () => {
+    setDeleteDialogOpen(true);
+  };
 
-        const response = await fetch('http://localhost:8000/api/v1/images/manga/save', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to save cover image');
-        }
-
-        // Wait for the response to ensure the file is saved
-        const result = await response.json();
-        if (!result.filename) {
-          throw new Error('Failed to get filename from server');
-        }
-        coverImagePath = result.filename;
+  const handleDeleteConfirm = async () => {
+    if (id) {
+      try {
+        await deleteManga(Number(id));
+        navigate("/");
+      } catch (error) {
+        console.error("Failed to delete manga:", error);
       }
+    }
+    setDeleteDialogOpen(false);
+  };
 
-      // Update the manga with the new cover image path
-      const mangaToUpdate = {
-        ...updatedManga,
-        coverImage: coverImagePath
-      };
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+  };
 
-      const savedManga = await updateMangaDetails(mangaToUpdate);
+  const handleSave = async (updatedManga: Manga, coverImage?: File) => {
+    try {
+      const savedManga = await updateMangaDetails(updatedManga, coverImage);
       setManga(savedManga);
       setEditMode(false);
-      alert("Changes saved successfully!");
     } catch (error) {
-      console.error("Error updating manga:", error);
-      alert("Failed to update manga. Please try again.");
+      console.error("Failed to update manga:", error);
     }
   };
 
-  const handleBackClick = () => {
-    navigate("/");
+  const handleCancel = () => {
+    setEditMode(false);
   };
 
   const getStatusColor = (status: string) => {
@@ -128,19 +123,46 @@ const MangaDetails: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Button
-        startIcon={<ArrowBackIcon />}
-        onClick={handleBackClick}
-        sx={{ mb: 3 }}
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={handleBackClick}
+        >
+          Back to Dashboard
+        </Button>
+        <Box>
+          <IconButton onClick={handleToggleEditMode} sx={{ mr: 1 }}>
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={handleDeleteClick} color="error">
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+      </Box>
+
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
       >
-        Back to Dashboard
-      </Button>
+        <DialogTitle>Delete Manga</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete "{manga.title}"? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel}>Cancel</Button>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {editMode ? (
         <MangaForm
           manga={manga}
-          onSave={handleSaveChanges}
-          onCancel={handleToggleEditMode}
+          onSave={handleSave}
+          onCancel={handleCancel}
         />
       ) : (
         <Grid container spacing={3}>
@@ -226,9 +248,6 @@ const MangaDetails: React.FC = () => {
                     </Typography>
                   )}
                 </Box>
-                <IconButton onClick={handleToggleEditMode} color="primary">
-                  <EditIcon />
-                </IconButton>
               </Box>
 
               {/* Status Badges */}

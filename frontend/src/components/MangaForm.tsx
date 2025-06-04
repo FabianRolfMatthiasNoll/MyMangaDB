@@ -11,7 +11,6 @@ import {
   FormControl,
   InputLabel,
   Typography,
-  IconButton,
 } from "@mui/material";
 import { Author, Genre, Manga, ListModel, Category } from "../api/models"; // Import ListModel
 import { OverallStatus, ReadingStatus } from "../api/models";
