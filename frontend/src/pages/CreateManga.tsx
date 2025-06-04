@@ -1,23 +1,21 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Container,
   Box,
   Typography,
   Paper,
   IconButton,
-  useTheme,
-  alpha,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MangaForm from "../components/MangaForm";
 import { Manga, MangaCreate, Category } from "../api/models";
 import { createManga } from "../services/apiService";
-import { getMangaCoverImageUrl } from "../services/apiService";
 
 const CreateManga: React.FC = () => {
   const navigate = useNavigate();
-  const theme = useTheme();
+  const location = useLocation();
+  const [selectedLists, setSelectedLists] = useState<number[]>([]);
 
   const initialManga: Manga = {
     id: 0,
@@ -35,6 +33,15 @@ const CreateManga: React.FC = () => {
     lists: [],
     volumes: [],
   };
+
+  useEffect(() => {
+    // Get listId from URL if present
+    const params = new URLSearchParams(location.search);
+    const listId = params.get('listId');
+    if (listId) {
+      setSelectedLists([Number(listId)]);
+    }
+  }, [location]);
 
   const handleSave = async (manga: Manga, coverImage?: File) => {
     try {
@@ -92,40 +99,34 @@ const CreateManga: React.FC = () => {
     }
   };
 
-  const handleCancel = () => {
-    navigate("/");
-  };
-
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Paper
-        elevation={3}
-        sx={{
-          p: 3,
-          borderRadius: 2,
-          background: theme.palette.mode === "dark"
-            ? alpha(theme.palette.background.paper, 0.8)
-            : alpha(theme.palette.background.paper, 0.9),
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-          <IconButton
-            onClick={handleCancel}
-            sx={{ mr: 2 }}
-            aria-label="back"
-          >
-            <ArrowBackIcon />
-          </IconButton>
-          <Typography variant="h4" component="h1">
-            Create New Manga
-          </Typography>
-        </Box>
-        <MangaForm
-          manga={initialManga}
-          onSave={handleSave}
-          onCancel={handleCancel}
-        />
-      </Paper>
+    <Container maxWidth="md">
+      <Box p={3}>
+        <Paper elevation={0} sx={{ p: 3, backgroundColor: 'transparent' }}>
+          <Box display="flex" alignItems="center" mb={3}>
+            <IconButton 
+              onClick={() => navigate(-1)} 
+              sx={{ 
+                mr: 2,
+                backgroundColor: 'background.paper',
+                '&:hover': { backgroundColor: 'action.hover' }
+              }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+              Add New Manga
+            </Typography>
+          </Box>
+
+          <MangaForm
+            manga={initialManga}
+            onSave={handleSave}
+            onCancel={() => navigate(-1)}
+            initialLists={selectedLists}
+          />
+        </Paper>
+      </Box>
     </Container>
   );
 };

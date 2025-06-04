@@ -12,7 +12,7 @@ import {
   InputLabel,
   Typography,
 } from "@mui/material";
-import { Author, Genre, Manga, ListModel, Category } from "../api/models"; // Import ListModel
+import { Author, Genre, Manga, ListModel, Category } from "../api/models";
 import { OverallStatus, ReadingStatus } from "../api/models";
 import {
   getAvailableAuthors,
@@ -38,38 +38,38 @@ interface MangaFormProps {
   manga: Manga;
   onSave: (manga: Manga, coverImage?: File) => void;
   onCancel: () => void;
+  initialLists?: number[];
 }
 
-const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
+const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel, initialLists = [] }) => {
   const [editableManga, setEditableManga] = useState<Manga>(manga);
   const [availableAuthors, setAvailableAuthors] = useState<Author[]>([]);
   const [availableGenres, setAvailableGenres] = useState<Genre[]>([]);
   const [availableLists, setAvailableLists] = useState<ListModel[]>([]);
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [selectedLists, setSelectedLists] = useState<number[]>(() => {
+    return initialLists.length > 0 ? initialLists : manga.lists.map(list => list.id);
+  });
 
   useEffect(() => {
-    const getAuthors = async () => {
-      const authors = await getAvailableAuthors();
-      setAvailableAuthors(authors);
+    const fetchData = async () => {
+      try {
+        const [authors, genres, lists] = await Promise.all([
+          getAvailableAuthors(),
+          getAvailableGenres(),
+          getAvailableLists()
+        ]);
+        setAvailableAuthors(authors);
+        setAvailableGenres(genres);
+        setAvailableLists(lists);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
-
-    const getGenres = async () => {
-      const genres = await getAvailableGenres();
-      setAvailableGenres(genres);
-    };
-
-    const getLists = async () => {
-      const lists = await getAvailableLists();
-      setAvailableLists(lists);
-    };
-
-    getAuthors();
-    getGenres();
-    getLists();
+    fetchData();
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChange = (field: keyof Manga, value: any) => {
     setEditableManga({ ...editableManga, [field]: value });
   };
@@ -86,15 +86,18 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
     }
   };
 
-  const handleSave = () => {
-    if (!editableManga.title.trim()) {
-      alert("Title is required");
-      return;
-    }
-    onSave(editableManga, coverImage || undefined);
+  const handleListsChange = (_event: React.SyntheticEvent, newValue: ListModel[]) => {
+    setSelectedLists(newValue.map(list => list.id));
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleSave = () => {
+    const mangaToSave = {
+      ...editableManga,
+      lists: availableLists.filter(list => selectedLists.includes(list.id))
+    };
+    onSave(mangaToSave, coverImage || undefined);
+  };
+
   const handleAuthorsChange = (_: any, newValue: any[]) => {
     const authors = newValue.reduce((acc, option) => {
       if (typeof option === "string") {
@@ -114,7 +117,6 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
     handleChange("authors", authors);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleGenresChange = (_: any, newValue: any[]) => {
     const genres = newValue.reduce((acc, option) => {
       if (typeof option === "string") {
@@ -134,26 +136,6 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
     handleChange("genres", genres);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleListsChange = (_: any, newValue: any[]) => {
-    const lists = newValue.reduce((acc, option) => {
-      if (typeof option === "string") {
-        const existingList = availableLists.find(
-          (list) => list.name.toLowerCase() === option.toLowerCase()
-        );
-        if (existingList) {
-          acc.push(existingList);
-        } else {
-          acc.push({ id: 0, name: option });
-        }
-      } else {
-        acc.push(option);
-      }
-      return acc;
-    }, []);
-    handleChange("lists", lists);
-  };
-
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <TextField
@@ -169,7 +151,6 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
         fullWidth
         onChange={(e) => handleChange("japaneseTitle", e.target.value)}
       />
-      {/* TODO:  Correctly filter out duplicates*/}
       <Autocomplete
         multiple
         freeSolo
@@ -228,19 +209,15 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
       />
       <Autocomplete
         multiple
-        freeSolo
         options={availableLists}
-        getOptionLabel={(option) =>
-          typeof option === "string" ? option : option.name
-        }
-        filterSelectedOptions
-        value={editableManga.lists}
+        getOptionLabel={(option) => option.name}
+        value={availableLists.filter(list => selectedLists.includes(list.id))}
         onChange={handleListsChange}
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Lists"
-            placeholder="Add lists"
+            label="Select Lists"
+            margin="normal"
             fullWidth
           />
         )}
@@ -319,7 +296,7 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel }) => {
           onChange={(_e, newValue) => handleChange("starRating", newValue || 0)}
         />
       </Box>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+      <Box>
         <Button
           component="label"
           variant="outlined"

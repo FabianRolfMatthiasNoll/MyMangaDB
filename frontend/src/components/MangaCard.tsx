@@ -15,9 +15,10 @@ import { Link } from "react-router-dom";
 interface MangaCardProps {
   manga: Manga;
   getImageUrl: (filename: string) => string;
+  listId?: number;
 }
 
-const MangaCard: React.FC<MangaCardProps> = ({ manga, getImageUrl }) => {
+const MangaCard: React.FC<MangaCardProps> = ({ manga, getImageUrl, listId }) => {
   const theme = useTheme();
 
   const cardStyles = {
@@ -81,7 +82,7 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, getImageUrl }) => {
   };
 
   return (
-    <Card sx={cardStyles} component={Link} to={`/manga/${manga.id}`}>
+    <Card sx={cardStyles} component={Link} to={`/manga/${manga.id}`} state={listId ? { from: 'list-detail', listId } : undefined}>
       <CardActionArea>
         <Box sx={cardMediaWrapperStyle}>
           <CardMedia

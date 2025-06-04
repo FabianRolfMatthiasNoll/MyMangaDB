@@ -19,9 +19,10 @@ import { Link } from "react-router-dom";
 interface MangaListProps {
   mangas: Manga[];
   isMobile: boolean;
+  listId?: number;
 }
 
-const MangaList: React.FC<MangaListProps> = ({ mangas, isMobile }) => {
+const MangaList: React.FC<MangaListProps> = ({ mangas, isMobile, listId }) => {
   const theme = useTheme();
 
   const getStatusColor = (status: string) => {
@@ -64,6 +65,7 @@ const MangaList: React.FC<MangaListProps> = ({ mangas, isMobile }) => {
                 }}
                 component={Link}
                 to={`/manga/${manga.id}`}
+                state={listId ? { from: 'list-detail', listId } : undefined}
               >
                 <CardMedia
                   component="img"
@@ -148,7 +150,11 @@ const MangaList: React.FC<MangaListProps> = ({ mangas, isMobile }) => {
         <Grid container spacing={2}>
           {mangas.map((manga) => (
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={manga.id}>
-              <MangaCard manga={manga} getImageUrl={getMangaCoverImageUrl} />
+              <MangaCard 
+                manga={manga} 
+                getImageUrl={getMangaCoverImageUrl} 
+                listId={listId}
+              />
             </Grid>
           ))}
         </Grid>

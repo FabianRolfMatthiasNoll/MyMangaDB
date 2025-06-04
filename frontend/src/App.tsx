@@ -12,7 +12,8 @@ import { useMemo, useState } from "react";
 import { deDE } from "@mui/material/locale";
 import Dashboard from "./pages/Dashboard";
 import MangaDetails from "./pages/MangaDetails";
-import ListOverview from "./components/ListOverview";
+import ListsPage from "./pages/ListsPage";
+import ListDetailPage from "./pages/ListDetailPage";
 import MangaListByListId from "./components/MangaListByList";
 import SettingsPage from "./pages/SettingsPage";
 import CreateManga from "./pages/CreateManga";
@@ -49,7 +50,8 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/manga/:id" element={<MangaDetails />} />
             <Route path="/create-manga" element={<CreateManga />} />
-            <Route path="/lists" element={<ListOverview />} />
+            <Route path="/lists" element={<ListsPage />} />
+            <Route path="/lists/:listId" element={<ListDetailPage />} />
             <Route path="/list/:listId" element={<MangaListByListId />} />
             <Route path="/authors" element={<NotFound />} />
             <Route path="/genres" element={<NotFound />} />

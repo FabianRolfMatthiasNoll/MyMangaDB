@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   Container,
   Grid,
@@ -17,6 +17,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
@@ -32,11 +34,21 @@ import MangaForm from "../components/MangaForm";
 
 const MangaDetails: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const theme = useTheme();
   const { id } = useParams<{ id: string }>();
   const [manga, setManga] = useState<Manga | null>(null);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+  const [notification, setNotification] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error';
+  }>({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
 
   useEffect(() => {
     const fetchManga = async () => {
@@ -69,7 +81,11 @@ const MangaDetails: React.FC = () => {
   };
 
   const handleBackClick = () => {
-    navigate(-1);
+    if (location.state?.from === 'list-detail' && location.state?.listId) {
+      navigate(`/lists/${location.state.listId}`);
+    } else {
+      navigate("/");
+    }
   };
 
   const handleDeleteClick = () => {
@@ -97,8 +113,18 @@ const MangaDetails: React.FC = () => {
       const savedManga = await updateMangaDetails(updatedManga, coverImage);
       setManga(savedManga);
       setEditMode(false);
+      setNotification({
+        open: true,
+        message: 'Manga updated successfully',
+        severity: 'success'
+      });
     } catch (error) {
       console.error("Failed to update manga:", error);
+      setNotification({
+        open: true,
+        message: 'Failed to update manga',
+        severity: 'error'
+      });
     }
   };
 
@@ -121,6 +147,10 @@ const MangaDetails: React.FC = () => {
     return statusColors[status] || theme.palette.grey[500];
   };
 
+  const handleCloseNotification = () => {
+    setNotification(prev => ({ ...prev, open: false }));
+  };
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
@@ -128,7 +158,7 @@ const MangaDetails: React.FC = () => {
           startIcon={<ArrowBackIcon />}
           onClick={handleBackClick}
         >
-          Back to Dashboard
+          {location.state?.from === 'list-detail' ? 'Back to List' : 'Back to Dashboard'}
         </Button>
         <Box>
           <IconButton onClick={handleToggleEditMode} sx={{ mr: 1 }}>
@@ -395,6 +425,21 @@ const MangaDetails: React.FC = () => {
           </Grid>
         </Grid>
       )}
+
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={6000}
+        onClose={handleCloseNotification}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseNotification} 
+          severity={notification.severity}
+          sx={{ width: '100%' }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

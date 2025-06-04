@@ -244,3 +244,53 @@ const handleApiError = async (error: unknown) => {
   // Fallback for unknown errors
   alert("An unexpected error occurred. Please try again later.");
 };
+
+export interface ListWithCount {
+  id: number;
+  name: string;
+  mangaCount: number;
+}
+
+export interface List {
+  id: number;
+  name: string;
+}
+
+export const listService = {
+  getAllLists: async (): Promise<List[]> => {
+    const response = await listsApi.getListsApiV1ListsGetAllGet();
+    return response;
+  },
+
+  getListWithCount: async (): Promise<ListWithCount[]> => {
+    const response = await listsApi.getListsWithCountApiV1ListsGetAllWithCountGet();
+    return response as ListWithCount[];
+  },
+
+  getListById: async (listId: number): Promise<List> => {
+    const response = await listsApi.getListApiV1ListsListIdGet({ listId });
+    return response;
+  },
+
+  createList: async (name: string): Promise<List> => {
+    const response = await listsApi.createListApiV1ListsCreatePost({
+      listCreate: { name }
+    });
+    return response;
+  },
+
+  updateList: async (listId: number, name: string): Promise<List> => {
+    const response = await listsApi.updateListApiV1ListsListIdPut({
+      listId,
+      listCreate: { name }
+    });
+    return response;
+  },
+
+  deleteList: async (listId: number): Promise<List> => {
+    const response = await listsApi.deleteListApiV1ListsListIdDelete({
+      listId
+    });
+    return response;
+  }
+};
