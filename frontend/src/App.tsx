@@ -14,7 +14,6 @@ import Dashboard from "./pages/Dashboard";
 import MangaDetails from "./pages/MangaDetails";
 import ListsPage from "./pages/ListsPage";
 import ListDetailPage from "./pages/ListDetailPage";
-import MangaListByListId from "./components/MangaListByList";
 import SettingsPage from "./pages/SettingsPage";
 import CreateManga from "./pages/CreateManga";
 
@@ -52,7 +51,6 @@ function App() {
             <Route path="/create-manga" element={<CreateManga />} />
             <Route path="/lists" element={<ListsPage />} />
             <Route path="/lists/:listId" element={<ListDetailPage />} />
-            <Route path="/list/:listId" element={<MangaListByListId />} />
             <Route path="/authors" element={<NotFound />} />
             <Route path="/genres" element={<NotFound />} />
             <Route path="/settings" element={<SettingsPage />} />

@@ -11,7 +11,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { listService, List, getMangaCoverImageUrl } from "../services/apiService";
+import { listService, List } from "../services/apiService";
 import { Manga } from "../api";
 import { getMangasByListId } from "../services/apiService";
 import MangaList from "../components/MangaList";
