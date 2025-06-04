@@ -30,6 +30,11 @@ export interface GetVolumeCoverImageApiV1ImagesVolumeFilenameGetRequest {
     filename: string;
 }
 
+export interface SaveMangaCoverApiV1ImagesMangaSavePostRequest {
+    file: Blob;
+    filename: string;
+}
+
 /**
  * 
  */
@@ -106,6 +111,75 @@ export class ImagesApi extends runtime.BaseAPI {
      */
     async getVolumeCoverImageApiV1ImagesVolumeFilenameGet(requestParameters: GetVolumeCoverImageApiV1ImagesVolumeFilenameGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
         const response = await this.getVolumeCoverImageApiV1ImagesVolumeFilenameGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Save Manga Cover
+     */
+    async saveMangaCoverApiV1ImagesMangaSavePostRaw(requestParameters: SaveMangaCoverApiV1ImagesMangaSavePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+        if (requestParameters['file'] == null) {
+            throw new runtime.RequiredError(
+                'file',
+                'Required parameter "file" was null or undefined when calling saveMangaCoverApiV1ImagesMangaSavePost().'
+            );
+        }
+
+        if (requestParameters['filename'] == null) {
+            throw new runtime.RequiredError(
+                'filename',
+                'Required parameter "filename" was null or undefined when calling saveMangaCoverApiV1ImagesMangaSavePost().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const consumes: runtime.Consume[] = [
+            { contentType: 'multipart/form-data' },
+        ];
+        // @ts-ignore: canConsumeForm may be unused
+        const canConsumeForm = runtime.canConsumeForm(consumes);
+
+        let formParams: { append(param: string, value: any): any };
+        let useForm = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        useForm = canConsumeForm;
+        if (useForm) {
+            formParams = new FormData();
+        } else {
+            formParams = new URLSearchParams();
+        }
+
+        if (requestParameters['file'] != null) {
+            formParams.append('file', requestParameters['file'] as any);
+        }
+
+        if (requestParameters['filename'] != null) {
+            formParams.append('filename', requestParameters['filename'] as any);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/images/manga/save`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: formParams,
+        }, initOverrides);
+
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<any>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
+    }
+
+    /**
+     * Save Manga Cover
+     */
+    async saveMangaCoverApiV1ImagesMangaSavePost(requestParameters: SaveMangaCoverApiV1ImagesMangaSavePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
+        const response = await this.saveMangaCoverApiV1ImagesMangaSavePostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
