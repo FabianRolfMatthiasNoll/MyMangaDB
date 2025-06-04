@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -19,7 +19,6 @@ import MangaList from "../components/MangaList";
 const ListDetailPage: React.FC = () => {
   const { listId } = useParams<{ listId: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [list, setList] = useState<List | null>(null);
@@ -47,13 +46,7 @@ const ListDetailPage: React.FC = () => {
   }, [listId]);
 
   const handleBack = () => {
-    // If we came from a manga detail page, go back to the list
-    if (location.state?.from === 'manga-detail') {
-      navigate(-1);
-    } else {
-      // Otherwise go to the dashboard
-      navigate('/');
-    }
+    navigate("/lists");
   };
 
   if (loading) {
