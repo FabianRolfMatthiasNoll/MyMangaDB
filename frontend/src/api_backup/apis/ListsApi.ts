@@ -181,7 +181,7 @@ export class ListsApi extends runtime.BaseAPI {
     /**
      * Get Lists With Count
      */
-    async getListsWithCountApiV1ListsGetAllWithCountGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<{ [key: string]: any; }>>> {
+    async getListsWithCountApiV1ListsGetAllWithCountGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<object>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -199,7 +199,7 @@ export class ListsApi extends runtime.BaseAPI {
     /**
      * Get Lists With Count
      */
-    async getListsWithCountApiV1ListsGetAllWithCountGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<{ [key: string]: any; }>> {
+    async getListsWithCountApiV1ListsGetAllWithCountGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<object>> {
         const response = await this.getListsWithCountApiV1ListsGetAllWithCountGetRaw(initOverrides);
         return await response.value();
     }

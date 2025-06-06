@@ -31,12 +31,6 @@ export interface Genre {
      * @memberof Genre
      */
     id: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof Genre
-     */
-    mangaCount?: number;
 }
 
 /**
@@ -60,7 +54,6 @@ export function GenreFromJSONTyped(json: any, ignoreDiscriminator: boolean): Gen
         
         'name': json['name'],
         'id': json['id'],
-        'mangaCount': json['manga_count'] == null ? undefined : json['manga_count'],
     };
 }
 
@@ -77,7 +70,6 @@ export function GenreToJSONTyped(value?: Genre | null, ignoreDiscriminator: bool
         
         'name': value['name'],
         'id': value['id'],
-        'manga_count': value['mangaCount'],
     };
 }
 

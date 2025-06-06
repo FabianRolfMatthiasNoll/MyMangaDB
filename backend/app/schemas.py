@@ -36,6 +36,7 @@ class AuthorCreate(AuthorBase):
 
 class Author(AuthorBase):
     id: int
+    manga_count: int = 0
 
     class Config:
         from_attributes = True
@@ -51,6 +52,7 @@ class GenreCreate(GenreBase):
 
 class Genre(GenreBase):
     id: int
+    manga_count: int = 0
 
     class Config:
         from_attributes = True

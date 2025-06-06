@@ -16,6 +16,10 @@ import ListsPage from "./pages/ListsPage";
 import ListDetailPage from "./pages/ListDetailPage";
 import SettingsPage from "./pages/SettingsPage";
 import CreateManga from "./pages/CreateManga";
+import AuthorsPage from "./pages/AuthorsPage";
+import AuthorDetailPage from "./pages/AuthorDetailPage";
+import GenresPage from "./pages/GenresPage";
+import GenreDetailPage from "./pages/GenreDetailPage";
 
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("dark");
@@ -51,8 +55,10 @@ function App() {
             <Route path="/create-manga" element={<CreateManga />} />
             <Route path="/lists" element={<ListsPage />} />
             <Route path="/lists/:listId" element={<ListDetailPage />} />
-            <Route path="/authors" element={<NotFound />} />
-            <Route path="/genres" element={<NotFound />} />
+            <Route path="/authors" element={<AuthorsPage />} />
+            <Route path="/authors/:authorId" element={<AuthorDetailPage />} />
+            <Route path="/genres" element={<GenresPage />} />
+            <Route path="/genres/:genreId" element={<GenreDetailPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

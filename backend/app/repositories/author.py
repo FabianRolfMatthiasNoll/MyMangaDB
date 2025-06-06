@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from sqlalchemy.orm import Session
 from backend.app.models import Author as AuthorModel
 from backend.app.schemas import Author, AuthorCreate
@@ -10,6 +10,11 @@ class AuthorRepository:
     def get_all(db: Session, skip: int = 0, limit: int = 10) -> List[Author]:
         authors = db.query(AuthorModel).offset(skip).limit(limit).all()
         return [Author.model_validate(author) for author in authors]
+
+    @staticmethod
+    def get_by_id(db: Session, author_id: int) -> Optional[Author]:
+        author = db.query(AuthorModel).filter(AuthorModel.id == author_id).first()
+        return Author.model_validate(author) if author else None
 
     @staticmethod
     def create(db: Session, author: AuthorCreate) -> Author:

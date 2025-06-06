@@ -16,43 +16,37 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Genre
+ * @interface Author
  */
-export interface Genre {
+export interface Author {
     /**
      * 
      * @type {string}
-     * @memberof Genre
+     * @memberof Author
      */
     name: string;
     /**
      * 
      * @type {number}
-     * @memberof Genre
+     * @memberof Author
      */
     id: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof Genre
-     */
-    mangaCount?: number;
 }
 
 /**
- * Check if a given object implements the Genre interface.
+ * Check if a given object implements the Author interface.
  */
-export function instanceOfGenre(value: object): value is Genre {
+export function instanceOfAuthor(value: object): value is Author {
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('id' in value) || value['id'] === undefined) return false;
     return true;
 }
 
-export function GenreFromJSON(json: any): Genre {
-    return GenreFromJSONTyped(json, false);
+export function AuthorFromJSON(json: any): Author {
+    return AuthorFromJSONTyped(json, false);
 }
 
-export function GenreFromJSONTyped(json: any, ignoreDiscriminator: boolean): Genre {
+export function AuthorFromJSONTyped(json: any, ignoreDiscriminator: boolean): Author {
     if (json == null) {
         return json;
     }
@@ -60,15 +54,14 @@ export function GenreFromJSONTyped(json: any, ignoreDiscriminator: boolean): Gen
         
         'name': json['name'],
         'id': json['id'],
-        'mangaCount': json['manga_count'] == null ? undefined : json['manga_count'],
     };
 }
 
-export function GenreToJSON(json: any): Genre {
-    return GenreToJSONTyped(json, false);
+export function AuthorToJSON(json: any): Author {
+    return AuthorToJSONTyped(json, false);
 }
 
-export function GenreToJSONTyped(value?: Genre | null, ignoreDiscriminator: boolean = false): any {
+export function AuthorToJSONTyped(value?: Author | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -77,7 +70,6 @@ export function GenreToJSONTyped(value?: Genre | null, ignoreDiscriminator: bool
         
         'name': value['name'],
         'id': value['id'],
-        'manga_count': value['mangaCount'],
     };
 }
 

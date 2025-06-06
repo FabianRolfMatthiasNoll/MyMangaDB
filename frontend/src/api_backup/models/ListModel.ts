@@ -16,43 +16,37 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Genre
+ * @interface ListModel
  */
-export interface Genre {
+export interface ListModel {
     /**
      * 
      * @type {string}
-     * @memberof Genre
+     * @memberof ListModel
      */
     name: string;
     /**
      * 
      * @type {number}
-     * @memberof Genre
+     * @memberof ListModel
      */
     id: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof Genre
-     */
-    mangaCount?: number;
 }
 
 /**
- * Check if a given object implements the Genre interface.
+ * Check if a given object implements the ListModel interface.
  */
-export function instanceOfGenre(value: object): value is Genre {
+export function instanceOfListModel(value: object): value is ListModel {
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('id' in value) || value['id'] === undefined) return false;
     return true;
 }
 
-export function GenreFromJSON(json: any): Genre {
-    return GenreFromJSONTyped(json, false);
+export function ListModelFromJSON(json: any): ListModel {
+    return ListModelFromJSONTyped(json, false);
 }
 
-export function GenreFromJSONTyped(json: any, ignoreDiscriminator: boolean): Genre {
+export function ListModelFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListModel {
     if (json == null) {
         return json;
     }
@@ -60,15 +54,14 @@ export function GenreFromJSONTyped(json: any, ignoreDiscriminator: boolean): Gen
         
         'name': json['name'],
         'id': json['id'],
-        'mangaCount': json['manga_count'] == null ? undefined : json['manga_count'],
     };
 }
 
-export function GenreToJSON(json: any): Genre {
-    return GenreToJSONTyped(json, false);
+export function ListModelToJSON(json: any): ListModel {
+    return ListModelToJSONTyped(json, false);
 }
 
-export function GenreToJSONTyped(value?: Genre | null, ignoreDiscriminator: boolean = false): any {
+export function ListModelToJSONTyped(value?: ListModel | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -77,7 +70,6 @@ export function GenreToJSONTyped(value?: Genre | null, ignoreDiscriminator: bool
         
         'name': value['name'],
         'id': value['id'],
-        'manga_count': value['mangaCount'],
     };
 }
 

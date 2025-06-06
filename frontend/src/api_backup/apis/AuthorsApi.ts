@@ -32,10 +32,6 @@ export interface CreateAuthorApiV1AuthorsCreatePostRequest {
     authorCreate: AuthorCreate;
 }
 
-export interface GetAuthorApiV1AuthorsAuthorIdGetRequest {
-    authorId: number;
-}
-
 /**
  * 
  */
@@ -100,39 +96,6 @@ export class AuthorsApi extends runtime.BaseAPI {
      */
     async getAllAuthorsApiV1AuthorsGetAllGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Author>> {
         const response = await this.getAllAuthorsApiV1AuthorsGetAllGetRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Get Author
-     */
-    async getAuthorApiV1AuthorsAuthorIdGetRaw(requestParameters: GetAuthorApiV1AuthorsAuthorIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Author>> {
-        if (requestParameters['authorId'] == null) {
-            throw new runtime.RequiredError(
-                'authorId',
-                'Required parameter "authorId" was null or undefined when calling getAuthorApiV1AuthorsAuthorIdGet().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        const response = await this.request({
-            path: `/api/v1/authors/{author_id}`.replace(`{${"author_id"}}`, encodeURIComponent(String(requestParameters['authorId']))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => AuthorFromJSON(jsonValue));
-    }
-
-    /**
-     * Get Author
-     */
-    async getAuthorApiV1AuthorsAuthorIdGet(requestParameters: GetAuthorApiV1AuthorsAuthorIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Author> {
-        const response = await this.getAuthorApiV1AuthorsAuthorIdGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

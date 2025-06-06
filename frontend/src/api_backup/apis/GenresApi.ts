@@ -32,10 +32,6 @@ export interface CreateGenreApiV1GenresCreatePostRequest {
     genreCreate: GenreCreate;
 }
 
-export interface GetGenreApiV1GenresGenreIdGetRequest {
-    genreId: number;
-}
-
 /**
  * 
  */
@@ -100,39 +96,6 @@ export class GenresApi extends runtime.BaseAPI {
      */
     async getAllGenresApiV1GenresGetAllGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Genre>> {
         const response = await this.getAllGenresApiV1GenresGetAllGetRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Get Genre
-     */
-    async getGenreApiV1GenresGenreIdGetRaw(requestParameters: GetGenreApiV1GenresGenreIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Genre>> {
-        if (requestParameters['genreId'] == null) {
-            throw new runtime.RequiredError(
-                'genreId',
-                'Required parameter "genreId" was null or undefined when calling getGenreApiV1GenresGenreIdGet().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        const response = await this.request({
-            path: `/api/v1/genres/{genre_id}`.replace(`{${"genre_id"}}`, encodeURIComponent(String(requestParameters['genreId']))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => GenreFromJSON(jsonValue));
-    }
-
-    /**
-     * Get Genre
-     */
-    async getGenreApiV1GenresGenreIdGet(requestParameters: GetGenreApiV1GenresGenreIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Genre> {
-        const response = await this.getGenreApiV1GenresGenreIdGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

@@ -31,6 +31,12 @@ export interface Author {
      * @memberof Author
      */
     id: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof Author
+     */
+    mangaCount?: number;
 }
 
 /**
@@ -54,6 +60,7 @@ export function AuthorFromJSONTyped(json: any, ignoreDiscriminator: boolean): Au
         
         'name': json['name'],
         'id': json['id'],
+        'mangaCount': json['manga_count'] == null ? undefined : json['manga_count'],
     };
 }
 
@@ -70,6 +77,7 @@ export function AuthorToJSONTyped(value?: Author | null, ignoreDiscriminator: bo
         
         'name': value['name'],
         'id': value['id'],
+        'manga_count': value['mangaCount'],
     };
 }
 

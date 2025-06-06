@@ -7,6 +7,7 @@ from backend.app.models import (
     Genre as GenreModel,
     Volume as VolumeModel,
     List as ListModel,
+    manga_genre,
 )
 from backend.app.schemas import MangaCreate, Manga
 from .base import BaseRepository, RepositoryError
@@ -113,6 +114,14 @@ class MangaRepository(BaseRepository):
         db.add(db_manga)
         BaseRepository.commit_session(db)
         db.refresh(db_manga)
+
+        # Update manga counts
+        for author in authors:
+            author.manga_count = len(author.mangas)
+        for genre in genres:
+            genre.manga_count = len(genre.mangas)
+        BaseRepository.commit_session(db)
+
         return Manga.model_validate(db_manga)
 
     @staticmethod
@@ -120,6 +129,10 @@ class MangaRepository(BaseRepository):
         db_manga = db.query(MangaModel).filter(MangaModel.id == manga_data.id).first()
         if not db_manga:
             raise RepositoryError("Manga not found")
+
+        # Store old authors and genres for count update
+        old_authors = set(db_manga.authors)
+        old_genres = set(db_manga.genres)
 
         # Handle cover image update
         if manga_data.cover_image != db_manga.cover_image:
@@ -167,6 +180,17 @@ class MangaRepository(BaseRepository):
 
         BaseRepository.commit_session(db)
         db.refresh(db_manga)
+
+        # Update manga counts for both old and new authors/genres
+        all_authors = set(db_manga.authors) | old_authors
+        all_genres = set(db_manga.genres) | old_genres
+
+        for author in all_authors:
+            author.manga_count = len(author.mangas)
+        for genre in all_genres:
+            genre.manga_count = len(genre.mangas)
+        BaseRepository.commit_session(db)
+
         return Manga.model_validate(db_manga)
 
     @staticmethod
@@ -174,6 +198,11 @@ class MangaRepository(BaseRepository):
         db_manga = db.query(MangaModel).filter(MangaModel.id == manga_id).first()
         if not db_manga:
             raise RepositoryError("Manga not found")
+
+        # Store authors and genres for count update
+        authors = set(db_manga.authors)
+        genres = set(db_manga.genres)
+
         # Remove the cover image file if it exists.
         if db_manga.cover_image is not None:
             cover_path = os.path.join(
@@ -184,8 +213,17 @@ class MangaRepository(BaseRepository):
                     os.remove(cover_path)
                 except Exception as e:
                     logger.warning("Failed to remove cover image file: %s", e)
+
         db.delete(db_manga)
         BaseRepository.commit_session(db)
+
+        # Update manga counts
+        for author in authors:
+            author.manga_count = len(author.mangas)
+        for genre in genres:
+            genre.manga_count = len(genre.mangas)
+        BaseRepository.commit_session(db)
+
         return Manga.model_validate(db_manga)
 
     @staticmethod
