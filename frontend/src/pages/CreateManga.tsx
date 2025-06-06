@@ -10,7 +10,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MangaForm from "../components/MangaForm";
 import { Manga, MangaCreate, Category } from "../api/models";
-import { createManga } from "../services/apiService";
+import { createManga } from "../services/mangaService";
 
 const CreateManga: React.FC = () => {
   const navigate = useNavigate();

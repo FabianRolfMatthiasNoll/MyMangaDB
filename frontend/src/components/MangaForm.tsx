@@ -14,11 +14,9 @@ import {
 } from "@mui/material";
 import { Author, Genre, Manga, ListModel, Category } from "../api/models";
 import { OverallStatus, ReadingStatus } from "../api/models";
-import {
-  getAvailableAuthors,
-  getAvailableGenres,
-  getAvailableLists,
-} from "../services/apiService";
+import { getAvailableAuthors } from "../services/authorService";
+import { getAvailableGenres } from "../services/genreService";
+import { getAllLists } from "../services/listService";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 
@@ -58,7 +56,7 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel, initialL
         const [authors, genres, lists] = await Promise.all([
           getAvailableAuthors(),
           getAvailableGenres(),
-          getAvailableLists()
+          getAllLists()
         ]);
         setAvailableAuthors(authors);
         setAvailableGenres(genres);

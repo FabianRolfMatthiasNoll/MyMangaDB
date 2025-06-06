@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { Manga } from "../api/models";
 import MangaCard from "./MangaCard";
-import { getMangaCoverImageUrl } from "../services/apiService";
+import { getMangaCoverImageUrl } from "../services/imageService";
 import { Link } from "react-router-dom";
 
 interface MangaListProps {

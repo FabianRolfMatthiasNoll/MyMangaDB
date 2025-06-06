@@ -10,7 +10,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
-import { getMangas } from "../services/apiService";
+import { getMangas } from "../services/mangaService";
 import { Manga } from "../api/models";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useTheme } from "@mui/material/styles";
@@ -35,7 +35,7 @@ const Dashboard: React.FC = () => {
   const [showSecondaryFabs, setShowSecondaryFabs] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  const limit = 10;
+  const limit = 20;
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -45,15 +45,15 @@ const Dashboard: React.FC = () => {
     try {
       const nextPage = reset ? 1 : page;
       const newMangas = await getMangas(nextPage, limit, searchQuery, sortOrder);
-      setMangas((prevMangas) =>
-        reset ? newMangas : [...prevMangas, ...newMangas]
-      );
-      setPage(nextPage + 1);
-      if (newMangas.length < limit) {
-        setHasMore(false);
+      
+      if (reset || nextPage === 1) {
+        setMangas(newMangas);
       } else {
-        setHasMore(true);
+        setMangas(prevMangas => [...prevMangas, ...newMangas]);
       }
+      
+      setPage(nextPage + 1);
+      setHasMore(newMangas.length === limit);
     } catch (error) {
       console.error("Failed to fetch mangas", error);
       setHasMore(false);

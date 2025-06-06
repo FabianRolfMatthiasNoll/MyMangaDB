@@ -22,11 +22,8 @@ import {
   Skeleton,
   CircularProgress,
 } from "@mui/material";
-import {
-  getSources,
-  getSearchResults,
-  createManga,
-} from "../services/apiService";
+import { getSources, getSearchResults } from "../services/sourceService";
+import { createManga } from "../services/mangaService";
 import { Source, MangaCreate } from "../api/models";
 
 interface AutomaticSearchModalProps {

@@ -23,12 +23,8 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  getMangaCoverImageUrl,
-  getMangaDetails,
-  updateMangaDetails,
-  deleteManga,
-} from "../services/apiService";
+import { getMangaCoverImageUrl } from "../services/imageService";
+import { getMangaDetails, updateMangaDetails, deleteManga } from "../services/mangaService";
 import { Manga } from "../api/models";
 import MangaForm from "../components/MangaForm";
 

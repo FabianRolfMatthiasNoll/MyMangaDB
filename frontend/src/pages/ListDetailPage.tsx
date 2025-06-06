@@ -11,9 +11,9 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { listService, List } from "../services/apiService";
-import { Manga } from "../api";
-import { getMangasByListId } from "../services/apiService";
+import { getListById, updateList, deleteList } from "../services/listService";
+import { Manga, ListModel } from "../api/models";
+import { getMangasByListId } from "../services/mangaService";
 import MangaList from "../components/MangaList";
 
 const ListDetailPage: React.FC = () => {
@@ -21,7 +21,7 @@ const ListDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [list, setList] = useState<List | null>(null);
+  const [list, setList] = useState<ListModel | null>(null);
   const [mangas, setMangas] = useState<Manga[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,7 +30,7 @@ const ListDetailPage: React.FC = () => {
       try {
         setLoading(true);
         if (listId) {
-          const listResponse = await listService.getListById(Number(listId));
+          const listResponse = await getListById(Number(listId));
           setList(listResponse);
           const mangasResponse = await getMangasByListId(Number(listId));
           setMangas(mangasResponse);

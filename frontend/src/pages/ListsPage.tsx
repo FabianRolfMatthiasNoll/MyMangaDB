@@ -19,7 +19,7 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
-import { listService, ListWithCount } from "../services/apiService";
+import { getListWithCount, createList, updateList, deleteList, ListWithCount } from "../services/listService";
 
 const ListsPage: React.FC = () => {
   const [lists, setLists] = useState<ListWithCount[]>([]);
@@ -32,7 +32,7 @@ const ListsPage: React.FC = () => {
   const fetchLists = async () => {
     try {
       setLoading(true);
-      const response = await listService.getListWithCount();
+      const response = await getListWithCount();
       setLists(response);
     } catch (error) {
       console.error("Error fetching lists:", error);
@@ -65,9 +65,9 @@ const ListsPage: React.FC = () => {
   const handleSaveList = async () => {
     try {
       if (editingList) {
-        await listService.updateList(editingList.id, listName);
+        await updateList(editingList.id, listName);
       } else {
-        await listService.createList(listName);
+        await createList(listName);
       }
       handleCloseDialog();
       fetchLists();
@@ -79,7 +79,7 @@ const ListsPage: React.FC = () => {
   const handleDeleteList = async (listId: number) => {
     if (window.confirm("Are you sure you want to delete this list?")) {
       try {
-        await listService.deleteList(listId);
+        await deleteList(listId);
         fetchLists();
       } catch (error) {
         console.error("Error deleting list:", error);
