@@ -14,6 +14,8 @@ import {
   Grid,
   Container,
   Tooltip,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -28,6 +30,8 @@ const ListsPage: React.FC = () => {
   const [listName, setListName] = useState("");
   const [editingList, setEditingList] = useState<{ id: number; name: string } | null>(null);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const fetchLists = async () => {
     try {
@@ -101,27 +105,29 @@ const ListsPage: React.FC = () => {
 
   return (
     <Container maxWidth="lg">
-      <Box p={3}>
-        <Paper elevation={0} sx={{ p: 3, mb: 4, backgroundColor: 'transparent' }}>
+      <Box p={isMobile ? 2 : 3}>
+        <Paper elevation={0} sx={{ p: isMobile ? 2 : 3, mb: 4, backgroundColor: 'transparent' }}>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-            <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+            <Typography variant={isMobile ? "h5" : "h4"} sx={{ fontWeight: 'bold' }}>
               My Lists
             </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              onClick={() => handleOpenDialog()}
-              sx={{
-                px: 3,
-                py: 1,
-                borderRadius: 2,
-                textTransform: 'none',
-                fontSize: '1rem'
-              }}
-            >
-              Create New List
-            </Button>
+            {lists.length > 0 && (
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={() => handleOpenDialog()}
+                sx={{
+                  px: isMobile ? 2 : 3,
+                  py: isMobile ? 0.5 : 1,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontSize: isMobile ? '0.875rem' : '1rem'
+                }}
+              >
+                Create New List
+              </Button>
+            )}
           </Box>
 
           {lists.length === 0 ? (
@@ -147,24 +153,24 @@ const ListsPage: React.FC = () => {
                 startIcon={<AddIcon />}
                 onClick={() => handleOpenDialog()}
                 sx={{ 
-                  px: 4,
-                  py: 1.5,
+                  px: isMobile ? 3 : 4,
+                  py: isMobile ? 1 : 1.5,
                   borderRadius: 2,
                   textTransform: 'none',
-                  fontSize: '1.1rem'
+                  fontSize: isMobile ? '1rem' : '1.1rem'
                 }}
               >
                 Create Your First List
               </Button>
             </Box>
           ) : (
-            <Grid container spacing={3}>
+            <Grid container spacing={isMobile ? 2 : 3}>
               {lists.map((list) => (
                 <Grid item xs={12} sm={6} md={4} key={list.id}>
                   <Paper
                     elevation={2}
                     sx={{
-                      p: 3,
+                      p: isMobile ? 2 : 3,
                       cursor: "pointer",
                       transition: "transform 0.2s, box-shadow 0.2s",
                       "&:hover": {
@@ -181,7 +187,7 @@ const ListsPage: React.FC = () => {
                     >
                       <Box>
                         <Typography 
-                          variant="h6" 
+                          variant={isMobile ? "subtitle1" : "h6"} 
                           sx={{ 
                             fontWeight: 'bold',
                             mb: 1
@@ -247,7 +253,7 @@ const ListsPage: React.FC = () => {
           PaperProps={{
             sx: {
               borderRadius: 2,
-              minWidth: '400px'
+              minWidth: isMobile ? '90%' : '400px'
             }
           }}
         >
