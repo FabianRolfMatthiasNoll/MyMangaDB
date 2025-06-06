@@ -82,45 +82,79 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <Container
-      maxWidth={false}
+    <Box
       sx={{
-        marginTop: { xs: 0, md: 2, lg: 2, xl: 2 },
+        display: 'flex',
+        flexDirection: 'column',
+        height: 'calc(100vh - 64px)', // Subtract header height
+        overflow: 'hidden',
+        width: '100%',
       }}
     >
-      <SearchBar
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        sortOrder={sortOrder}
-        setSortOrder={setSortOrder}
-        toggleAdvancedFilters={() =>
-          setShowAdvancedFilters(!showAdvancedFilters)
-        }
-      />
-      {showAdvancedFilters && (
-        <AdvancedFilters
-          filterCategory={filterCategory}
-          setFilterCategory={setFilterCategory}
-          filterReadingStatus={filterReadingStatus}
-          setFilterReadingStatus={setFilterReadingStatus}
-          filterOverallStatus={filterOverallStatus}
-          setFilterOverallStatus={setFilterOverallStatus}
-          ratingRange={ratingRange}
-          setRatingRange={setRatingRange}
-          resetFilters={resetFilters}
+      <Container
+        maxWidth={false}
+        disableGutters
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          width: '100%',
+          px: { xs: 2, sm: 3, md: 4 },
+          pt: { xs: 2, sm: 3 },
+          pb: 2,
+        }}
+      >
+        <SearchBar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          sortOrder={sortOrder}
+          setSortOrder={setSortOrder}
+          toggleAdvancedFilters={() =>
+            setShowAdvancedFilters(!showAdvancedFilters)
+          }
         />
-      )}
-      <Box sx={{ overflowY: "auto", height: "100vh" }}>
-        <InfiniteScroll
-          dataLength={mangas.length}
-          next={fetchMoreMangas}
-          hasMore={hasMore}
-          scrollThreshold={0.9}
-          loader={<></>}
+        {showAdvancedFilters && (
+          <AdvancedFilters
+            filterCategory={filterCategory}
+            setFilterCategory={setFilterCategory}
+            filterReadingStatus={filterReadingStatus}
+            setFilterReadingStatus={setFilterReadingStatus}
+            filterOverallStatus={filterOverallStatus}
+            setFilterOverallStatus={setFilterOverallStatus}
+            ratingRange={ratingRange}
+            setRatingRange={setRatingRange}
+            resetFilters={resetFilters}
+          />
+        )}
+        <Box
+          sx={{
+            flex: 1,
+            overflow: 'auto',
+            mt: 2,
+            width: '100%',
+            '&::-webkit-scrollbar': {
+              width: '8px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: 'transparent',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+              borderRadius: '4px',
+            },
+          }}
         >
-          <MangaList mangas={mangas} isMobile={isMobile} />
-        </InfiniteScroll>
-      </Box>
+          <InfiniteScroll
+            dataLength={mangas.length}
+            next={fetchMoreMangas}
+            hasMore={hasMore}
+            scrollThreshold={0.9}
+            loader={<></>}
+          >
+            <MangaList mangas={mangas} isMobile={isMobile} />
+          </InfiniteScroll>
+        </Box>
+      </Container>
 
       <Box
         sx={{
@@ -187,8 +221,14 @@ const Dashboard: React.FC = () => {
       <AutomaticSearchModal
         open={showModal}
         onClose={() => setShowModal(false)}
+        onMangaAdded={() => {
+          setMangas([]);
+          setPage(1);
+          setHasMore(true);
+          fetchMangas(true);
+        }}
       />
-    </Container>
+    </Box>
   );
 };
 
