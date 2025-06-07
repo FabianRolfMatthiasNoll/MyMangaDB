@@ -106,6 +106,13 @@ class Source(Base):
     language = Column(String)
 
 
+class Settings(Base):
+    __tablename__ = "settings"
+    id = Column(Integer, primary_key=True, index=True)
+    key = Column(String, unique=True, index=True)
+    value = Column(String)
+
+
 Author.mangas = relationship("Manga", secondary=manga_author, back_populates="authors")
 Genre.mangas = relationship("Manga", secondary=manga_genre, back_populates="genres")
 List.mangas = relationship("Manga", secondary=manga_list, back_populates="lists")

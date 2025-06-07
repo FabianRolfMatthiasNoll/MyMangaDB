@@ -134,3 +134,15 @@ class Source(SourceBase):
 
     class Config:
         from_attributes = True
+
+
+class SettingsBase(BaseModel):
+    key: str
+    value: str
+
+
+class Settings(SettingsBase):
+    id: int
+
+    class Config:
+        from_attributes = True
