@@ -3,9 +3,41 @@ from fastapi.middleware.cors import CORSMiddleware
 from .api.v1 import api_router
 from . import models
 from .database import engine
+from backend.config import get_default_paths, save_config
+from .repositories.source import SourceRepository
+from .schemas import SourceCreate
+from sqlalchemy.orm import Session
+from .database import SessionLocal
+import os
 
-# Create all database tables
-models.Base.metadata.create_all(bind=engine)
+def initialize_application():
+    # Create config if it doesn't exist
+    config = get_default_paths()
+    save_config(config)
+    
+    # Create database directory if it doesn't exist
+    db_dir = os.path.dirname(config["database_path"])
+    os.makedirs(db_dir, exist_ok=True)
+    
+    # Create images directory if it doesn't exist
+    os.makedirs(config["image_path"], exist_ok=True)
+    
+    # Create database tables
+    models.Base.metadata.create_all(bind=engine)
+    
+    # Initialize default sources if they don't exist
+    db = SessionLocal()
+    try:
+        sources = SourceRepository.get_all(db)
+        if not sources:
+            # Add default sources
+            default_sources = [
+                SourceCreate(name="MangaPassion", language="DE")
+            ]
+            for source in default_sources:
+                SourceRepository.create(db, source)
+    finally:
+        db.close()
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -21,6 +53,10 @@ app.add_middleware(
 
 app.include_router(api_router, prefix="/api/v1")
 
+# Initialize application on startup
+@app.on_event("startup")
+async def startup_event():
+    initialize_application()
 
 @app.get("/")
 def read_root():
