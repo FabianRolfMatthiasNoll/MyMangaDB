@@ -5,4 +5,5 @@ export * from './genreService';
 export * from './imageService';
 export * from './listService';
 export * from './mangaService';
-export * from './sourceService'; 
+export * from './sourceService';
+export * from './settingsService'; 

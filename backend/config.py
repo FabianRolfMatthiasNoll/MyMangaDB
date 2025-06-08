@@ -1,11 +1,8 @@
 import os
 import json
 import sys
-from pathlib import Path
 
-CONFIG_FILE = "config.json"
-
-def get_default_paths():
+def get_config_dir():
     # Get the user's home directory
     home_path = os.path.expanduser("~")
     
@@ -22,6 +19,10 @@ def get_default_paths():
     
     # Create the base directory if it doesn't exist
     os.makedirs(base_dir, exist_ok=True)
+    return base_dir
+
+def get_default_paths():
+    base_dir = get_config_dir()
     
     # Set up paths for database and images
     db_path = os.path.join(base_dir, "MyMangaDB.db")
@@ -35,8 +36,11 @@ def get_default_paths():
         "image_path": image_path
     }
 
+def get_config_path():
+    return os.path.join(get_config_dir(), "config.json")
+
 def load_config():
-    config_path = os.path.join(os.path.dirname(__file__), CONFIG_FILE)
+    config_path = get_config_path()
     if os.path.exists(config_path):
         try:
             with open(config_path, 'r') as f:
@@ -47,7 +51,7 @@ def load_config():
     return get_default_paths()
 
 def save_config(config):
-    config_path = os.path.join(os.path.dirname(__file__), CONFIG_FILE)
+    config_path = get_config_path()
     with open(config_path, 'w') as f:
         json.dump(config, f, indent=4)
 

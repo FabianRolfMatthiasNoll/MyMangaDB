@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .api.v1 import api_router
 from . import models
 from .database import engine
-from backend.config import get_default_paths, save_config
+from backend.config import get_default_paths, save_config, get_config_path
 from .repositories.source import SourceRepository
 from .schemas import SourceCreate
 from sqlalchemy.orm import Session
@@ -11,9 +11,12 @@ from .database import SessionLocal
 import os
 
 def initialize_application():
-    # Create config if it doesn't exist
-    config = get_default_paths()
-    save_config(config)
+    # Only create default config if none exists
+    if not os.path.exists(get_config_path()):
+        config = get_default_paths()
+        save_config(config)
+    else:
+        config = get_default_paths()  # Still need this for directory creation
     
     # Create database directory if it doesn't exist
     db_dir = os.path.dirname(config["database_path"])

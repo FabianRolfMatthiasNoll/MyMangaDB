@@ -1,12 +1,21 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks
-from typing import Dict
 import os
 import shutil
 import sys
-import subprocess
-from backend.config import load_config, save_config, get_default_paths
+from backend.config import load_config, save_config
+from backend.app.database import engine, SessionLocal
+from sqlalchemy import create_engine
 
 router = APIRouter()
+
+def update_database_engine(new_path: str):
+    """Update the database engine with a new path"""
+    global engine
+    new_url = f"sqlite:///{new_path}"
+    new_engine = create_engine(new_url, connect_args={"check_same_thread": False})
+    engine.dispose()  # Close all connections
+    engine = new_engine
+    SessionLocal.configure(bind=engine)
 
 @router.get("/getAll")
 def get_all_settings():
@@ -42,8 +51,12 @@ def create_or_update_setting(key: str, value: str, migrate: bool = False, backgr
                 os.makedirs(os.path.dirname(value), exist_ok=True)
                 # Copy the database file
                 shutil.copy2(old_value, value)
+                # Delete the old database file
+                os.remove(old_value)
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"Failed to migrate database: {str(e)}")
+        # Update the database engine
+        update_database_engine(value)
     
     # Handle image path change
     elif key == "image_path" and old_value and old_value != value:
@@ -61,17 +74,14 @@ def create_or_update_setting(key: str, value: str, migrate: bool = False, backgr
                         shutil.copytree(s, d, dirs_exist_ok=True)
                     else:
                         shutil.copy2(s, d)
+                # Delete the old images directory
+                shutil.rmtree(old_value)
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"Failed to migrate images: {str(e)}")
     
     # Update the config
     config[key] = value
     save_config(config)
-    
-    # If this is a path change, schedule a restart
-    if key in ["database_path", "image_path"] and old_value != value:
-        if background_tasks:
-            background_tasks.add_task(restart_backend)
     
     return {key: value}
 
