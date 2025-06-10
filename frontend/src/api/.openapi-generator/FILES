@@ -1,4 +1,5 @@
 apis/AuthorsApi.ts
+apis/DatabaseApi.ts
 apis/DefaultApi.ts
 apis/GenresApi.ts
 apis/ImagesApi.ts

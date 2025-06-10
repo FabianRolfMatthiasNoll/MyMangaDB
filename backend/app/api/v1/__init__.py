@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from .endpoints import manga, source, author, genre, image, list, settings
+from .endpoints import manga, source, author, genre, image, list, settings, database
 
 api_router = APIRouter()
 api_router.include_router(manga.router, prefix="/mangas", tags=["Mangas"])
@@ -10,3 +10,4 @@ api_router.include_router(genre.router, prefix="/genres", tags=["Genres"])
 api_router.include_router(image.router, prefix="/images", tags=["Images"])
 api_router.include_router(list.router, prefix="/lists", tags=["Lists"])
 api_router.include_router(settings.router, prefix="/settings", tags=["Settings"])
+api_router.include_router(database.router, prefix="/database", tags=["Database"])

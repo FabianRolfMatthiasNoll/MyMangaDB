@@ -18,6 +18,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { getSettings, updateSetting, Settings } from "../services/settingsService";
+import DatabaseOperations from "../components/DatabaseOperations";
 
 const SettingsPage: React.FC = () => {
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -174,6 +175,8 @@ const SettingsPage: React.FC = () => {
             </Box>
           </Box>
         </Paper>
+
+        <DatabaseOperations />
 
         <Dialog open={migrateDialogOpen} onClose={handleMigrateCancel}>
           <DialogTitle>Migrate Data</DialogTitle>
