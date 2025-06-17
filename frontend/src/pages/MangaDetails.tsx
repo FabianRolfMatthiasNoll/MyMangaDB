@@ -23,7 +23,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { getMangaCoverImageUrl } from "../services/imageService";
+import { fetchMangaCoverImageAsBlobUrl } from "../services/imageService";
 import { getMangaDetails, updateMangaDetails, deleteManga } from "../services/mangaService";
 import { Manga } from "../api/models";
 import MangaForm from "../components/MangaForm";
@@ -34,6 +34,7 @@ const MangaDetails: React.FC = () => {
   const theme = useTheme();
   const { id } = useParams<{ id: string }>();
   const [manga, setManga] = useState<Manga | null>(null);
+  const [imageUrl, setImageUrl] = useState<string>("");
   const [editMode, setEditMode] = useState<boolean>(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [notification, setNotification] = useState<{
@@ -56,6 +57,27 @@ const MangaDetails: React.FC = () => {
 
     fetchManga();
   }, [id]);
+
+  useEffect(() => {
+    if (manga && manga.coverImage) {
+      let isMounted = true;
+      const fetchImage = async () => {
+        const url = await fetchMangaCoverImageAsBlobUrl(manga.coverImage!);
+        if (isMounted) {
+          setImageUrl(url);
+        }
+      };
+
+      fetchImage();
+
+      return () => {
+        isMounted = false;
+        if (imageUrl) {
+          URL.revokeObjectURL(imageUrl);
+        }
+      };
+    }
+  }, [manga?.coverImage]);
 
   if (!manga) {
     return (
@@ -215,7 +237,7 @@ const MangaDetails: React.FC = () => {
                   }}
                 >
                   <img
-                    src={getMangaCoverImageUrl(manga.coverImage)}
+                    src={imageUrl}
                     alt={manga.title}
                     style={{
                       position: "absolute",

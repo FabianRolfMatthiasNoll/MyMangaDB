@@ -4,6 +4,7 @@ volumes:
   database:
   letsencrypt:
 
+
 services:
   traefik:
     image: "traefik:v2.11"
@@ -38,8 +39,8 @@ services:
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls.certresolver=myresolver"
     environment:
-      API_TOKEN: "SOME_TOKEN_HERE"
-      API_URL: "https://<BackendDomain>"
+      VITE_API_KEY: ${API_TOKEN}
+      VITE_API_URL: https://<BackendDomain>
       AUTH_PWD: "<SomePassword>"
 
   backend:
@@ -51,7 +52,7 @@ services:
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=myresolver"
     environment:
-      API_TOKEN: "SOME_TOKEN_HERE"
-      DOCKER_MODE: "true"
+      API_TOKEN: ${API_TOKEN}
+      FRONTEND_URL: https://<FrontendDomain>
     volumes:
       - database:/app/data

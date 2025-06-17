@@ -32,7 +32,7 @@ export interface ImportDatabaseApiV1DatabaseImportPostRequest {
 export class DatabaseApi extends runtime.BaseAPI {
 
     /**
-     * Export the database and images as a ZIP file.  Returns:     FileResponse: A ZIP file containing the database and images.     The response will have the following headers:     - Content-Type: application/zip     - Content-Disposition: attachment; filename=\"mangadb_export.zip\"
+     * Export the database and images as a ZIP file.  Returns:     Response: A ZIP file containing the database and images.     The response will have the following headers:     - Content-Type: application/zip     - Content-Disposition: attachment; filename=\"mangadb_export.zip\"
      * Export Database
      */
     async exportDatabaseApiV1DatabaseExportGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -51,7 +51,7 @@ export class DatabaseApi extends runtime.BaseAPI {
     }
 
     /**
-     * Export the database and images as a ZIP file.  Returns:     FileResponse: A ZIP file containing the database and images.     The response will have the following headers:     - Content-Type: application/zip     - Content-Disposition: attachment; filename=\"mangadb_export.zip\"
+     * Export the database and images as a ZIP file.  Returns:     Response: A ZIP file containing the database and images.     The response will have the following headers:     - Content-Type: application/zip     - Content-Disposition: attachment; filename=\"mangadb_export.zip\"
      * Export Database
      */
     async exportDatabaseApiV1DatabaseExportGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {

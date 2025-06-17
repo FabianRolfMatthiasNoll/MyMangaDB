@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardMedia,
@@ -11,15 +11,37 @@ import {
 } from "@mui/material";
 import { Manga } from "../api/models";
 import { Link } from "react-router-dom";
+import { fetchMangaCoverImageAsBlobUrl } from "../services/imageService";
 
 interface MangaCardProps {
   manga: Manga;
-  getImageUrl: (filename: string) => string;
   listId?: number;
 }
 
-const MangaCard: React.FC<MangaCardProps> = ({ manga, getImageUrl, listId }) => {
+const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
   const theme = useTheme();
+  const [imageUrl, setImageUrl] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchImage = async () => {
+      if (manga.coverImage) {
+        const url = await fetchMangaCoverImageAsBlobUrl(manga.coverImage);
+        if (isMounted) {
+          setImageUrl(url);
+        }
+      }
+    };
+
+    fetchImage();
+
+    return () => {
+      isMounted = false;
+      if (imageUrl) {
+        URL.revokeObjectURL(imageUrl);
+      }
+    };
+  }, [manga.coverImage]);
 
   const cardStyles = {
     maxWidth: 350,
@@ -87,7 +109,7 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, getImageUrl, listId }) => 
         <Box sx={cardMediaWrapperStyle}>
           <CardMedia
             component="img"
-            image={getImageUrl(manga.coverImage || "")}
+            image={imageUrl}
             alt="manga cover"
             sx={cardMediaStyle}
           />

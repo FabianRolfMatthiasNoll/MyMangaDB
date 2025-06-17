@@ -1,13 +1,8 @@
 import { apiCallWrapper } from "./errorService";
-import { API_BASE_URL } from "./config";
+import { configuration } from "./config";
 import { SettingsApi } from "../api/apis/SettingsApi";
-import { Configuration } from "../api/runtime";
 
-const apiConfig = new Configuration({
-  basePath: API_BASE_URL
-});
-
-const settingsApi = new SettingsApi(apiConfig);
+const settingsApi = new SettingsApi(configuration);
 
 export interface Settings {
   database_path: string;
