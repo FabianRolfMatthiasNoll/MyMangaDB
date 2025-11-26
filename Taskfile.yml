@@ -1,0 +1,105 @@
+version: '3'
+
+tasks:
+  default:
+    desc: Run the development environment (backend + frontend)
+    cmds:
+      - task: dev
+
+  setup:
+    desc: Install all dependencies and setup environment
+    cmds:
+      - task: setup:env
+      - task: backend:install
+      - task: frontend:install
+
+  setup:env:
+    desc: Generate .env files with API keys
+    cmds:
+      - python3 setup_dev.py
+
+  dev:
+    desc: Run both backend and frontend in parallel
+    deps: [backend:run, frontend:run]
+
+  # Backend Tasks
+  backend:install:
+    desc: Create virtual environment and install backend dependencies
+    dir: backend
+    cmds:
+      - test -d .venv || python3 -m venv .venv
+      - .venv/bin/pip install --upgrade pip
+      - .venv/bin/pip install -r requirements.txt
+    sources:
+      - requirements.txt
+
+  backend:run:
+    desc: Run the FastAPI backend server
+    dir: backend
+    cmds:
+      - .venv/bin/uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+  backend:lint:
+    desc: Run linting checks for backend (placeholder)
+    dir: backend
+    cmds:
+      - echo "No linting configured yet. Consider adding flake8 or black."
+
+  # Frontend Tasks
+  frontend:install:
+    desc: Install frontend Node.js dependencies
+    dir: frontend
+    cmds:
+      - npm install
+    sources:
+      - package.json
+      - package-lock.json
+    generates:
+      - node_modules/.package-lock.json
+
+  frontend:run:
+    desc: Run the Vite frontend development server
+    dir: frontend
+    cmds:
+      - npm run dev
+
+  frontend:build:
+    desc: Build the frontend for production
+    dir: frontend
+    cmds:
+      - npm run build
+
+  frontend:lint:
+    desc: Run frontend linter
+    dir: frontend
+    cmds:
+      - npm run lint
+
+  # Docker Tasks
+  docker:build:
+    desc: Build docker images
+    cmds:
+      - docker-compose build
+
+  docker:up:
+    desc: Start services in background
+    cmds:
+      - docker-compose up -d
+
+  docker:down:
+    desc: Stop and remove services
+    cmds:
+      - docker-compose down
+
+  docker:logs:
+    desc: Follow docker logs
+    cmds:
+      - docker-compose logs -f
+
+  # Utility Tasks
+  clean:
+    desc: Clean up generated files and artifacts
+    cmds:
+      - rm -rf backend/.venv
+      - rm -rf frontend/node_modules
+      - rm -rf frontend/dist
