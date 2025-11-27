@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 tasks:
   default:
@@ -16,7 +16,43 @@ tasks:
   setup:env:
     desc: Generate .env files with API keys
     cmds:
-      - python3 setup_dev.py
+      - |
+        python3 -c "
+        import os, secrets
+
+        if os.path.exists('backend/.env') or os.path.exists('frontend/.env'):
+            print('One or both .env files already exist. Skipping generation.')
+            exit(0)
+
+        key = secrets.token_urlsafe(32)
+
+        backend_content = f'''# API Security
+        API_TOKEN={key}
+
+        # Frontend URL (for CORS)
+        FRONTEND_URL=http://localhost:5173
+
+        # Database and Image paths
+        DATABASE_PATH=./data/manga.db
+        IMAGE_PATH=./data/images
+
+        # SSL Verification (Set to true to disable SSL verification)
+        DISABLE_SSL_VERIFY=true
+        '''
+
+        frontend_content = f'''# API Configuration
+        VITE_API_URL=http://localhost:8000
+        VITE_API_KEY={key}
+        '''
+
+        with open('backend/.env', 'w') as f:
+            f.write(backend_content)
+            
+        with open('frontend/.env', 'w') as f:
+            f.write(frontend_content)
+            
+        print('Generated .env files with new API key.')
+        "
 
   dev:
     desc: Run both backend and frontend in parallel
@@ -35,9 +71,8 @@ tasks:
 
   backend:run:
     desc: Run the FastAPI backend server
-    dir: backend
     cmds:
-      - .venv/bin/uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+      - backend/.venv/bin/uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
 
   backend:lint:
     desc: Run linting checks for backend (placeholder)

@@ -3,6 +3,8 @@ chromedriver.exe
 images
 config.json
 *.env*
+.task
+
 # Created by https://www.gitignore.io/api/linux,macos,python,pycharm,windows,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=linux,macos,python,pycharm,windows,visualstudiocode
 
