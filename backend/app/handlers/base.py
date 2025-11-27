@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from typing import List
+from backend.app.schemas import MangaCreate
 
 
 class BaseHandler(ABC):
@@ -6,9 +8,9 @@ class BaseHandler(ABC):
         self.base_url = base_url
 
     @abstractmethod
-    def search(self, search_term):
+    def search(self, search_term: str) -> List[MangaCreate]:
         pass
 
     @abstractmethod
-    def scrape(self, url):
+    def scrape(self, url: str) -> MangaCreate:
         pass

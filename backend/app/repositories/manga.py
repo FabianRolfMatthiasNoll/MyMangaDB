@@ -273,7 +273,13 @@ class MangaRepository(BaseRepository):
             save_path = os.path.join(settings.IMAGE_SAVE_PATH, filename)
             os.makedirs(settings.IMAGE_SAVE_PATH, exist_ok=True)
             try:
-                response = requests.get(cover_image_url)
+                # Check for SSL verification disable
+                verify_ssl = os.getenv("DISABLE_SSL_VERIFY", "false").lower() != "true"
+                if not verify_ssl:
+                    import urllib3
+                    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+                
+                response = requests.get(cover_image_url, verify=verify_ssl)
                 response.raise_for_status()
                 with open(save_path, "wb") as f:
                     f.write(response.content)

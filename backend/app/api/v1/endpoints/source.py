@@ -37,10 +37,4 @@ def search_manga(title: str, source_name: str, db: Session = Depends(get_db)):
         )
 
     search_results = handler.search(title)
-    manga_creates = []
-
-    for result in search_results:
-        manga_create = handler.scrape(result["link"])
-        manga_creates.append(manga_create)
-
-    return manga_creates
+    return search_results

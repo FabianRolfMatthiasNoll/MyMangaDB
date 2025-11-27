@@ -70,19 +70,22 @@ def initialize_application():
     # Create database tables
     models.Base.metadata.create_all(bind=engine)
     
-    # Initialize default sources if they don't exist
+    # Initialize default sources
     db = SessionLocal()
     try:
-        sources = SourceRepository.get_all(db)
-        if not sources:
-            # Add default sources
-            default_sources = [
-                SourceCreate(name="MangaPassion", language="DE")
-            ]
-            for source in default_sources:
+        existing_sources = {s.name for s in SourceRepository.get_all(db)}
+        
+        default_sources = [
+            SourceCreate(name="MangaPassion", language="DE"),
+            SourceCreate(name="Jikan", language="EN")
+        ]
+        
+        for source in default_sources:
+            if source.name not in existing_sources:
                 SourceRepository.create(db, source)
     finally:
         db.close()
+
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -104,10 +107,12 @@ app.add_middleware(APIKeyMiddleware)
 
 app.include_router(api_router, prefix="/api/v1")
 
+
 # Initialize application on startup
 @app.on_event("startup")
 async def startup_event():
     initialize_application()
+
 
 @app.get("/")
 def read_root():
