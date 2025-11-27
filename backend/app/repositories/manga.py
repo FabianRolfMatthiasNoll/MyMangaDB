@@ -22,8 +22,11 @@ logger = logging.getLogger(__name__)
 
 class MangaRepository(BaseRepository):
     @staticmethod
-    def get_by_title(db: Session, title: str) -> Optional[Manga]:
-        manga = db.query(MangaModel).filter(MangaModel.title == title).first()
+    def get_by_title(db: Session, title: str, language: Optional[str] = None) -> Optional[Manga]:
+        query = db.query(MangaModel).filter(MangaModel.title == title)
+        if language:
+            query = query.filter(MangaModel.language == language)
+        manga = query.first()
         return Manga.model_validate(manga) if manga else None
 
     @staticmethod
@@ -72,8 +75,16 @@ class MangaRepository(BaseRepository):
 
     @staticmethod
     def create(db: Session, manga_create: MangaCreate) -> Manga:
-        if db.query(MangaModel).filter(MangaModel.title == manga_create.title).first():
-            raise RepositoryError(f"Manga '{manga_create.title}' already exists")
+        # Check if manga with same title AND language exists
+        existing_manga = db.query(MangaModel).filter(
+            MangaModel.title == manga_create.title,
+            MangaModel.language == manga_create.language
+        ).first()
+        
+        if existing_manga:
+            raise RepositoryError(
+                f"Manga '{manga_create.title}' with language '{manga_create.language}' already exists"
+            )
 
         # Process related entities using the common find_or_create functionality.
         authors = [

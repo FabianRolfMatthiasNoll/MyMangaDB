@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.post("/create", response_model=Manga, status_code=status.HTTP_201_CREATED)
 def create_manga(manga: MangaCreate, db: Session = Depends(get_db)):
-    db_manga = MangaRepository.get_by_title(db, title=manga.title)
+    db_manga = MangaRepository.get_by_title(db, title=manga.title, language=manga.language)
     if db_manga:
         raise HTTPException(status_code=400, detail="Manga already exists")
     return MangaRepository.create(db, manga)
