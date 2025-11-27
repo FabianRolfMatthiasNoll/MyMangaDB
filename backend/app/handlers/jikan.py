@@ -61,17 +61,6 @@ class JikanHandler(BaseHandler):
         title = data.get("title", "Unknown Title")
         title_japanese = data.get("title_japanese")
         synopsis = data.get("synopsis", "")
-        
-        # Map Status
-        status_map = {
-            "Publishing": OverallStatus.ongoing,
-            "Finished": OverallStatus.completed,
-            "On Hiatus": OverallStatus.hiatus,
-            "Discontinued": OverallStatus.cancelled,
-            "Not yet published": OverallStatus.ongoing,
-        }
-        jikan_status = data.get("status")
-        overall_status = status_map.get(jikan_status)
 
         # Map Category
         type_map = {
@@ -86,10 +75,6 @@ class JikanHandler(BaseHandler):
         }
         jikan_type = data.get("type")
         category = type_map.get(jikan_type, Category.manga)
-
-        # Map Score (1-10 to 1-5)
-        score = data.get("score")
-        star_rating = score / 2 if score else None
 
         # Images
         images = data.get("images", {}).get("jpg", {})
@@ -113,8 +98,7 @@ class JikanHandler(BaseHandler):
             title=title,
             japanese_title=title_japanese,
             summary=synopsis,
-            star_rating=star_rating,
-            overall_status=overall_status,
+            star_rating=None,
             category=category,
             cover_image=cover_image_url,
             authors=[AuthorCreate(name=author) for author in list(set(authors))],
