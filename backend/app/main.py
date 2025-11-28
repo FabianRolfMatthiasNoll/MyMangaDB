@@ -68,14 +68,14 @@ def initialize_application():
         if not UserRepository.get_by_username(db, "admin"):
             UserRepository.create(
                 db,
-                UserCreate(username="admin", password="adminpassword", role=Role.admin),
+                UserCreate(username="admin", password="admin", role=Role.admin),
             )
 
         # Init Guest
         if not UserRepository.get_by_username(db, "guest"):
             UserRepository.create(
                 db,
-                UserCreate(username="guest", password="guestpassword", role=Role.guest),
+                UserCreate(username="guest", password="guest", role=Role.guest),
             )
     finally:
         db.close()

@@ -61,6 +61,7 @@ We use [Task](https://taskfile.dev/) to manage our development commands.
 
 - **Run Tests:** `task backend:test`
 - **Linting:** `task lint` (Runs pre-commit hooks manually)
+- **Generate API Client:** `task frontend:generate-api` (Updates the frontend API client based on backend changes)
 
 **Note for RaspberryPi users:** use the `requirements_rpi.txt`. Because `PyQt5` is making compatibility issues.
 
@@ -71,11 +72,19 @@ We use [Task](https://taskfile.dev/) to manage our development commands.
 For hosting, a Docker compose file is provided. Update the following settings in the file:
 
 ```yml
-API_TOKEN: "YOUR_API_TOKEN_HERE" # Set the API Token twice for frontend-backend communication
 API_URL: "http://localhost:8000" # Backend URL, typically the server IP
-AUTH_PWD: "mymangadb" # Password for editing mode
 DOCKER_MODE: "true" # Changes database location to the mounted volume for persistence
 ```
+
+### Authentication
+
+The application now uses Role-Based Access Control (RBAC).
+Default users created on startup:
+
+- **Admin:** `admin` / `admin` (Full access)
+- **Guest:** `guest` / `guest` (Read-only access)
+
+**Important:** Change these passwords immediately after first login!
 
 ## 📸 Sneak Preview (v2.0.0)
 
