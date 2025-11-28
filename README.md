@@ -69,12 +69,16 @@ We use [Task](https://taskfile.dev/) to manage our development commands.
 
 ### Hosting
 
-For hosting, a Docker compose file is provided. Update the following settings in the file:
+For hosting, a Docker compose file is provided. It uses Traefik as a reverse proxy and handles SSL certificates automatically.
 
-```yml
-API_URL: "http://localhost:8000" # Backend URL, typically the server IP
-DOCKER_MODE: "true" # Changes database location to the mounted volume for persistence
-```
+**Configuration:**
+
+1.  Update the `docker-compose.yml` file with your domain names and email for Let's Encrypt.
+2.  Set the following environment variables (or create a `.env` file):
+    - `API_TOKEN`: A secure random string for internal API communication.
+    - `AUTH_PWD`: A password for additional protection if needed.
+
+**Note:** The application is designed to run behind a reverse proxy like Traefik. If you want to run it locally without Traefik, you might need to adjust the `docker-compose.yml` ports and labels.
 
 ### Authentication
 
@@ -92,16 +96,16 @@ Default users created on startup:
 
 ### Dashboard
 
-![Dashboard](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/frontendRework/screenshots/dashboard.png)
+![Dashboard](screenshots/dashboard.png)
 
 ### Manga Overview
 
-![Manga Overview](https://raw.githubusercontent.com/FabianRolfMatthiasNoll/MyMangaDB/frontendRework/screenshots/manga_overview.png)
+![Manga Overview](screenshots/manga_overview.png)
 
 ### Editing Manga
 
-![Editing Manga](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/frontendRework/screenshots/manga_editing.png?raw=true)
+![Editing Manga](screenshots/manga_editing.png)
 
 ### Automatic Manga Fetching
 
-![Automatic Manga Fetching](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/blob/frontendRework/screenshots/automatic_manga_fetching.png?raw=true)
+![Automatic Manga Fetching](screenshots/automatic_manga_fetching.png)
