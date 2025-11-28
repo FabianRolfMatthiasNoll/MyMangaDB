@@ -21,7 +21,13 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
-import { getListWithCount, createList, updateList, deleteList, ListWithCount } from "../services/listService";
+import {
+  getListWithCount,
+  createList,
+  updateList,
+  deleteList,
+  ListWithCount,
+} from "../services/listService";
 import { useUser } from "../context/UserContext";
 
 const ListsPage: React.FC = () => {
@@ -29,10 +35,13 @@ const ListsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [listName, setListName] = useState("");
-  const [editingList, setEditingList] = useState<{ id: number; name: string } | null>(null);
+  const [editingList, setEditingList] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { isAdmin } = useUser();
 
   const fetchLists = async () => {
@@ -99,7 +108,12 @@ const ListsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="80vh"
+      >
         <CircularProgress />
       </Box>
     );
@@ -108,9 +122,20 @@ const ListsPage: React.FC = () => {
   return (
     <Container maxWidth="lg">
       <Box p={isMobile ? 2 : 3}>
-        <Paper elevation={0} sx={{ p: isMobile ? 2 : 3, mb: 4, backgroundColor: 'transparent' }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-            <Typography variant={isMobile ? "h5" : "h4"} sx={{ fontWeight: 'bold' }}>
+        <Paper
+          elevation={0}
+          sx={{ p: isMobile ? 2 : 3, mb: 4, backgroundColor: "transparent" }}
+        >
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={4}
+          >
+            <Typography
+              variant={isMobile ? "h5" : "h4"}
+              sx={{ fontWeight: "bold" }}
+            >
               My Lists
             </Typography>
             {isAdmin && lists.length > 0 && (
@@ -123,8 +148,8 @@ const ListsPage: React.FC = () => {
                   px: isMobile ? 2 : 3,
                   py: isMobile ? 0.5 : 1,
                   borderRadius: 2,
-                  textTransform: 'none',
-                  fontSize: isMobile ? '0.875rem' : '1rem'
+                  textTransform: "none",
+                  fontSize: isMobile ? "0.875rem" : "1rem",
                 }}
               >
                 Create New List
@@ -137,9 +162,9 @@ const ListsPage: React.FC = () => {
               textAlign="center"
               py={8}
               sx={{
-                backgroundColor: 'background.paper',
+                backgroundColor: "background.paper",
                 borderRadius: 2,
-                boxShadow: 1
+                boxShadow: 1,
               }}
             >
               <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -159,8 +184,8 @@ const ListsPage: React.FC = () => {
                     px: isMobile ? 3 : 4,
                     py: isMobile ? 1 : 1.5,
                     borderRadius: 2,
-                    textTransform: 'none',
-                    fontSize: isMobile ? '1rem' : '1.1rem'
+                    textTransform: "none",
+                    fontSize: isMobile ? "1rem" : "1.1rem",
                   }}
                 >
                   Create Your First List
@@ -179,8 +204,8 @@ const ListsPage: React.FC = () => {
                       transition: "transform 0.2s, box-shadow 0.2s",
                       "&:hover": {
                         transform: "translateY(-4px)",
-                        boxShadow: 4
-                      }
+                        boxShadow: 4,
+                      },
                     }}
                   >
                     <Box
@@ -193,8 +218,8 @@ const ListsPage: React.FC = () => {
                         <Typography
                           variant={isMobile ? "subtitle1" : "h6"}
                           sx={{
-                            fontWeight: 'bold',
-                            mb: 1
+                            fontWeight: "bold",
+                            mb: 1,
                           }}
                         >
                           {list.name}
@@ -203,12 +228,13 @@ const ListsPage: React.FC = () => {
                           variant="body2"
                           color="text.secondary"
                           sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 0.5
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.5,
                           }}
                         >
-                          {list.mangaCount} manga{list.mangaCount !== 1 ? "s" : ""}
+                          {list.mangaCount} manga
+                          {list.mangaCount !== 1 ? "s" : ""}
                         </Typography>
                       </Box>
                       {isAdmin && (
@@ -221,8 +247,8 @@ const ListsPage: React.FC = () => {
                                 handleOpenDialog(list);
                               }}
                               sx={{
-                                backgroundColor: 'background.paper',
-                                '&:hover': { backgroundColor: 'action.hover' }
+                                backgroundColor: "background.paper",
+                                "&:hover": { backgroundColor: "action.hover" },
                               }}
                             >
                               <EditIcon />
@@ -236,8 +262,8 @@ const ListsPage: React.FC = () => {
                                 handleDeleteList(list.id);
                               }}
                               sx={{
-                                backgroundColor: 'background.paper',
-                                '&:hover': { backgroundColor: 'action.hover' }
+                                backgroundColor: "background.paper",
+                                "&:hover": { backgroundColor: "action.hover" },
                               }}
                             >
                               <DeleteIcon />
@@ -259,8 +285,8 @@ const ListsPage: React.FC = () => {
           PaperProps={{
             sx: {
               borderRadius: 2,
-              minWidth: isMobile ? '90%' : '400px'
-            }
+              minWidth: isMobile ? "90%" : "400px",
+            },
           }}
         >
           <DialogTitle sx={{ pb: 1 }}>
@@ -282,8 +308,8 @@ const ListsPage: React.FC = () => {
             <Button
               onClick={handleCloseDialog}
               sx={{
-                textTransform: 'none',
-                px: 2
+                textTransform: "none",
+                px: 2,
               }}
             >
               Cancel
@@ -293,8 +319,8 @@ const ListsPage: React.FC = () => {
               color="primary"
               variant="contained"
               sx={{
-                textTransform: 'none',
-                px: 3
+                textTransform: "none",
+                px: 3,
               }}
             >
               {editingList ? "Save" : "Create"}

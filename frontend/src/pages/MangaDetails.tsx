@@ -24,7 +24,11 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { fetchMangaCoverImageAsBlobUrl } from "../services/imageService";
-import { getMangaDetails, updateMangaDetails, deleteManga } from "../services/mangaService";
+import {
+  getMangaDetails,
+  updateMangaDetails,
+  deleteManga,
+} from "../services/mangaService";
 import { Manga } from "../api/models";
 import MangaForm from "../components/MangaForm";
 import { useUser } from "../context/UserContext";
@@ -42,11 +46,11 @@ const MangaDetails: React.FC = () => {
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
-    severity: 'success' | 'error';
+    severity: "success" | "error";
   }>({
     open: false,
-    message: '',
-    severity: 'success'
+    message: "",
+    severity: "success",
   });
 
   useEffect(() => {
@@ -101,7 +105,7 @@ const MangaDetails: React.FC = () => {
   };
 
   const handleBackClick = () => {
-    if (location.state?.from === 'list-detail' && location.state?.listId) {
+    if (location.state?.from === "list-detail" && location.state?.listId) {
       navigate(`/lists/${location.state.listId}`);
     } else {
       navigate("/");
@@ -135,15 +139,15 @@ const MangaDetails: React.FC = () => {
       setEditMode(false);
       setNotification({
         open: true,
-        message: 'Manga updated successfully',
-        severity: 'success'
+        message: "Manga updated successfully",
+        severity: "success",
       });
     } catch (error) {
       console.error("Failed to update manga:", error);
       setNotification({
         open: true,
-        message: 'Failed to update manga',
-        severity: 'error'
+        message: "Failed to update manga",
+        severity: "error",
       });
     }
   };
@@ -155,30 +159,29 @@ const MangaDetails: React.FC = () => {
   const getStatusColor = (status: string) => {
     const statusColors: { [key: string]: string } = {
       "Not Started": theme.palette.error.main,
-      "Reading": theme.palette.info.main,
-      "Completed": theme.palette.success.main,
+      Reading: theme.palette.info.main,
+      Completed: theme.palette.success.main,
       "On Hold": theme.palette.warning.main,
-      "Dropped": theme.palette.error.main,
+      Dropped: theme.palette.error.main,
       "Plan to Read": theme.palette.secondary.main,
-      "Ongoing": theme.palette.info.main,
-      "Hiatus": theme.palette.warning.main,
-      "Discontinued": theme.palette.error.main,
+      Ongoing: theme.palette.info.main,
+      Hiatus: theme.palette.warning.main,
+      Discontinued: theme.palette.error.main,
     };
     return statusColors[status] || theme.palette.grey[500];
   };
 
   const handleCloseNotification = () => {
-    setNotification(prev => ({ ...prev, open: false }));
+    setNotification((prev) => ({ ...prev, open: false }));
   };
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={handleBackClick}
-        >
-          {location.state?.from === 'list-detail' ? 'Back to List' : 'Back to Dashboard'}
+        <Button startIcon={<ArrowBackIcon />} onClick={handleBackClick}>
+          {location.state?.from === "list-detail"
+            ? "Back to List"
+            : "Back to Dashboard"}
         </Button>
         {isAdmin && (
           <Box>
@@ -192,30 +195,28 @@ const MangaDetails: React.FC = () => {
         )}
       </Box>
 
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={handleDeleteCancel}
-      >
+      <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
         <DialogTitle>Delete Manga</DialogTitle>
         <DialogContent>
           <Typography>
-            Are you sure you want to delete "{manga.title}"? This action cannot be undone.
+            Are you sure you want to delete "{manga.title}"? This action cannot
+            be undone.
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDeleteCancel}>Cancel</Button>
-          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
+            variant="contained"
+          >
             Delete
           </Button>
         </DialogActions>
       </Dialog>
 
       {editMode ? (
-        <MangaForm
-          manga={manga}
-          onSave={handleSave}
-          onCancel={handleCancel}
-        />
+        <MangaForm manga={manga} onSave={handleSave} onCancel={handleCancel} />
       ) : (
         <Grid container spacing={3}>
           {/* Cover Image Section */}
@@ -227,9 +228,10 @@ const MangaDetails: React.FC = () => {
                 borderRadius: 2,
                 overflow: "hidden",
                 height: "fit-content",
-                background: theme.palette.mode === "dark"
-                  ? alpha(theme.palette.background.paper, 0.8)
-                  : alpha(theme.palette.background.paper, 0.9),
+                background:
+                  theme.palette.mode === "dark"
+                    ? alpha(theme.palette.background.paper, 0.8)
+                    : alpha(theme.palette.background.paper, 0.9),
               }}
             >
               {manga.coverImage ? (
@@ -261,9 +263,10 @@ const MangaDetails: React.FC = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    bgcolor: theme.palette.mode === "dark"
-                      ? alpha(theme.palette.grey[900], 0.8)
-                      : alpha(theme.palette.grey[200], 0.8),
+                    bgcolor:
+                      theme.palette.mode === "dark"
+                        ? alpha(theme.palette.grey[900], 0.8)
+                        : alpha(theme.palette.grey[200], 0.8),
                   }}
                 >
                   <Typography variant="h6" color="text.secondary">
@@ -284,18 +287,30 @@ const MangaDetails: React.FC = () => {
                 height: "fit-content",
                 display: "flex",
                 flexDirection: "column",
-                background: theme.palette.mode === "dark"
-                  ? alpha(theme.palette.background.paper, 0.8)
-                  : alpha(theme.palette.background.paper, 0.9),
+                background:
+                  theme.palette.mode === "dark"
+                    ? alpha(theme.palette.background.paper, 0.8)
+                    : alpha(theme.palette.background.paper, 0.9),
               }}
             >
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  mb: 2,
+                }}
+              >
                 <Box>
                   <Typography variant="h4" gutterBottom>
                     {manga.title}
                   </Typography>
                   {manga.japaneseTitle && (
-                    <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+                    <Typography
+                      variant="subtitle1"
+                      color="text.secondary"
+                      gutterBottom
+                    >
                       {manga.japaneseTitle}
                     </Typography>
                   )}
@@ -328,9 +343,10 @@ const MangaDetails: React.FC = () => {
                   <Chip
                     label={manga.category}
                     sx={{
-                      bgcolor: theme.palette.mode === "dark"
-                        ? alpha(theme.palette.primary.main, 0.9)
-                        : theme.palette.primary.main,
+                      bgcolor:
+                        theme.palette.mode === "dark"
+                          ? alpha(theme.palette.primary.main, 0.9)
+                          : theme.palette.primary.main,
                       color: "white",
                       fontWeight: 500,
                     }}
@@ -340,7 +356,11 @@ const MangaDetails: React.FC = () => {
 
               {/* Authors and Genres */}
               <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                <Typography
+                  variant="subtitle2"
+                  color="text.secondary"
+                  gutterBottom
+                >
                   Authors
                 </Typography>
                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
@@ -354,7 +374,11 @@ const MangaDetails: React.FC = () => {
                   ))}
                 </Box>
 
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                <Typography
+                  variant="subtitle2"
+                  color="text.secondary"
+                  gutterBottom
+                >
                   Genres
                 </Typography>
                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
@@ -374,7 +398,11 @@ const MangaDetails: React.FC = () => {
               {/* Summary */}
               {manga.summary && (
                 <Box sx={{ mb: 3, flex: 1 }}>
-                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
                     Summary
                   </Typography>
                   <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
@@ -409,7 +437,11 @@ const MangaDetails: React.FC = () => {
               {/* Lists */}
               {manga.lists.length > 0 && (
                 <Box sx={{ mt: 3 }}>
-                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
                     Lists
                   </Typography>
                   <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
@@ -434,9 +466,10 @@ const MangaDetails: React.FC = () => {
               sx={{
                 p: 3,
                 borderRadius: 2,
-                background: theme.palette.mode === "dark"
-                  ? alpha(theme.palette.background.paper, 0.8)
-                  : alpha(theme.palette.background.paper, 0.9),
+                background:
+                  theme.palette.mode === "dark"
+                    ? alpha(theme.palette.background.paper, 0.8)
+                    : alpha(theme.palette.background.paper, 0.9),
               }}
             >
               <Typography variant="h6" gutterBottom>
@@ -452,12 +485,12 @@ const MangaDetails: React.FC = () => {
         open={notification.open}
         autoHideDuration={6000}
         onClose={handleCloseNotification}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
           onClose={handleCloseNotification}
           severity={notification.severity}
-          sx={{ width: '100%' }}
+          sx={{ width: "100%" }}
         >
           {notification.message}
         </Alert>

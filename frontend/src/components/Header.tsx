@@ -71,9 +71,7 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
           {item.text}
         </MenuItem>
       ))}
-      <MenuItem onClick={handleLogout}>
-        Logout
-      </MenuItem>
+      <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
 
