@@ -3,6 +3,7 @@ from .genre import GenreRepository
 from .list import ListRepository
 from .manga import MangaRepository
 from .source import SourceRepository
+from .user import UserRepository
 
 __all__ = [
     "AuthorRepository",
@@ -10,4 +11,5 @@ __all__ = [
     "ListRepository",
     "MangaRepository",
     "SourceRepository",
+    "UserRepository",
 ]

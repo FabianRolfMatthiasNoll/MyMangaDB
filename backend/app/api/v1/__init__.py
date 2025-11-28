@@ -1,8 +1,19 @@
 from fastapi import APIRouter
 
-from .endpoints import author, database, genre, image, list, manga, settings, source
+from .endpoints import (
+    auth,
+    author,
+    database,
+    genre,
+    image,
+    list,
+    manga,
+    settings,
+    source,
+)
 
 api_router = APIRouter()
+api_router.include_router(auth.router, prefix="/auth", tags=["Auth"])
 api_router.include_router(manga.router, prefix="/mangas", tags=["Mangas"])
 api_router.include_router(source.router, prefix="/sources", tags=["Sources"])
 api_router.include_router(author.router, prefix="/authors", tags=["Authors"])

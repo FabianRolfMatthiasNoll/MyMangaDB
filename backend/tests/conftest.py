@@ -11,9 +11,13 @@ from sqlalchemy.pool import StaticPool
 os.environ["API_TOKEN"] = "test-token"
 os.environ["DOCKER_MODE"] = "false"
 
+from backend.app.api.deps import (  # noqa: E402
+    get_current_active_superuser,
+    get_current_user,
+)
 from backend.app.database import get_db  # noqa: E402
 from backend.app.main import app  # noqa: E402
-from backend.app.models import Base  # noqa: E402
+from backend.app.models import Base, Role, User  # noqa: E402
 from backend.app.repositories.source import SourceRepository  # noqa: E402
 from backend.app.schemas import SourceCreate  # noqa: E402
 
@@ -63,11 +67,15 @@ def db_session() -> Generator:
 async def client(db_session) -> AsyncGenerator:
     app.dependency_overrides[get_db] = lambda: db_session
 
+    # Override auth
+    mock_user = User(id=1, username="testuser", role=Role.admin)
+    app.dependency_overrides[get_current_user] = lambda: mock_user
+    app.dependency_overrides[get_current_active_superuser] = lambda: mock_user
+
     # Create a transport for the app
     transport = ASGITransport(app=app)
 
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        ac.headers.update({"X-API-Key": "test-token"})
         yield ac
 
     app.dependency_overrides.clear()

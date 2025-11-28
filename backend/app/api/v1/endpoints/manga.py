@@ -3,6 +3,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
+from backend.app.api import deps
 from backend.app.database import get_db
 from backend.app.repositories import MangaRepository
 from backend.app.schemas import Manga, MangaCreate
@@ -10,7 +11,12 @@ from backend.app.schemas import Manga, MangaCreate
 router = APIRouter()
 
 
-@router.post("/create", response_model=Manga, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/create",
+    response_model=Manga,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(deps.get_current_active_superuser)],
+)
 def create_manga(manga: MangaCreate, db: Session = Depends(get_db)):
     db_manga = MangaRepository.get_by_title(
         db, title=manga.title, language=manga.language
@@ -21,7 +27,10 @@ def create_manga(manga: MangaCreate, db: Session = Depends(get_db)):
 
 
 @router.post(
-    "/create-list", response_model=List[Manga], status_code=status.HTTP_201_CREATED
+    "/create-list",
+    response_model=List[Manga],
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(deps.get_current_active_superuser)],
 )
 def create_manga_list(mangas: List[MangaCreate], db: Session = Depends(get_db)):
     try:
@@ -36,6 +45,7 @@ def create_manga_list(mangas: List[MangaCreate], db: Session = Depends(get_db)):
     "/getAll",
     response_model=List[Manga],
     summary="Get mangas with server-side paging, search and sort",
+    dependencies=[Depends(deps.get_current_user)],
 )
 def get_mangas(
     skip: int = Query(0, ge=0),
@@ -58,7 +68,11 @@ def get_mangas(
         raise HTTPException(status_code=500, detail="Failed to fetch mangas")
 
 
-@router.get("/{manga_id}", response_model=Manga)
+@router.get(
+    "/{manga_id}",
+    response_model=Manga,
+    dependencies=[Depends(deps.get_current_user)],
+)
 def get_manga_by_id(manga_id: int, db: Session = Depends(get_db)):
     try:
         db_manga = MangaRepository.get_by_id(db, manga_id=manga_id)
@@ -69,7 +83,11 @@ def get_manga_by_id(manga_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Failed to fetch manga by ID")
 
 
-@router.get("/by-genre/{genre_id}", response_model=List[Manga])
+@router.get(
+    "/by-genre/{genre_id}",
+    response_model=List[Manga],
+    dependencies=[Depends(deps.get_current_user)],
+)
 def get_mangas_by_genre(genre_id: int, db: Session = Depends(get_db)):
     try:
         return MangaRepository.get_by_genre(db, genre_id)
@@ -77,7 +95,11 @@ def get_mangas_by_genre(genre_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Failed to fetch mangas by genre")
 
 
-@router.get("/by-author/{author_id}", response_model=List[Manga])
+@router.get(
+    "/by-author/{author_id}",
+    response_model=List[Manga],
+    dependencies=[Depends(deps.get_current_user)],
+)
 def get_mangas_by_author(author_id: int, db: Session = Depends(get_db)):
     try:
         return MangaRepository.get_by_author(db, author_id)
@@ -85,7 +107,11 @@ def get_mangas_by_author(author_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Failed to fetch mangas by author")
 
 
-@router.get("/by-list/{list_id}", response_model=List[Manga])
+@router.get(
+    "/by-list/{list_id}",
+    response_model=List[Manga],
+    dependencies=[Depends(deps.get_current_user)],
+)
 def get_mangas_by_list(list_id: int, db: Session = Depends(get_db)):
     try:
         return MangaRepository.get_by_list(db, list_id)
@@ -93,7 +119,11 @@ def get_mangas_by_list(list_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Failed to fetch mangas by list")
 
 
-@router.get("/by-rating/{rating}", response_model=List[Manga])
+@router.get(
+    "/by-rating/{rating}",
+    response_model=List[Manga],
+    dependencies=[Depends(deps.get_current_user)],
+)
 def get_mangas_by_star_rating(rating: float, db: Session = Depends(get_db)):
     try:
         return MangaRepository.get_by_star_rating(db, rating)
@@ -101,7 +131,11 @@ def get_mangas_by_star_rating(rating: float, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Failed to fetch mangas by rating")
 
 
-@router.put("/update", response_model=Manga)
+@router.put(
+    "/update",
+    response_model=Manga,
+    dependencies=[Depends(deps.get_current_active_superuser)],
+)
 def update_manga(manga: Manga, db: Session = Depends(get_db)):
     try:
         db_manga = MangaRepository.get_by_id(db, manga.id)
@@ -114,7 +148,11 @@ def update_manga(manga: Manga, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Failed to update manga")
 
 
-@router.delete("/{manga_id}", response_model=Manga)
+@router.delete(
+    "/{manga_id}",
+    response_model=Manga,
+    dependencies=[Depends(deps.get_current_active_superuser)],
+)
 def delete_manga(manga_id: int, db: Session = Depends(get_db)):
     try:
         db_manga = MangaRepository.get_by_id(db, manga_id=manga_id)

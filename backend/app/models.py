@@ -29,6 +29,11 @@ class Category(enum.Enum):
     doujinshi = "doujinshi"
 
 
+class Role(enum.Enum):
+    admin = "admin"
+    guest = "guest"
+
+
 # Many-to-Many relationship tables
 manga_author = Table(
     "manga_author",
@@ -112,6 +117,14 @@ class Settings(Base):
     id = Column(Integer, primary_key=True, index=True)
     key = Column(String, unique=True, index=True)
     value = Column(String)
+
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+    role = Column(Enum(Role), default=Role.guest)
 
 
 Author.mangas = relationship("Manga", secondary=manga_author, back_populates="authors")

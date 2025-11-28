@@ -26,6 +26,11 @@ class Category(str, Enum):
     doujinshi = "doujinshi"
 
 
+class Role(str, Enum):
+    admin = "admin"
+    guest = "guest"
+
+
 # Schemas
 class AuthorBase(BaseModel):
     name: str
@@ -147,3 +152,30 @@ class Settings(SettingsBase):
 
     class Config:
         from_attributes = True
+
+
+class UserBase(BaseModel):
+    username: str
+
+
+class UserCreate(UserBase):
+    password: str
+    role: Role = Role.guest
+
+
+class User(UserBase):
+    id: int
+    role: Role
+
+    class Config:
+        from_attributes = True
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
+    role: Optional[Role] = None
