@@ -18,10 +18,14 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import { getSettings, updateSetting, Settings } from "../services/settingsService";
+import EditIcon from "@mui/icons-material/Edit";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
+import {
+  getSettings,
+  updateSetting,
+  Settings,
+} from "../services/settingsService";
 import DatabaseOperations from "../components/DatabaseOperations";
 import { UsersApi } from "../api";
 import { configuration } from "../services/config";
@@ -34,7 +38,10 @@ const SettingsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [migrateDialogOpen, setMigrateDialogOpen] = useState(false);
-  const [pendingChange, setPendingChange] = useState<{ key: string; value: string } | null>(null);
+  const [pendingChange, setPendingChange] = useState<{
+    key: string;
+    value: string;
+  } | null>(null);
   const [editingPath, setEditingPath] = useState<string | null>(null);
   const [tempPath, setTempPath] = useState("");
 
@@ -42,7 +49,10 @@ const SettingsPage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState("admin");
   const [newPassword, setNewPassword] = useState("");
   const [passwordLoading, setPasswordLoading] = useState(false);
-  const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [passwordMessage, setPasswordMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   useEffect(() => {
     fetchSettings();
@@ -63,7 +73,7 @@ const SettingsPage: React.FC = () => {
 
   const handlePasswordChange = async () => {
     if (!newPassword) {
-      setPasswordMessage({ type: 'error', text: 'Password cannot be empty' });
+      setPasswordMessage({ type: "error", text: "Password cannot be empty" });
       return;
     }
     setPasswordLoading(true);
@@ -72,13 +82,19 @@ const SettingsPage: React.FC = () => {
       await usersApi.changePasswordApiV1UsersChangePasswordPost({
         userUpdatePassword: {
           username: selectedUser,
-          password: newPassword
-        }
+          password: newPassword,
+        },
       });
-      setPasswordMessage({ type: 'success', text: 'Password updated successfully' });
+      setPasswordMessage({
+        type: "success",
+        text: "Password updated successfully",
+      });
       setNewPassword("");
     } catch (err) {
-      setPasswordMessage({ type: 'error', text: 'Failed to update password. Ensure you are an admin.' });
+      setPasswordMessage({
+        type: "error",
+        text: "Failed to update password. Ensure you are an admin.",
+      });
     } finally {
       setPasswordLoading(false);
     }
@@ -126,7 +142,12 @@ const SettingsPage: React.FC = () => {
 
   if (loading && !settings) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="80vh"
+      >
         <CircularProgress />
       </Box>
     );
@@ -157,17 +178,21 @@ const SettingsPage: React.FC = () => {
           </Typography>
 
           <Box sx={{ mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <TextField
                 fullWidth
                 label="Database Path"
-                value={editingPath === 'database_path' ? tempPath : settings?.database_path || ""}
+                value={
+                  editingPath === "database_path"
+                    ? tempPath
+                    : settings?.database_path || ""
+                }
                 onChange={(e) => setTempPath(e.target.value)}
-                disabled={editingPath !== 'database_path'}
+                disabled={editingPath !== "database_path"}
                 margin="normal"
                 helperText="Path to store the SQLite database file"
               />
-              {editingPath === 'database_path' ? (
+              {editingPath === "database_path" ? (
                 <>
                   <IconButton onClick={handleAcceptEdit} color="primary">
                     <CheckIcon />
@@ -177,7 +202,7 @@ const SettingsPage: React.FC = () => {
                   </IconButton>
                 </>
               ) : (
-                <IconButton onClick={() => handleEditClick('database_path')}>
+                <IconButton onClick={() => handleEditClick("database_path")}>
                   <EditIcon />
                 </IconButton>
               )}
@@ -185,17 +210,21 @@ const SettingsPage: React.FC = () => {
           </Box>
 
           <Box sx={{ mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <TextField
                 fullWidth
                 label="Images Path"
-                value={editingPath === 'image_path' ? tempPath : settings?.image_path || ""}
+                value={
+                  editingPath === "image_path"
+                    ? tempPath
+                    : settings?.image_path || ""
+                }
                 onChange={(e) => setTempPath(e.target.value)}
-                disabled={editingPath !== 'image_path'}
+                disabled={editingPath !== "image_path"}
                 margin="normal"
                 helperText="Path to store the images directory"
               />
-              {editingPath === 'image_path' ? (
+              {editingPath === "image_path" ? (
                 <>
                   <IconButton onClick={handleAcceptEdit} color="primary">
                     <CheckIcon />
@@ -205,7 +234,7 @@ const SettingsPage: React.FC = () => {
                   </IconButton>
                 </>
               ) : (
-                <IconButton onClick={() => handleEditClick('image_path')}>
+                <IconButton onClick={() => handleEditClick("image_path")}>
                   <EditIcon />
                 </IconButton>
               )}
@@ -225,7 +254,14 @@ const SettingsPage: React.FC = () => {
               {passwordMessage.text}
             </Alert>
           )}
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              alignItems: "flex-start",
+              flexWrap: "wrap",
+            }}
+          >
             <FormControl sx={{ minWidth: 120 }}>
               <InputLabel id="user-select-label">User</InputLabel>
               <Select
@@ -268,7 +304,11 @@ const SettingsPage: React.FC = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleMigrateCancel}>Cancel</Button>
-            <Button onClick={handleMigrateConfirm} variant="contained" color="primary">
+            <Button
+              onClick={handleMigrateConfirm}
+              variant="contained"
+              color="primary"
+            >
               Migrate Data
             </Button>
           </DialogActions>

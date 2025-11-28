@@ -20,7 +20,7 @@ const ListDetailPage: React.FC = () => {
   const { listId } = useParams<{ listId: string }>();
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [list, setList] = useState<ListModel | null>(null);
   const [mangas, setMangas] = useState<Manga[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,7 +51,12 @@ const ListDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="80vh"
+      >
         <CircularProgress />
       </Box>
     );
@@ -75,8 +80,8 @@ const ListDetailPage: React.FC = () => {
           sx={{
             p: isMobile ? 2 : 3,
             mb: 4,
-            backgroundColor: 'transparent',
-            borderRadius: 2
+            backgroundColor: "transparent",
+            borderRadius: 2,
           }}
         >
           <Box display="flex" alignItems="center" mb={3}>
@@ -84,8 +89,8 @@ const ListDetailPage: React.FC = () => {
               onClick={handleBack}
               sx={{
                 mr: 2,
-                backgroundColor: 'background.paper',
-                '&:hover': { backgroundColor: 'action.hover' }
+                backgroundColor: "background.paper",
+                "&:hover": { backgroundColor: "action.hover" },
               }}
             >
               <ArrowBackIcon />
@@ -93,10 +98,10 @@ const ListDetailPage: React.FC = () => {
             <Typography
               variant={isMobile ? "h5" : "h4"}
               sx={{
-                fontWeight: 'bold',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
+                fontWeight: "bold",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
               }}
             >
               {list.name}
@@ -108,9 +113,9 @@ const ListDetailPage: React.FC = () => {
               textAlign="center"
               py={8}
               sx={{
-                backgroundColor: 'background.paper',
+                backgroundColor: "background.paper",
                 borderRadius: 2,
-                boxShadow: 1
+                boxShadow: 1,
               }}
             >
               <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -121,7 +126,11 @@ const ListDetailPage: React.FC = () => {
               </Typography>
             </Box>
           ) : (
-            <MangaList mangas={mangas} isMobile={isMobile} listId={Number(listId)} />
+            <MangaList
+              mangas={mangas}
+              isMobile={isMobile}
+              listId={Number(listId)}
+            />
           )}
         </Paper>
       </Box>

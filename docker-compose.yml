@@ -4,7 +4,6 @@ volumes:
   database:
   letsencrypt:
 
-
 services:
   traefik:
     image: "traefik:v2.11"
