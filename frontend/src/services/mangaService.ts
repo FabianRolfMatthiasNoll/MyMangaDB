@@ -77,4 +77,4 @@ export const getMangasByListId = async (listId: number) =>
         listId,
       }),
     []
-  ); 
+  );

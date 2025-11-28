@@ -31,7 +31,7 @@ const DatabaseOperations: React.FC = () => {
       console.log('Starting export process');
       const blob = await databaseService.exportDatabase();
       console.log('Received blob from service');
-      
+
       if (!blob || blob.size === 0) {
         throw new Error('Received empty response from server');
       }
@@ -42,7 +42,7 @@ const DatabaseOperations: React.FC = () => {
       // Create a download link with a more descriptive name
       const url = window.URL.createObjectURL(blob);
       console.log('Created object URL');
-      
+
       const a = document.createElement('a');
       a.href = url;
       const date = new Date().toISOString().split('T')[0];
@@ -50,7 +50,7 @@ const DatabaseOperations: React.FC = () => {
       document.body.appendChild(a);
       console.log('Starting download');
       a.click();
-      
+
       // Clean up
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
@@ -187,4 +187,4 @@ const DatabaseOperations: React.FC = () => {
   );
 };
 
-export default DatabaseOperations; 
+export default DatabaseOperations;

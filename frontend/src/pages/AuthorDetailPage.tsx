@@ -69,19 +69,19 @@ const AuthorDetailPage: React.FC = () => {
   return (
     <Container maxWidth="lg">
       <Box p={isMobile ? 2 : 3}>
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            p: isMobile ? 2 : 3, 
-            mb: 4, 
+        <Paper
+          elevation={0}
+          sx={{
+            p: isMobile ? 2 : 3,
+            mb: 4,
             backgroundColor: 'transparent',
             borderRadius: 2
           }}
         >
           <Box display="flex" alignItems="center" mb={3}>
-            <IconButton 
+            <IconButton
               onClick={handleBack}
-              sx={{ 
+              sx={{
                 mr: 2,
                 backgroundColor: 'background.paper',
                 '&:hover': { backgroundColor: 'action.hover' }
@@ -89,9 +89,9 @@ const AuthorDetailPage: React.FC = () => {
             >
               <ArrowBackIcon />
             </IconButton>
-            <Typography 
-              variant={isMobile ? "h5" : "h4"} 
-              sx={{ 
+            <Typography
+              variant={isMobile ? "h5" : "h4"}
+              sx={{
                 fontWeight: 'bold',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -103,10 +103,10 @@ const AuthorDetailPage: React.FC = () => {
           </Box>
 
           {mangas.length === 0 ? (
-            <Box 
-              textAlign="center" 
-              py={8} 
-              sx={{ 
+            <Box
+              textAlign="center"
+              py={8}
+              sx={{
                 backgroundColor: 'background.paper',
                 borderRadius: 2,
                 boxShadow: 1
@@ -128,4 +128,4 @@ const AuthorDetailPage: React.FC = () => {
   );
 };
 
-export default AuthorDetailPage; 
+export default AuthorDetailPage;

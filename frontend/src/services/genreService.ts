@@ -13,4 +13,4 @@ export const getGenreById = async (genreId: number): Promise<Genre | null> =>
   apiCallWrapper(() => genresApi.getGenreApiV1GenresGenreIdGet({ genreId }), null);
 
 export const getMangasByGenreId = async (genreId: number): Promise<Manga[]> =>
-  apiCallWrapper(() => mangasApi.getMangasByGenreApiV1MangasByGenreGenreIdGet({ genreId }), []); 
+  apiCallWrapper(() => mangasApi.getMangasByGenreApiV1MangasByGenreGenreIdGet({ genreId }), []);

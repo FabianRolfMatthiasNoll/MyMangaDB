@@ -1,13 +1,16 @@
+import json
 import os
 import platform
-import urllib.request
-import zipfile
-import json
 import shutil
 import subprocess
+import urllib.request
+import zipfile
 from tempfile import TemporaryDirectory
 
-CHROMEDRIVER_URL = "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json"
+CHROMEDRIVER_URL = (
+    "https://googlechromelabs.github.io/chrome-for-testing/"
+    "known-good-versions-with-downloads.json"
+)
 
 
 def get_chrome_version():

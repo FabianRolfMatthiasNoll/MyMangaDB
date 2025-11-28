@@ -1,7 +1,12 @@
-from typing import List as TypedList, Optional
+from typing import List as TypedList
+from typing import Optional
+
 from sqlalchemy.orm import Session
+
 from backend.app.models import List as ListModel
-from backend.app.schemas import ListCreate, ListModel as ListSchema
+from backend.app.schemas import ListCreate
+from backend.app.schemas import ListModel as ListSchema
+
 from .base import BaseRepository, RepositoryError
 
 
@@ -64,9 +69,7 @@ class ListRepository:
         result = []
         for list_ in lists_:
             manga_count = len(list_.mangas)
-            result.append({
-                "id": list_.id,
-                "name": list_.name,
-                "mangaCount": manga_count
-            })
+            result.append(
+                {"id": list_.id, "name": list_.name, "mangaCount": manga_count}
+            )
         return result

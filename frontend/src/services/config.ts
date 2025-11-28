@@ -15,4 +15,4 @@ export const configuration = new Configuration({
   },
 });
 
-export const getImageUrl = (path: string) => `${API_URL}/api/v1/images/${path}`; 
+export const getImageUrl = (path: string) => `${API_URL}/api/v1/images/${path}`;

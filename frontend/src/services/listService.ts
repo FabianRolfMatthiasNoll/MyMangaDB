@@ -61,4 +61,4 @@ export const deleteList = async (listId: number): Promise<ListModel | null> =>
       listId
     }),
     null
-  ); 
+  );

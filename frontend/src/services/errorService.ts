@@ -40,4 +40,4 @@ export const apiCallWrapper = async <T>(apiCall: () => Promise<T>, fallback: T) 
     await handleApiError(error);
     return fallback;
   }
-}; 
+};

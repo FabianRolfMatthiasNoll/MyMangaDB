@@ -104,9 +104,9 @@ const CreateManga: React.FC = () => {
       <Box p={3}>
         <Paper elevation={0} sx={{ p: 3, backgroundColor: 'transparent' }}>
           <Box display="flex" alignItems="center" mb={3}>
-            <IconButton 
-              onClick={() => navigate(-1)} 
-              sx={{ 
+            <IconButton
+              onClick={() => navigate(-1)}
+              sx={{
                 mr: 2,
                 backgroundColor: 'background.paper',
                 '&:hover': { backgroundColor: 'action.hover' }
@@ -131,4 +131,4 @@ const CreateManga: React.FC = () => {
   );
 };
 
-export default CreateManga; 
+export default CreateManga;

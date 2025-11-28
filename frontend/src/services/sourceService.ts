@@ -22,4 +22,4 @@ export const createSource = async (sourceCreate: SourceCreate) =>
   apiCallWrapper(
     () => sourcesApi.createSourceApiV1SourcesCreatePost({ sourceCreate }),
     null
-  ); 
+  );

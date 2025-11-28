@@ -118,7 +118,7 @@ const SettingsPage: React.FC = () => {
           <Typography variant="h6" gutterBottom>
             Data Paths
           </Typography>
-          
+
           <Box sx={{ mb: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <TextField
@@ -198,4 +198,4 @@ const SettingsPage: React.FC = () => {
   );
 };
 
-export default SettingsPage; 
+export default SettingsPage;

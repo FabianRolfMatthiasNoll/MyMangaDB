@@ -66,7 +66,7 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
     bottom: 0,
     opacity: 0,
     transition: "opacity 0.3s ease",
-    background: `linear-gradient(to bottom, 
+    background: `linear-gradient(to bottom,
       ${alpha(theme.palette.background.paper, 0)} 0%,
       ${alpha(theme.palette.background.paper, 0.8)} 50%,
       ${alpha(theme.palette.background.paper, 0.95)} 100%)`,
@@ -114,11 +114,11 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
             sx={cardMediaStyle}
           />
           <Box className="cover" sx={coverStyles}>
-            <Box sx={{ 
-              position: "absolute", 
-              bottom: 0, 
-              left: 0, 
-              right: 0, 
+            <Box sx={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
               p: 2,
               display: "flex",
               flexDirection: "column",

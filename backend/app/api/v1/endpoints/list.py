@@ -1,9 +1,11 @@
 from typing import List as TypedList
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from backend.app.schemas import ListCreate, ListModel
-from backend.app.repositories.list import ListRepository
+
 from backend.app.database import get_db
+from backend.app.repositories.list import ListRepository
+from backend.app.schemas import ListCreate, ListModel
 
 router = APIRouter()
 

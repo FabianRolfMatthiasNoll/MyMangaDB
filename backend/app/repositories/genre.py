@@ -1,8 +1,12 @@
 from typing import List, Optional
+
 from sqlalchemy.orm import Session
+
 from backend.app.models import Genre as GenreModel
 from backend.app.schemas import Genre, GenreCreate
+
 from .base import BaseRepository, RepositoryError
+
 
 class GenreRepository:
     @staticmethod

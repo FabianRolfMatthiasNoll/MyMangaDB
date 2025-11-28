@@ -223,7 +223,7 @@ const MangaDetails: React.FC = () => {
                 borderRadius: 2,
                 overflow: "hidden",
                 height: "fit-content",
-                background: theme.palette.mode === "dark" 
+                background: theme.palette.mode === "dark"
                   ? alpha(theme.palette.background.paper, 0.8)
                   : alpha(theme.palette.background.paper, 0.9),
               }}
@@ -257,7 +257,7 @@ const MangaDetails: React.FC = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    bgcolor: theme.palette.mode === "dark" 
+                    bgcolor: theme.palette.mode === "dark"
                       ? alpha(theme.palette.grey[900], 0.8)
                       : alpha(theme.palette.grey[200], 0.8),
                   }}
@@ -280,7 +280,7 @@ const MangaDetails: React.FC = () => {
                 height: "fit-content",
                 display: "flex",
                 flexDirection: "column",
-                background: theme.palette.mode === "dark" 
+                background: theme.palette.mode === "dark"
                   ? alpha(theme.palette.background.paper, 0.8)
                   : alpha(theme.palette.background.paper, 0.9),
               }}
@@ -324,7 +324,7 @@ const MangaDetails: React.FC = () => {
                   <Chip
                     label={manga.category}
                     sx={{
-                      bgcolor: theme.palette.mode === "dark" 
+                      bgcolor: theme.palette.mode === "dark"
                         ? alpha(theme.palette.primary.main, 0.9)
                         : theme.palette.primary.main,
                       color: "white",
@@ -430,7 +430,7 @@ const MangaDetails: React.FC = () => {
               sx={{
                 p: 3,
                 borderRadius: 2,
-                background: theme.palette.mode === "dark" 
+                background: theme.palette.mode === "dark"
                   ? alpha(theme.palette.background.paper, 0.8)
                   : alpha(theme.palette.background.paper, 0.9),
               }}
@@ -450,8 +450,8 @@ const MangaDetails: React.FC = () => {
         onClose={handleCloseNotification}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert 
-          onClose={handleCloseNotification} 
+        <Alert
+          onClose={handleCloseNotification}
           severity={notification.severity}
           sx={{ width: '100%' }}
         >

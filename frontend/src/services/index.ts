@@ -7,4 +7,4 @@ export * from './listService';
 export * from './mangaService';
 export * from './sourceService';
 export * from './settingsService';
-export * from './databaseService'; 
+export * from './databaseService';

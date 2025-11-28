@@ -1,28 +1,31 @@
-from typing import List as TypedList, Optional
-from sqlalchemy import asc, desc
-from sqlalchemy.orm import Session
-from backend.app.models import (
-    Manga as MangaModel,
-    Author as AuthorModel,
-    Genre as GenreModel,
-    Volume as VolumeModel,
-    List as ListModel,
-    manga_genre,
-)
-from backend.app.schemas import MangaCreate, Manga
-from .base import BaseRepository, RepositoryError
+import logging
 import os
 import uuid
+from typing import List as TypedList
+from typing import Optional
+
 import requests
+from sqlalchemy import asc, desc
+from sqlalchemy.orm import Session
+
 from backend.app import settings
-import logging
+from backend.app.models import Author as AuthorModel
+from backend.app.models import Genre as GenreModel
+from backend.app.models import List as ListModel
+from backend.app.models import Manga as MangaModel
+from backend.app.models import Volume as VolumeModel
+from backend.app.schemas import Manga, MangaCreate
+
+from .base import BaseRepository, RepositoryError
 
 logger = logging.getLogger(__name__)
 
 
 class MangaRepository(BaseRepository):
     @staticmethod
-    def get_by_title(db: Session, title: str, language: Optional[str] = None) -> Optional[Manga]:
+    def get_by_title(
+        db: Session, title: str, language: Optional[str] = None
+    ) -> Optional[Manga]:
         query = db.query(MangaModel).filter(MangaModel.title == title)
         if language:
             query = query.filter(MangaModel.language == language)
@@ -43,7 +46,8 @@ class MangaRepository(BaseRepository):
         sort: Optional[str] = "asc",
     ) -> TypedList[Manga]:
         """
-        Holt Mangas mit Paging. Optional: Filter nach Titel (ILIKE '%search%'), Sortierung.
+        Holt Mangas mit Paging.
+        Optional: Filter nach Titel (ILIKE '%search%'), Sortierung.
         """
         query = db.query(MangaModel)
 
@@ -76,14 +80,19 @@ class MangaRepository(BaseRepository):
     @staticmethod
     def create(db: Session, manga_create: MangaCreate) -> Manga:
         # Check if manga with same title AND language exists
-        existing_manga = db.query(MangaModel).filter(
-            MangaModel.title == manga_create.title,
-            MangaModel.language == manga_create.language
-        ).first()
-        
+        existing_manga = (
+            db.query(MangaModel)
+            .filter(
+                MangaModel.title == manga_create.title,
+                MangaModel.language == manga_create.language,
+            )
+            .first()
+        )
+
         if existing_manga:
             raise RepositoryError(
-                f"Manga '{manga_create.title}' with language '{manga_create.language}' already exists"
+                f"Manga '{manga_create.title}' with language "
+                f"'{manga_create.language}' already exists"
             )
 
         # Process related entities using the common find_or_create functionality.
@@ -149,7 +158,9 @@ class MangaRepository(BaseRepository):
         if manga_data.cover_image != db_manga.cover_image:
             # Remove old cover image if it exists
             if db_manga.cover_image is not None:
-                old_cover_path = os.path.join(settings.IMAGE_SAVE_PATH, str(db_manga.cover_image))
+                old_cover_path = os.path.join(
+                    settings.IMAGE_SAVE_PATH, str(db_manga.cover_image)
+                )
                 if os.path.exists(old_cover_path):
                     try:
                         os.remove(old_cover_path)
@@ -276,9 +287,9 @@ class MangaRepository(BaseRepository):
     def _handle_cover_image(cover_image_url: Optional[str]) -> Optional[str]:
         if not cover_image_url:
             return None
-            
+
         # If it's a URL (from Mangapassion), download it
-        if cover_image_url.startswith(('http://', 'https://')):
+        if cover_image_url.startswith(("http://", "https://")):
             unique_id = str(uuid.uuid4())
             filename = f"{unique_id}.jpg"
             save_path = os.path.join(settings.IMAGE_SAVE_PATH, filename)
@@ -288,8 +299,9 @@ class MangaRepository(BaseRepository):
                 verify_ssl = os.getenv("DISABLE_SSL_VERIFY", "false").lower() != "true"
                 if not verify_ssl:
                     import urllib3
+
                     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-                
+
                 response = requests.get(cover_image_url, verify=verify_ssl)
                 response.raise_for_status()
                 with open(save_path, "wb") as f:

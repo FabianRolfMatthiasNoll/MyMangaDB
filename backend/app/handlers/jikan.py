@@ -1,15 +1,11 @@
-import requests
 import os
-import urllib3
 from typing import Dict, List
-from backend.app.schemas import (
-    AuthorCreate,
-    Category,
-    GenreCreate,
-    MangaCreate,
-    OverallStatus,
-)
+
+import requests
+import urllib3
+
 from backend.app.handlers.base import BaseHandler
+from backend.app.schemas import AuthorCreate, Category, GenreCreate, MangaCreate
 
 
 class JikanHandler(BaseHandler):
@@ -37,18 +33,21 @@ class JikanHandler(BaseHandler):
 
     def scrape(self, url: str) -> MangaCreate:
         # url in this context is the mal_id passed from search results
-        # If the user passes a full URL, we might need to parse it, 
-        # but based on MangaPassion implementation, the 'link' from search is passed here.
+        # If the user passes a full URL, we might need to parse it,
+        # but based on MangaPassion implementation, the 'link' from search
+        # is passed here.
         # In MangaPassion search: "link": f"{self.base_url}/editions/{manga_id}"
         # In Jikan search above: "link": str(mal_id)
-        
-        # So if url is just digits, treat it as ID. If it's a full URL, try to extract ID?
+
+        # So if url is just digits, treat it as ID.
+        # If it's a full URL, try to extract ID?
         # Let's assume it's the ID for now as that's what we return in search.
-        
+
         manga_id = url
         if url.startswith("http"):
-             # If it's a full URL, we might need to handle it, but for now let's assume ID
-             pass
+            # If it's a full URL, we might need to handle it,
+            # but for now let's assume ID
+            pass
 
         api_url = f"{self.base_url}/manga/{manga_id}"
         response = requests.get(api_url, verify=self.verify_ssl)
@@ -84,7 +83,7 @@ class JikanHandler(BaseHandler):
         authors = []
         for author in data.get("authors", []):
             authors.append(author.get("name"))
-        
+
         # Genres (include themes and demographics)
         genres = []
         for genre in data.get("genres", []):
@@ -105,5 +104,5 @@ class JikanHandler(BaseHandler):
             genres=[GenreCreate(name=genre) for genre in list(set(genres))],
             lists=[],
             volumes=[],
-            language="EN" # Jikan is primarily for English/International audience info
+            language="EN",  # Jikan is primarily for English/International audience info
         )

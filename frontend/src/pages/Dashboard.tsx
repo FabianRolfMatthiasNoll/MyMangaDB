@@ -45,13 +45,13 @@ const Dashboard: React.FC = () => {
     try {
       const nextPage = reset ? 1 : page;
       const newMangas = await getMangas(nextPage, limit, searchQuery, sortOrder);
-      
+
       if (reset || nextPage === 1) {
         setMangas(newMangas);
       } else {
         setMangas(prevMangas => [...prevMangas, ...newMangas]);
       }
-      
+
       setPage(nextPage + 1);
       setHasMore(newMangas.length === limit);
     } catch (error) {

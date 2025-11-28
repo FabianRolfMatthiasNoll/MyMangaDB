@@ -13,4 +13,4 @@ export const getAuthorById = async (authorId: number): Promise<Author | null> =>
   apiCallWrapper(() => authorsApi.getAuthorApiV1AuthorsAuthorIdGet({ authorId }), null);
 
 export const getMangasByAuthorId = async (authorId: number): Promise<Manga[]> =>
-  apiCallWrapper(() => mangasApi.getMangasByAuthorApiV1MangasByAuthorAuthorIdGet({ authorId }), []); 
+  apiCallWrapper(() => mangasApi.getMangasByAuthorApiV1MangasByAuthorAuthorIdGet({ authorId }), []);

@@ -26,8 +26,8 @@ const MangaList: React.FC<MangaListProps> = ({ mangas, isMobile, listId }) => {
         <Grid container spacing={2}>
           {mangas.map((manga) => (
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={manga.id}>
-              <MangaCard 
-                manga={manga} 
+              <MangaCard
+                manga={manga}
                 listId={listId}
               />
             </Grid>

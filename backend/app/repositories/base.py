@@ -1,4 +1,5 @@
 from typing import Any, Type
+
 from sqlalchemy.orm import Session
 
 
@@ -31,7 +32,8 @@ class BaseRepository:
         instance = db.query(model).filter(field == value).first()
         if instance:
             return instance
-        # Support both simple values and objects with model_dump() (e.g. Pydantic models)
+        # Support both simple values and objects with model_dump()
+        # (e.g. Pydantic models)
         if hasattr(value, "model_dump"):
             data = value.model_dump()
         elif isinstance(value, dict):

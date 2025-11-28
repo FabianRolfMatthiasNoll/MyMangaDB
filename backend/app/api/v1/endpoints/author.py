@@ -1,9 +1,11 @@
 from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+
 from backend.app.database import get_db
-from backend.app.schemas import Author, AuthorCreate
 from backend.app.repositories.author import AuthorRepository
+from backend.app.schemas import Author, AuthorCreate
 
 router = APIRouter()
 

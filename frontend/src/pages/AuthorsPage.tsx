@@ -59,10 +59,10 @@ const AuthorsPage: React.FC = () => {
           </Box>
 
           {authors.length === 0 ? (
-            <Box 
-              textAlign="center" 
-              py={8} 
-              sx={{ 
+            <Box
+              textAlign="center"
+              py={8}
+              sx={{
                 backgroundColor: 'background.paper',
                 borderRadius: 2,
                 boxShadow: 1
@@ -93,17 +93,17 @@ const AuthorsPage: React.FC = () => {
                     onClick={() => handleAuthorClick(author.id)}
                   >
                     <Box>
-                      <Typography 
-                        variant={isMobile ? "subtitle1" : "h6"} 
-                        sx={{ 
+                      <Typography
+                        variant={isMobile ? "subtitle1" : "h6"}
+                        sx={{
                           fontWeight: 'bold',
                           mb: 1
                         }}
                       >
                         {author.name}
                       </Typography>
-                      <Typography 
-                        variant="body2" 
+                      <Typography
+                        variant="body2"
                         color="text.secondary"
                         sx={{
                           display: 'flex',
@@ -125,4 +125,4 @@ const AuthorsPage: React.FC = () => {
   );
 };
 
-export default AuthorsPage; 
+export default AuthorsPage;

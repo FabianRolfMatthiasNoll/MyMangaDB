@@ -1,7 +1,11 @@
-from typing import List as TypedList, Optional
+from typing import List as TypedList
+from typing import Optional
+
 from sqlalchemy.orm import Session
+
 from backend.app.models import Source as SourceModel
 from backend.app.schemas import Source, SourceCreate
+
 from .base import BaseRepository, RepositoryError
 
 

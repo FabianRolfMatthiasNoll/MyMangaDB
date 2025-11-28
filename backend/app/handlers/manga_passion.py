@@ -1,10 +1,12 @@
-import requests
 import os
-import urllib3
-from typing import Dict, List
+from typing import List
 from urllib.parse import urljoin
-from backend.app.schemas import AuthorCreate, Category, GenreCreate, MangaCreate
+
+import requests
+import urllib3
+
 from backend.app.handlers.base import BaseHandler
+from backend.app.schemas import AuthorCreate, Category, GenreCreate, MangaCreate
 
 
 class MangaPassionHandler(BaseHandler):
@@ -16,7 +18,8 @@ class MangaPassionHandler(BaseHandler):
 
     def search(self, search_term: str) -> List[MangaCreate]:
         search_url = (
-            f"{self.base_url}/editions?search[desc]={search_term}&itemsPerPage=10&page=1"
+            f"{self.base_url}/editions?"
+            f"search[desc]={search_term}&itemsPerPage=10&page=1"
         )
         response = requests.get(search_url, verify=self.verify_ssl)
         response.raise_for_status()
@@ -29,7 +32,8 @@ class MangaPassionHandler(BaseHandler):
             manga_id = item.get("id")
             if title and manga_id:
                 # Scrape details for each result to populate MangaCreate
-                # Note: This is N+1 requests, but necessary for MangaPassion as search results are minimal
+                # Note: This is N+1 requests, but necessary for MangaPassion
+                # as search results are minimal
                 link = f"{self.base_url}/editions/{manga_id}"
                 try:
                     manga = self.scrape(link)

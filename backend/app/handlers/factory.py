@@ -1,6 +1,6 @@
 # factory.py
-from .manga_passion import MangaPassionHandler
 from .jikan import JikanHandler
+from .manga_passion import MangaPassionHandler
 
 
 class HandlerFactory:

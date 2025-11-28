@@ -42,7 +42,7 @@ const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId
       }
     };
   }, [manga.coverImage]);
-  
+
   const getStatusColor = (status: string) => {
     const statusColors: { [key: string]: string } = {
       "Not Started": theme.palette.error.main,
@@ -161,4 +161,4 @@ const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId
   );
 };
 
-export default MobileMangaListItem; 
+export default MobileMangaListItem;

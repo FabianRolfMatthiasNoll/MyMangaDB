@@ -131,10 +131,10 @@ const ListsPage: React.FC = () => {
           </Box>
 
           {lists.length === 0 ? (
-            <Box 
-              textAlign="center" 
-              py={8} 
-              sx={{ 
+            <Box
+              textAlign="center"
+              py={8}
+              sx={{
                 backgroundColor: 'background.paper',
                 borderRadius: 2,
                 boxShadow: 1
@@ -152,7 +152,7 @@ const ListsPage: React.FC = () => {
                 size="large"
                 startIcon={<AddIcon />}
                 onClick={() => handleOpenDialog()}
-                sx={{ 
+                sx={{
                   px: isMobile ? 3 : 4,
                   py: isMobile ? 1 : 1.5,
                   borderRadius: 2,
@@ -186,17 +186,17 @@ const ListsPage: React.FC = () => {
                       onClick={() => handleListClick(list.id)}
                     >
                       <Box>
-                        <Typography 
-                          variant={isMobile ? "subtitle1" : "h6"} 
-                          sx={{ 
+                        <Typography
+                          variant={isMobile ? "subtitle1" : "h6"}
+                          sx={{
                             fontWeight: 'bold',
                             mb: 1
                           }}
                         >
                           {list.name}
                         </Typography>
-                        <Typography 
-                          variant="body2" 
+                        <Typography
+                          variant="body2"
                           color="text.secondary"
                           sx={{
                             display: 'flex',
@@ -247,8 +247,8 @@ const ListsPage: React.FC = () => {
           )}
         </Paper>
 
-        <Dialog 
-          open={dialogOpen} 
+        <Dialog
+          open={dialogOpen}
           onClose={handleCloseDialog}
           PaperProps={{
             sx: {
@@ -273,20 +273,20 @@ const ListsPage: React.FC = () => {
             />
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 2 }}>
-            <Button 
+            <Button
               onClick={handleCloseDialog}
-              sx={{ 
+              sx={{
                 textTransform: 'none',
                 px: 2
               }}
             >
               Cancel
             </Button>
-            <Button 
-              onClick={handleSaveList} 
+            <Button
+              onClick={handleSaveList}
               color="primary"
               variant="contained"
-              sx={{ 
+              sx={{
                 textTransform: 'none',
                 px: 3
               }}
@@ -300,4 +300,4 @@ const ListsPage: React.FC = () => {
   );
 };
 
-export default ListsPage; 
+export default ListsPage;

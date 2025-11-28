@@ -1,7 +1,10 @@
 from typing import List, Optional
+
 from sqlalchemy.orm import Session
+
 from backend.app.models import Author as AuthorModel
 from backend.app.schemas import Author, AuthorCreate
+
 from .base import BaseRepository, RepositoryError
 
 

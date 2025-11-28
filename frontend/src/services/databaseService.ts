@@ -14,15 +14,15 @@ class DatabaseService {
             console.log('Starting database export');
             const response = await this.api.exportDatabaseApiV1DatabaseExportGetRaw();
             console.log('Received response from server');
-            
+
             // Get the blob from the response
             const blob = await response.raw.blob();
             console.log(`Received Blob of size: ${blob.size} bytes`);
-            
+
             if (!blob || blob.size === 0) {
                 throw new Error('Received empty response from server');
             }
-            
+
             return blob;
         } catch (error) {
             console.error('Error exporting database:', error);
@@ -43,4 +43,4 @@ class DatabaseService {
     }
 }
 
-export const databaseService = new DatabaseService(); 
+export const databaseService = new DatabaseService();

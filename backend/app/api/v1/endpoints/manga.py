@@ -1,16 +1,20 @@
 from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-from backend.app.schemas import MangaCreate, Manga
+
 from backend.app.database import get_db
-from backend.app.repositories import MangaRepository, ListRepository
+from backend.app.repositories import MangaRepository
+from backend.app.schemas import Manga, MangaCreate
 
 router = APIRouter()
 
 
 @router.post("/create", response_model=Manga, status_code=status.HTTP_201_CREATED)
 def create_manga(manga: MangaCreate, db: Session = Depends(get_db)):
-    db_manga = MangaRepository.get_by_title(db, title=manga.title, language=manga.language)
+    db_manga = MangaRepository.get_by_title(
+        db, title=manga.title, language=manga.language
+    )
     if db_manga:
         raise HTTPException(status_code=400, detail="Manga already exists")
     return MangaRepository.create(db, manga)
@@ -24,7 +28,7 @@ def create_manga_list(mangas: List[MangaCreate], db: Session = Depends(get_db)):
         return MangaRepository.create_batch(db, mangas)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="An unexpected error occurred")
 
 
@@ -61,7 +65,7 @@ def get_manga_by_id(manga_id: int, db: Session = Depends(get_db)):
         if db_manga is None:
             raise HTTPException(status_code=404, detail="Manga not found")
         return db_manga
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to fetch manga by ID")
 
 
@@ -69,7 +73,7 @@ def get_manga_by_id(manga_id: int, db: Session = Depends(get_db)):
 def get_mangas_by_genre(genre_id: int, db: Session = Depends(get_db)):
     try:
         return MangaRepository.get_by_genre(db, genre_id)
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to fetch mangas by genre")
 
 
@@ -77,7 +81,7 @@ def get_mangas_by_genre(genre_id: int, db: Session = Depends(get_db)):
 def get_mangas_by_author(author_id: int, db: Session = Depends(get_db)):
     try:
         return MangaRepository.get_by_author(db, author_id)
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to fetch mangas by author")
 
 
@@ -85,7 +89,7 @@ def get_mangas_by_author(author_id: int, db: Session = Depends(get_db)):
 def get_mangas_by_list(list_id: int, db: Session = Depends(get_db)):
     try:
         return MangaRepository.get_by_list(db, list_id)
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to fetch mangas by list")
 
 
@@ -93,7 +97,7 @@ def get_mangas_by_list(list_id: int, db: Session = Depends(get_db)):
 def get_mangas_by_star_rating(rating: float, db: Session = Depends(get_db)):
     try:
         return MangaRepository.get_by_star_rating(db, rating)
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to fetch mangas by rating")
 
 
@@ -106,7 +110,7 @@ def update_manga(manga: Manga, db: Session = Depends(get_db)):
         return MangaRepository.update(db, manga_data=manga)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to update manga")
 
 
@@ -117,5 +121,5 @@ def delete_manga(manga_id: int, db: Session = Depends(get_db)):
         if db_manga is None:
             raise HTTPException(status_code=404, detail="Manga not found")
         return MangaRepository.delete(db, manga_id=manga_id)
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to delete manga")

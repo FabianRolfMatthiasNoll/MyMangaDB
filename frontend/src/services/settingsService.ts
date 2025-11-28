@@ -36,4 +36,4 @@ export const updateSetting = async (key: string, value: string, migrate: boolean
     },
     defaultSettings
   );
-}; 
+};
