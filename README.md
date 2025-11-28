@@ -27,32 +27,48 @@ Due to the varied nature of manga provider websites, the focus is on building an
 
 ### Release Version
 
-To launch the application, simply open the downloaded release file. This action will prompt a window to appear, signifying that the service is now active. Upon initiation, the app will create a local database on your device. Note that the service will cease operation the moment the window is closed.  
-  
+To launch the application, simply open the downloaded release file. This action will prompt a window to appear, signifying that the service is now active. Upon initiation, the app will create a local database on your device. Note that the service will cease operation the moment the window is closed.
+
 The database location varies by operating system:
 
 - **Windows:** `User/Appdata/manga.db`
 - **Linux:** `user/.config/manga.db`
 
-### Source Code
+### Development Setup
 
-Setting up the development environment for the first time involves creating a virtual environment. Execute the following command to do so:  
-`python -m venv /path/to/new/virtual/environment`  
-  
-Afterward, navigate to the main directory and run the command below to install all required packages:  
-`pip install -r requirements.txt`  
-  
-**Note for RaspberryPi users:** use the `requirements_rpi.txt`. Because `PyQt5` is making compatibility issues.  
-  
-In the `frontend` directory, you'll need to run:  `npm install`  
-This is necessary to install all Node modules for the frontend.  
-  
-To initiate both the backend and frontend, refer to the settings provided in the `vscode launch.json`.  
-**Please exercise caution** in using the application extensively, as future updates may introduce changes to the database schema.  
+We use [Task](https://taskfile.dev/) to manage our development commands.
+
+**Prerequisites:**
+- Python 3.12+
+- Node.js 20+
+- [Task](https://taskfile.dev/installation/)
+
+**Quick Start:**
+
+1.  **Setup the environment:**
+    This command will create the virtual environment, install dependencies (backend & frontend), generate `.env` files, and install git hooks.
+    ```bash
+    task setup
+    ```
+
+2.  **Run the application:**
+    Starts both backend and frontend in development mode.
+    ```bash
+    task dev
+    ```
+
+**Quality Assurance:**
+
+- **Run Tests:** `task backend:test`
+- **Linting:** `task lint` (Runs pre-commit hooks manually)
+
+**Note for RaspberryPi users:** use the `requirements_rpi.txt`. Because `PyQt5` is making compatibility issues.
+
+**Please exercise caution** in using the application extensively, as future updates may introduce changes to the database schema.
 
 ### Hosting
 
-For hosting, a Docker compose file is provided. Update the following settings in the file:  
+For hosting, a Docker compose file is provided. Update the following settings in the file:
 
 ```yml
 API_TOKEN: "YOUR_API_TOKEN_HERE" # Set the API Token twice for frontend-backend communication
