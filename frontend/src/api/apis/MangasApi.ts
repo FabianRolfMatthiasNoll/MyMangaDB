@@ -93,6 +93,11 @@ export class MangasApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+        }
+
         const response = await this.request({
             path: `/api/v1/mangas/create`,
             method: 'POST',
@@ -129,6 +134,11 @@ export class MangasApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+        }
+
         const response = await this.request({
             path: `/api/v1/mangas/create-list`,
             method: 'POST',
@@ -163,6 +173,11 @@ export class MangasApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+        }
+
         const response = await this.request({
             path: `/api/v1/mangas/{manga_id}`.replace(`{${"manga_id"}}`, encodeURIComponent(String(requestParameters['mangaId']))),
             method: 'DELETE',
@@ -195,6 +210,11 @@ export class MangasApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+        }
 
         const response = await this.request({
             path: `/api/v1/mangas/{manga_id}`.replace(`{${"manga_id"}}`, encodeURIComponent(String(requestParameters['mangaId']))),
@@ -239,6 +259,11 @@ export class MangasApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+        }
+
         const response = await this.request({
             path: `/api/v1/mangas/getAll`,
             method: 'GET',
@@ -273,6 +298,11 @@ export class MangasApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+        }
+
         const response = await this.request({
             path: `/api/v1/mangas/by-author/{author_id}`.replace(`{${"author_id"}}`, encodeURIComponent(String(requestParameters['authorId']))),
             method: 'GET',
@@ -305,6 +335,11 @@ export class MangasApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+        }
 
         const response = await this.request({
             path: `/api/v1/mangas/by-genre/{genre_id}`.replace(`{${"genre_id"}}`, encodeURIComponent(String(requestParameters['genreId']))),
@@ -339,6 +374,11 @@ export class MangasApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+        }
+
         const response = await this.request({
             path: `/api/v1/mangas/by-list/{list_id}`.replace(`{${"list_id"}}`, encodeURIComponent(String(requestParameters['listId']))),
             method: 'GET',
@@ -371,6 +411,11 @@ export class MangasApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+        }
 
         const response = await this.request({
             path: `/api/v1/mangas/by-rating/{rating}`.replace(`{${"rating"}}`, encodeURIComponent(String(requestParameters['rating']))),
@@ -406,6 +451,11 @@ export class MangasApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+        }
 
         const response = await this.request({
             path: `/api/v1/mangas/update`,

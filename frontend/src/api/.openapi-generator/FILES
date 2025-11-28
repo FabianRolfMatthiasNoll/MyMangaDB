@@ -1,3 +1,4 @@
+apis/AuthApi.ts
 apis/AuthorsApi.ts
 apis/DatabaseApi.ts
 apis/DefaultApi.ts
@@ -7,6 +8,7 @@ apis/ListsApi.ts
 apis/MangasApi.ts
 apis/SettingsApi.ts
 apis/SourcesApi.ts
+apis/UsersApi.ts
 apis/index.ts
 index.ts
 models/Author.ts
@@ -21,8 +23,12 @@ models/Manga.ts
 models/MangaCreate.ts
 models/OverallStatus.ts
 models/ReadingStatus.ts
+models/Role.ts
 models/Source.ts
 models/SourceCreate.ts
+models/Token.ts
+models/User.ts
+models/UserUpdatePassword.ts
 models/ValidationError.ts
 models/ValidationErrorLocInner.ts
 models/Volume.ts
