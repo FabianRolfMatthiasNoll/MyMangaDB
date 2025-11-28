@@ -28,18 +28,22 @@ services:
     volumes:
       - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - traefik_proxy
 
   frontend:
     build:
       context: ./frontend/
+      args:
+        VITE_API_URL: https://<BackendDomain>
+        VITE_API_KEY: ${API_TOKEN}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`<FrontendDomain>`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls.certresolver=myresolver"
-    environment:
-      VITE_API_KEY: ${API_TOKEN}
-      VITE_API_URL: https://<BackendDomain>
+    networks:
+      - traefik_proxy
 
   backend:
     build:
@@ -54,3 +58,9 @@ services:
       FRONTEND_URL: https://<FrontendDomain>
     volumes:
       - database:/app/data
+    networks:
+      - traefik_proxy
+
+networks:
+  traefik_proxy:
+    external: true

@@ -7,6 +7,15 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
+
+# Accept build arguments
+ARG VITE_API_URL
+ARG VITE_API_KEY
+
+# Bake them into the build
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_API_KEY=$VITE_API_KEY
+
 RUN npm run build
 
 # Production stage
