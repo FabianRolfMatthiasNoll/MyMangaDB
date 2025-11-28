@@ -28,7 +28,7 @@ tasks:
         key = secrets.token_urlsafe(32)
 
         backend_content = f'''# API Security
-        API_TOKEN={key}
+        SECRET_KEY={key}
 
         # Frontend URL (for CORS)
         FRONTEND_URL=http://localhost:5173
@@ -43,7 +43,6 @@ tasks:
 
         frontend_content = f'''# API Configuration
         VITE_API_URL=http://localhost:8000
-        VITE_API_KEY={key}
         '''
 
         with open('backend/.env', 'w') as f:
@@ -115,6 +114,34 @@ tasks:
     dir: frontend
     cmds:
       - npm run lint
+
+  frontend:generate-api:
+    desc: Generate TypeScript API client from Backend
+    cmds:
+      - |
+        # Start backend in background and save PID
+        echo "Starting backend..."
+        sh -c 'echo $$ > backend.pid; exec backend/.venv/bin/uvicorn backend.app.main:app --port 8000' > /dev/null 2>&1 &
+
+        # Wait for PID file to exist
+        while [ ! -f backend.pid ]; do sleep 0.1; done
+        BACKEND_PID=$(cat backend.pid)
+        echo "Backend PID: $BACKEND_PID"
+
+        # Ensure backend is stopped on exit
+        trap "kill \$(cat backend.pid) || true; rm backend.pid" EXIT
+
+        # Wait for backend to be ready
+        echo "Waiting for backend to start..."
+        sleep 5
+
+        # Generate API client
+        echo "Generating API client..."
+        (cd frontend && npx @openapitools/openapi-generator-cli generate \
+          -i http://localhost:8000/openapi.json \
+          -g typescript-fetch \
+          -o src/api \
+          --additional-properties=typescriptThreePlus=true)
 
   # Docker Tasks
   docker:build:
