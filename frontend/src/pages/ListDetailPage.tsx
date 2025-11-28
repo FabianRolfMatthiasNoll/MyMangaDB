@@ -11,7 +11,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { getListById, updateList, deleteList } from "../services/listService";
+import { getListById } from "../services/listService";
 import { Manga, ListModel } from "../api/models";
 import { getMangasByListId } from "../services/mangaService";
 import MangaList from "../components/MangaList";

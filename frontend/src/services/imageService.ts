@@ -46,9 +46,9 @@ export const uploadMangaCover = async (file: File): Promise<string> => {
   }
 };
 
-export const saveMangaCover = async (file: File): Promise<string> => {
+export const saveMangaCover = async (file: File, customFilename?: string): Promise<string> => {
   try {
-    const filename = `${Date.now()}_${file.name}`;
+    const filename = customFilename || `${Date.now()}_${file.name}`;
     const response = await imagesApi.saveMangaCoverApiV1ImagesMangaSavePost({ file, filename });
     return response.filename;
   } catch (error) {
