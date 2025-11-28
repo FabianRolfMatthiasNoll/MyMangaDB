@@ -1,5 +1,4 @@
 import { DatabaseApi } from '../api/apis/DatabaseApi';
-import { Configuration } from '../api/runtime';
 import { configuration } from './config';
 
 class DatabaseService {

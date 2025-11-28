@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import MenuIcon from "@mui/icons-material/Menu";
+import LogoutIcon from "@mui/icons-material/Logout";
 import {
   AppBar,
   Box,
@@ -13,7 +14,9 @@ import {
   Typography,
   useTheme,
   useMediaQuery,
+  Tooltip,
 } from "@mui/material";
+import { logout } from "../services/auth";
 
 interface NavBarProps {
   toggleThemeMode: () => void;
@@ -41,6 +44,10 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
     setAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    logout();
+  };
+
   const mobileMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -62,6 +69,9 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
           {item.text}
         </MenuItem>
       ))}
+      <MenuItem onClick={handleLogout}>
+        Logout
+      </MenuItem>
     </Menu>
   );
 
@@ -178,6 +188,13 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
                 <DarkModeRoundedIcon />
               )}
             </IconButton>
+            {!isMobile && (
+              <Tooltip title="Logout">
+                <IconButton onClick={handleLogout} sx={{ alignSelf: "center" }}>
+                  <LogoutIcon />
+                </IconButton>
+              </Tooltip>
+            )}
           </Box>
         </Box>
       </Toolbar>
