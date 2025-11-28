@@ -9,9 +9,10 @@ tasks:
   setup:
     desc: Install all dependencies and setup environment
     cmds:
-      - task: setup:env
-      - task: backend:install
-      - task: frontend:install
+      - task: "setup:env"
+      - task: "backend:install"
+      - task: "frontend:install"
+      - task: "git:hooks"
 
   setup:env:
     desc: Generate .env files with API keys
@@ -47,16 +48,16 @@ tasks:
 
         with open('backend/.env', 'w') as f:
             f.write(backend_content)
-            
+
         with open('frontend/.env', 'w') as f:
             f.write(frontend_content)
-            
+
         print('Generated .env files with new API key.')
         "
 
   dev:
     desc: Run both backend and frontend in parallel
-    deps: [backend:run, frontend:run]
+    deps: ["backend:run", "frontend:run"]
 
   # Backend Tasks
   backend:install:
@@ -79,6 +80,11 @@ tasks:
     dir: backend
     cmds:
       - echo "No linting configured yet. Consider adding flake8 or black."
+
+  backend:test:
+    desc: Run backend tests
+    cmds:
+      - export PYTHONPATH=$PYTHONPATH:$(pwd) && backend/.venv/bin/pytest backend/tests
 
   # Frontend Tasks
   frontend:install:
@@ -138,3 +144,13 @@ tasks:
       - rm -rf backend/.venv
       - rm -rf frontend/node_modules
       - rm -rf frontend/dist
+
+  git:hooks:
+    desc: Install git hooks
+    cmds:
+      - backend/.venv/bin/pre-commit install
+
+  lint:
+    desc: Run all linters
+    cmds:
+      - backend/.venv/bin/pre-commit run --all-files
