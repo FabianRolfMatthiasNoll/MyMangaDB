@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Avatar from "@mui/material/Avatar";
+import { useUser } from "../context/UserContext";
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -20,6 +21,7 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { refreshUser } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +29,7 @@ const LoginPage: React.FC = () => {
     setLoading(true);
     try {
       await login({ username, password });
+      await refreshUser();
       navigate("/");
     } catch (err) {
       setError("Invalid username or password");

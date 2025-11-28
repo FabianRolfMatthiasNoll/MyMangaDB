@@ -28,9 +28,16 @@ import GenresPage from "./pages/GenresPage";
 import GenreDetailPage from "./pages/GenreDetailPage";
 import LoginPage from "./pages/LoginPage";
 import { isAuthenticated } from "./services/auth";
+import { useUser } from "./context/UserContext";
 
 const PrivateRoutes = () => {
   return isAuthenticated() ? <Outlet /> : <Navigate to="/login" />;
+};
+
+const AdminRoutes = () => {
+  const { isAdmin, loading } = useUser();
+  if (loading) return null; // Or a loading spinner
+  return isAdmin ? <Outlet /> : <Navigate to="/" />;
 };
 
 function App() {
@@ -71,7 +78,6 @@ function App() {
                     <Routes>
                       <Route path="/" element={<Dashboard />} />
                       <Route path="/manga/:id" element={<MangaDetails />} />
-                      <Route path="/create-manga" element={<CreateManga />} />
                       <Route path="/lists" element={<ListsPage />} />
                       <Route
                         path="/lists/:listId"
@@ -87,7 +93,10 @@ function App() {
                         path="/genres/:genreId"
                         element={<GenreDetailPage />}
                       />
-                      <Route path="/settings" element={<SettingsPage />} />
+                      <Route element={<AdminRoutes />}>
+                        <Route path="/create-manga" element={<CreateManga />} />
+                        <Route path="/settings" element={<SettingsPage />} />
+                      </Route>
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Box>

@@ -17,6 +17,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { logout } from "../services/auth";
+import { useUser } from "../context/UserContext";
 
 interface NavBarProps {
   toggleThemeMode: () => void;
@@ -27,13 +28,14 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
   const location = useLocation();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { isAdmin } = useUser();
 
   const menuItems = [
     { text: "Dashboard", path: "/" },
     { text: "Lists", path: "/lists" },
     { text: "Authors", path: "/authors" },
     { text: "Genres", path: "/genres" },
-    { text: "Settings", path: "/settings" },
+    ...(isAdmin ? [{ text: "Settings", path: "/settings" }] : []),
   ];
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {

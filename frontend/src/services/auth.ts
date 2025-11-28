@@ -2,6 +2,7 @@ import {
   AuthApi,
   LoginAccessTokenApiV1AuthLoginPostRequest,
   Token,
+  User,
 } from "../api";
 import { configuration } from "./config";
 
@@ -31,4 +32,14 @@ export const logout = () => {
 
 export const isAuthenticated = (): boolean => {
   return !!localStorage.getItem("token");
+};
+
+export const getCurrentUser = async (): Promise<User> => {
+  try {
+    const user = await authApi.readUsersMeApiV1AuthMeGet();
+    return user;
+  } catch (error) {
+    console.error("Failed to fetch user:", error);
+    throw error;
+  }
 };

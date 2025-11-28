@@ -27,12 +27,14 @@ import { fetchMangaCoverImageAsBlobUrl } from "../services/imageService";
 import { getMangaDetails, updateMangaDetails, deleteManga } from "../services/mangaService";
 import { Manga } from "../api/models";
 import MangaForm from "../components/MangaForm";
+import { useUser } from "../context/UserContext";
 
 const MangaDetails: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
   const { id } = useParams<{ id: string }>();
+  const { isAdmin } = useUser();
   const [manga, setManga] = useState<Manga | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
   const [editMode, setEditMode] = useState<boolean>(false);
@@ -178,14 +180,16 @@ const MangaDetails: React.FC = () => {
         >
           {location.state?.from === 'list-detail' ? 'Back to List' : 'Back to Dashboard'}
         </Button>
-        <Box>
-          <IconButton onClick={handleToggleEditMode} sx={{ mr: 1 }}>
-            <EditIcon />
-          </IconButton>
-          <IconButton onClick={handleDeleteClick} color="error">
-            <DeleteIcon />
-          </IconButton>
-        </Box>
+        {isAdmin && (
+          <Box>
+            <IconButton onClick={handleToggleEditMode} sx={{ mr: 1 }}>
+              <EditIcon />
+            </IconButton>
+            <IconButton onClick={handleDeleteClick} color="error">
+              <DeleteIcon />
+            </IconButton>
+          </Box>
+        )}
       </Box>
 
       <Dialog

@@ -22,6 +22,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import { getListWithCount, createList, updateList, deleteList, ListWithCount } from "../services/listService";
+import { useUser } from "../context/UserContext";
 
 const ListsPage: React.FC = () => {
   const [lists, setLists] = useState<ListWithCount[]>([]);
@@ -32,6 +33,7 @@ const ListsPage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { isAdmin } = useUser();
 
   const fetchLists = async () => {
     try {
@@ -111,7 +113,7 @@ const ListsPage: React.FC = () => {
             <Typography variant={isMobile ? "h5" : "h4"} sx={{ fontWeight: 'bold' }}>
               My Lists
             </Typography>
-            {lists.length > 0 && (
+            {isAdmin && lists.length > 0 && (
               <Button
                 variant="contained"
                 color="primary"
@@ -146,22 +148,24 @@ const ListsPage: React.FC = () => {
               <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
                 Create your first list to start organizing your manga collection
               </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                startIcon={<AddIcon />}
-                onClick={() => handleOpenDialog()}
-                sx={{
-                  px: isMobile ? 3 : 4,
-                  py: isMobile ? 1 : 1.5,
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  fontSize: isMobile ? '1rem' : '1.1rem'
-                }}
-              >
-                Create Your First List
-              </Button>
+              {isAdmin && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  startIcon={<AddIcon />}
+                  onClick={() => handleOpenDialog()}
+                  sx={{
+                    px: isMobile ? 3 : 4,
+                    py: isMobile ? 1 : 1.5,
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontSize: isMobile ? '1rem' : '1.1rem'
+                  }}
+                >
+                  Create Your First List
+                </Button>
+              )}
             </Box>
           ) : (
             <Grid container spacing={isMobile ? 2 : 3}>
@@ -207,38 +211,40 @@ const ListsPage: React.FC = () => {
                           {list.mangaCount} manga{list.mangaCount !== 1 ? "s" : ""}
                         </Typography>
                       </Box>
-                      <Box>
-                        <Tooltip title="Edit List">
-                          <IconButton
-                            size="small"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleOpenDialog(list);
-                            }}
-                            sx={{
-                              backgroundColor: 'background.paper',
-                              '&:hover': { backgroundColor: 'action.hover' }
-                            }}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Delete List">
-                          <IconButton
-                            size="small"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteList(list.id);
-                            }}
-                            sx={{
-                              backgroundColor: 'background.paper',
-                              '&:hover': { backgroundColor: 'action.hover' }
-                            }}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
+                      {isAdmin && (
+                        <Box>
+                          <Tooltip title="Edit List">
+                            <IconButton
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenDialog(list);
+                              }}
+                              sx={{
+                                backgroundColor: 'background.paper',
+                                '&:hover': { backgroundColor: 'action.hover' }
+                              }}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete List">
+                            <IconButton
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteList(list.id);
+                              }}
+                              sx={{
+                                backgroundColor: 'background.paper',
+                                '&:hover': { backgroundColor: 'action.hover' }
+                              }}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                      )}
                     </Box>
                   </Paper>
                 </Grid>
