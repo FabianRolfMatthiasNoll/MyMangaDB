@@ -41,7 +41,6 @@ services:
     environment:
       VITE_API_KEY: ${API_TOKEN}
       VITE_API_URL: https://<BackendDomain>
-      AUTH_PWD: "<SomePassword>"
 
   backend:
     build:
