@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-latest]
 
     steps:
       - name: Checkout code
@@ -38,7 +38,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0 libwebkit2gtk-4.1-dev
+          sudo apt-get install -y libgirepository1.0-dev libgirepository-2.0-dev gir1.2-gtk-3.0 libwebkit2gtk-4.1-dev libglib2.0-dev
           pip install PyGObject
 
       - name: Build Frontend
@@ -52,8 +52,8 @@ jobs:
         run: |
           pyinstaller run.py --onefile --noconsole --add-data "./frontend/dist;dist" --name MyMangaDB --hidden-import=backend.app.main
 
-      - name: Build with PyInstaller (Unix)
-        if: runner.os != 'Windows'
+      - name: Build with PyInstaller (Linux)
+        if: runner.os == 'Linux'
         run: |
           pyinstaller run.py --onefile --noconsole --add-data "./frontend/dist:dist" --name MyMangaDB --hidden-import=backend.app.main
 
