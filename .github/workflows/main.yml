@@ -38,7 +38,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0 libwebkit2gtk-4.0-dev
+          sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0 libwebkit2gtk-4.1-dev
           pip install PyGObject
 
       - name: Build Frontend
