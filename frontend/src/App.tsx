@@ -1,44 +1,113 @@
-import React, { useState } from "react";
-import { ReactQueryDevtools } from "react-query/devtools";
-import { QueryClient, QueryClientProvider } from "react-query";
-import PanelParent from "./components/navigation/PanelParent";
-import AddMangaButton from "./components/navigation/AddMangaButton";
-import Navigation from "./components/navigation/Navigation";
-import { UIProvider } from "./components/navigation/UIContext";
-import { useAuth } from "./AuthContext";
-import AuthorizationModal from "./components/AuthorizationModal";
-import { ThemeProvider } from "@emotion/react";
-import { createTheme, CssBaseline, Box } from "@mui/material";
+import {
+  Box,
+  CssBaseline,
+  ThemeProvider,
+  createTheme,
+  responsiveFontSizes,
+} from "@mui/material";
+import Header from "./components/Header";
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
+import NotFound from "./pages/NotFound";
+import { useMemo, useState } from "react";
+import { deDE } from "@mui/material/locale";
+import Dashboard from "./pages/Dashboard";
+import MangaDetails from "./pages/MangaDetails";
+import ListsPage from "./pages/ListsPage";
+import ListDetailPage from "./pages/ListDetailPage";
+import SettingsPage from "./pages/SettingsPage";
+import CreateManga from "./pages/CreateManga";
+import AuthorsPage from "./pages/AuthorsPage";
+import AuthorDetailPage from "./pages/AuthorDetailPage";
+import GenresPage from "./pages/GenresPage";
+import GenreDetailPage from "./pages/GenreDetailPage";
+import LoginPage from "./pages/LoginPage";
+import { isAuthenticated } from "./services/auth";
+import { useUser } from "./context/UserContext";
 
-const queryClient = new QueryClient();
-const mdTheme = createTheme({
-  palette: {
-    mode: "light",
-  },
-});
+const PrivateRoutes = () => {
+  return isAuthenticated() ? <Outlet /> : <Navigate to="/login" />;
+};
 
-export default function Dashboard() {
-  const { isAuthorized, isLoggedIn } = useAuth();
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(!isAuthorized);
+const AdminRoutes = () => {
+  const { isAdmin, loading } = useUser();
+  if (loading) return null; // Or a loading spinner
+  return isAdmin ? <Outlet /> : <Navigate to="/" />;
+};
 
-  const handleCloseModal = () => {
-    setIsAuthModalOpen(false);
+function App() {
+  const [mode, setMode] = useState<"light" | "dark">("dark");
+
+  const toggleThemeMode = () => {
+    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
   };
 
+  const theme = useMemo(
+    () =>
+      responsiveFontSizes(
+        createTheme(
+          {
+            palette: {
+              mode,
+            },
+          },
+          deDE
+        )
+      ),
+    [mode]
+  );
+
   return (
-    <UIProvider>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={mdTheme}>
-          <CssBaseline />
-          <Box sx={{ display: "flex" }}>
-            <Navigation />
-            <PanelParent />
-          </Box>
-          {isLoggedIn && <AddMangaButton />}
-        </ThemeProvider>
-        {isLoggedIn && <ReactQueryDevtools initialIsOpen={false} />}
-      </QueryClientProvider>
-      <AuthorizationModal isOpen={isAuthModalOpen} onClose={handleCloseModal} />
-    </UIProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route element={<PrivateRoutes />}>
+            <Route
+              path="*"
+              element={
+                <>
+                  <Header toggleThemeMode={toggleThemeMode} />
+                  <Box style={{ display: "flex" }}>
+                    <Routes>
+                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/manga/:id" element={<MangaDetails />} />
+                      <Route path="/lists" element={<ListsPage />} />
+                      <Route
+                        path="/lists/:listId"
+                        element={<ListDetailPage />}
+                      />
+                      <Route path="/authors" element={<AuthorsPage />} />
+                      <Route
+                        path="/authors/:authorId"
+                        element={<AuthorDetailPage />}
+                      />
+                      <Route path="/genres" element={<GenresPage />} />
+                      <Route
+                        path="/genres/:genreId"
+                        element={<GenreDetailPage />}
+                      />
+                      <Route element={<AdminRoutes />}>
+                        <Route path="/create-manga" element={<CreateManga />} />
+                        <Route path="/settings" element={<SettingsPage />} />
+                      </Route>
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </Box>
+                </>
+              }
+            />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
+
+export default App;

@@ -1,13 +1,18 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
-# Using docker image layers for faster builds
-COPY requirements.txt ./
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./ ./backend
+COPY . backend/
 
-EXPOSE 80
+# Set PYTHONPATH so that 'backend' package can be imported
+ENV PYTHONPATH=/app
 
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "80"]
+# Create data directory for volume
+RUN mkdir -p /app/data
+
+EXPOSE 8000
+
+CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000"]

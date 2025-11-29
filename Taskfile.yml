@@ -1,0 +1,183 @@
+version: "3"
+
+tasks:
+  default:
+    desc: Run the development environment (backend + frontend)
+    cmds:
+      - task: dev
+
+  setup:
+    desc: Install all dependencies and setup environment
+    cmds:
+      - task: "setup:env"
+      - task: "backend:install"
+      - task: "frontend:install"
+      - task: "git:hooks"
+
+  setup:env:
+    desc: Generate .env files with API keys
+    cmds:
+      - |
+        python3 -c "
+        import os, secrets
+
+        if os.path.exists('backend/.env') or os.path.exists('frontend/.env'):
+            print('One or both .env files already exist. Skipping generation.')
+            exit(0)
+
+        key = secrets.token_urlsafe(32)
+
+        backend_content = f'''# API Security
+        SECRET_KEY={key}
+
+        # Frontend URL (for CORS)
+        FRONTEND_URL=http://localhost:5173
+
+        # Database and Image paths
+        DATABASE_PATH=./data/manga.db
+        IMAGE_PATH=./data/images
+
+        # SSL Verification (Set to true to disable SSL verification)
+        DISABLE_SSL_VERIFY=true
+        '''
+
+        frontend_content = f'''# API Configuration
+        VITE_API_URL=http://localhost:8000
+        '''
+
+        with open('backend/.env', 'w') as f:
+            f.write(backend_content)
+
+        with open('frontend/.env', 'w') as f:
+            f.write(frontend_content)
+
+        print('Generated .env files with new API key.')
+        "
+
+  dev:
+    desc: Run both backend and frontend in parallel
+    deps: ["backend:run", "frontend:run"]
+
+  # Backend Tasks
+  backend:install:
+    desc: Create virtual environment and install backend dependencies
+    dir: backend
+    cmds:
+      - test -d .venv || python3 -m venv .venv
+      - .venv/bin/pip install --upgrade pip
+      - .venv/bin/pip install -r requirements.txt
+    sources:
+      - requirements.txt
+
+  backend:run:
+    desc: Run the FastAPI backend server
+    cmds:
+      - backend/.venv/bin/uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
+
+  backend:lint:
+    desc: Run linting checks for backend (placeholder)
+    dir: backend
+    cmds:
+      - echo "No linting configured yet. Consider adding flake8 or black."
+
+  backend:test:
+    desc: Run backend tests
+    cmds:
+      - export PYTHONPATH=$PYTHONPATH:$(pwd) && backend/.venv/bin/pytest backend/tests
+
+  # Frontend Tasks
+  frontend:install:
+    desc: Install frontend Node.js dependencies
+    dir: frontend
+    cmds:
+      - npm install
+    sources:
+      - package.json
+      - package-lock.json
+    generates:
+      - node_modules/.package-lock.json
+
+  frontend:run:
+    desc: Run the Vite frontend development server
+    dir: frontend
+    cmds:
+      - npm run dev
+
+  frontend:build:
+    desc: Build the frontend for production
+    dir: frontend
+    cmds:
+      - npm run build
+
+  frontend:lint:
+    desc: Run frontend linter
+    dir: frontend
+    cmds:
+      - npm run lint
+
+  frontend:generate-api:
+    desc: Generate TypeScript API client from Backend
+    cmds:
+      - |
+        # Start backend in background and save PID
+        echo "Starting backend..."
+        sh -c 'echo $$ > backend.pid; exec backend/.venv/bin/uvicorn backend.app.main:app --port 8000' > /dev/null 2>&1 &
+
+        # Wait for PID file to exist
+        while [ ! -f backend.pid ]; do sleep 0.1; done
+        BACKEND_PID=$(cat backend.pid)
+        echo "Backend PID: $BACKEND_PID"
+
+        # Ensure backend is stopped on exit
+        trap "kill \$(cat backend.pid) || true; rm backend.pid" EXIT
+
+        # Wait for backend to be ready
+        echo "Waiting for backend to start..."
+        sleep 5
+
+        # Generate API client
+        echo "Generating API client..."
+        (cd frontend && npx @openapitools/openapi-generator-cli generate \
+          -i http://localhost:8000/openapi.json \
+          -g typescript-fetch \
+          -o src/api \
+          --additional-properties=typescriptThreePlus=true)
+
+  # Docker Tasks
+  docker:build:
+    desc: Build docker images
+    cmds:
+      - docker-compose build
+
+  docker:up:
+    desc: Start services in background
+    cmds:
+      - docker-compose up -d
+
+  docker:down:
+    desc: Stop and remove services
+    cmds:
+      - docker-compose down
+
+  docker:logs:
+    desc: Follow docker logs
+    cmds:
+      - docker-compose logs -f
+
+  # Utility Tasks
+  clean:
+    desc: Clean up generated files and artifacts
+    cmds:
+      - rm -rf backend/.venv
+      - rm -rf frontend/node_modules
+      - rm -rf frontend/dist
+
+  git:hooks:
+    desc: Install git hooks
+    cmds:
+      - backend/.venv/bin/pre-commit install
+
+  lint:
+    desc: Run all linters
+    cmds:
+      - backend/.venv/bin/pre-commit run --all-files
