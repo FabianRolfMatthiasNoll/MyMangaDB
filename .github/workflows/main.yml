@@ -50,12 +50,12 @@ jobs:
       - name: Build with PyInstaller (Windows)
         if: runner.os == 'Windows'
         run: |
-          pyinstaller run.py --onefile --noconsole --add-data "./frontend/dist;dist" --name MyMangaDB --hidden-import=backend.app.main
+          pyinstaller run.py --onefile --noconsole --add-data "./frontend/dist;dist" --name MyMangaDB --hidden-import=backend.app.main --hidden-import=passlib.handlers.bcrypt
 
       - name: Build with PyInstaller (Linux)
         if: runner.os == 'Linux'
         run: |
-          pyinstaller run.py --onefile --noconsole --add-data "./frontend/dist:dist" --name MyMangaDB --hidden-import=backend.app.main
+          pyinstaller run.py --onefile --noconsole --add-data "./frontend/dist:dist" --name MyMangaDB --hidden-import=backend.app.main --hidden-import=passlib.handlers.bcrypt
 
       - name: Set Linux Executable Permissions
         if: runner.os == 'Linux'
