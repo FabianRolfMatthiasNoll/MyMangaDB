@@ -6,6 +6,8 @@ pywebview
 requests
 python-multipart
 PyQt5
+PyQtWebEngine
+qtpy
 bs4
 selenium
 PyJWT==2.8.0
