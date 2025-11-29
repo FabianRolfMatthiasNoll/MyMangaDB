@@ -31,6 +31,7 @@ import {
 } from "../services/mangaService";
 import { Manga } from "../api/models";
 import MangaForm from "../components/MangaForm";
+import VolumeManager from "../components/VolumeManager";
 import { useUser } from "../context/UserContext";
 
 const MangaDetails: React.FC = () => {
@@ -475,7 +476,15 @@ const MangaDetails: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 Volumes
               </Typography>
-              {/* Volumes component will be added here */}
+              {manga && (
+                <VolumeManager
+                  manga={manga}
+                  onUpdate={async () => {
+                    const updatedManga = await getMangaDetails(manga.id);
+                    setManga(updatedManga);
+                  }}
+                />
+              )}
             </Paper>
           </Grid>
         </Grid>
