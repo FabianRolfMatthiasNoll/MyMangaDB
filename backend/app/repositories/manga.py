@@ -196,9 +196,17 @@ class MangaRepository(BaseRepository):
             BaseRepository.find_or_create(db, ListModel, ListModel.name, lst.name)
             for lst in manga_data.lists
         ]
-        db_manga.volumes = [
-            VolumeModel(**vol.model_dump()) for vol in manga_data.volumes
-        ]
+
+        # Handle volumes update
+        # Filter out id=0 (new volumes) to avoid conflicts with persistent instances
+        new_volumes = []
+        for vol in manga_data.volumes:
+            vol_data = vol.model_dump()
+            if vol_data.get("id") == 0:
+                del vol_data["id"]
+            new_volumes.append(VolumeModel(**vol_data))
+
+        db_manga.volumes = new_volumes
 
         BaseRepository.commit_session(db)
         db.refresh(db_manga)

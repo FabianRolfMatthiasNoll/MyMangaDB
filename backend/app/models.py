@@ -102,7 +102,9 @@ class Manga(Base):
     authors = relationship("Author", secondary=manga_author, back_populates="mangas")
     genres = relationship("Genre", secondary=manga_genre, back_populates="mangas")
     lists = relationship("List", secondary=manga_list, back_populates="mangas")
-    volumes = relationship("Volume", back_populates="manga")
+    volumes = relationship(
+        "Volume", back_populates="manga", cascade="all, delete-orphan"
+    )
 
 
 class Source(Base):

@@ -1,11 +1,11 @@
-import { configuration, API_KEY } from "./config";
+import { configuration, API_KEY, API_URL } from "./config";
 import { ImagesApi } from "../api/apis";
 
 const imagesApi = new ImagesApi(configuration);
 
 export const getMangaCoverImageUrl = (filepath: string): string => {
   if (!filepath) return "";
-  return `${import.meta.env.VITE_API_URL}/api/v1/images/manga/${filepath}`;
+  return `${API_URL}/api/v1/images/manga/${filepath}`;
 };
 
 export const fetchMangaCoverImageAsBlobUrl = async (
