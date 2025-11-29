@@ -24,12 +24,13 @@ import {
 } from "@mui/material";
 import { getSources, getSearchResults } from "../services/sourceService";
 import { createManga } from "../services/mangaService";
-import { Source, MangaCreate } from "../api/models";
+import { Source, MangaCreate, VolumeCreate } from "../api/models";
+import { parseVolumeString } from "../utils/volumeUtils";
 
 interface AutomaticSearchModalProps {
   open: boolean;
   onClose: () => void;
-  onMangaAdded?: () => void;  // Callback to refresh dashboard
+  onMangaAdded?: () => void; // Callback to refresh dashboard
 }
 
 const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
@@ -47,12 +48,15 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
-    severity: 'success' | 'error';
-  }>({
-    open: false,
-    message: '',
-    severity: 'success'
-  });
+    severity: "success" | "error";
+  }>({ open: false, message: "", severity: "success" });
+
+  // Volume Dialog State
+  const [volumeDialogOpen, setVolumeDialogOpen] = useState(false);
+  const [volumeInput, setVolumeInput] = useState("");
+  const [selectedMangaForVolume, setSelectedMangaForVolume] =
+    useState<MangaCreate | null>(null);
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -80,20 +84,23 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
     if (selectedSource) {
       setIsSearching(true);
       try {
-        const results = await getSearchResults(searchQuery, selectedSource.name);
+        const results = await getSearchResults(
+          searchQuery,
+          selectedSource.name
+        );
         setSearchResults(results);
         if (results.length === 0) {
           setSnackbar({
             open: true,
             message: "No results found.",
-            severity: 'error'
+            severity: "error",
           });
         }
       } catch (error) {
         setSnackbar({
           open: true,
           message: "An error occurred while searching.",
-          severity: 'error'
+          severity: "error",
         });
       } finally {
         setIsSearching(false);
@@ -102,7 +109,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
       setSnackbar({
         open: true,
         message: "Please select a source to search from.",
-        severity: 'error'
+        severity: "error",
       });
     }
   };
@@ -110,19 +117,11 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
   const handleCreateManga = async (manga: MangaCreate) => {
     setCreatingManga(manga.title);
     try {
-      const createdManga = await createManga(manga);
-      if (!createdManga) {
-        setSnackbar({
-          open: true,
-          message: "Failed to create manga.",
-          severity: 'error'
-        });
-        return;
-      }
+      await createManga(manga);
       setSnackbar({
         open: true,
         message: `Successfully added "${manga.title}" to database`,
-        severity: 'success'
+        severity: "success",
       });
       // Call the callback to refresh dashboard
       onMangaAdded?.();
@@ -130,7 +129,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
       setSnackbar({
         open: true,
         message: "An error occurred while adding the manga.",
-        severity: 'error'
+        severity: "error",
       });
     } finally {
       setCreatingManga(null);
@@ -138,24 +137,77 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
   };
 
   const handleCloseSnackbar = () => {
-    setSnackbar(prev => ({ ...prev, open: false }));
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
+  const handleOpenVolumeDialog = (manga: MangaCreate) => {
+    setSelectedMangaForVolume(manga);
+    setVolumeInput("");
+    setVolumeDialogOpen(true);
+  };
+
+  const handleConfirmVolumeAdd = async () => {
+    if (!selectedMangaForVolume) return;
+
+    const volumeNumbers = parseVolumeString(volumeInput);
+    const volumes: VolumeCreate[] = volumeNumbers.map((num) => ({
+      volumeNumber: num.toString(),
+      mangaId: 0, // Temporary, backend handles this or ignores it for create
+    }));
+
+    // We need to clone the manga and add volumes
+    const mangaWithVolumes = {
+      ...selectedMangaForVolume,
+      volumes: volumes,
+    };
+
+    setVolumeDialogOpen(false);
+    await handleCreateManga(mangaWithVolumes);
   };
 
   const renderSearchResults = () => {
     if (isSearching) {
-      return Array(3).fill(0).map((_, index) => (
-        <Card key={index} sx={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', mb: 2 }}>
-          <Skeleton variant="rectangular" width={isMobile ? '100%' : 151} height={isMobile ? 200 : 151} />
-          <CardContent sx={{ flex: '1 1 auto' }}>
-            <Skeleton variant="text" width="60%" height={32} />
-            <Skeleton variant="text" width="40%" height={24} sx={{ mt: 1 }} />
-            <Skeleton variant="text" width="90%" height={20} sx={{ mt: 1 }} />
-            <Skeleton variant="text" width="90%" height={20} sx={{ mt: 0.5 }} />
-            <Skeleton variant="text" width="90%" height={20} sx={{ mt: 0.5 }} />
-            <Skeleton variant="rectangular" width={120} height={36} sx={{ mt: 1 }} />
-          </CardContent>
-        </Card>
-      ));
+      return Array(3)
+        .fill(0)
+        .map((_, index) => (
+          <Card
+            key={index}
+            sx={{
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              mb: 2,
+            }}
+          >
+            <Skeleton
+              variant="rectangular"
+              width={isMobile ? "100%" : 151}
+              height={isMobile ? 200 : 151}
+            />
+            <CardContent sx={{ flex: "1 1 auto" }}>
+              <Skeleton variant="text" width="60%" height={32} />
+              <Skeleton variant="text" width="40%" height={24} sx={{ mt: 1 }} />
+              <Skeleton variant="text" width="90%" height={20} sx={{ mt: 1 }} />
+              <Skeleton
+                variant="text"
+                width="90%"
+                height={20}
+                sx={{ mt: 0.5 }}
+              />
+              <Skeleton
+                variant="text"
+                width="90%"
+                height={20}
+                sx={{ mt: 0.5 }}
+              />
+              <Skeleton
+                variant="rectangular"
+                width={120}
+                height={36}
+                sx={{ mt: 1 }}
+              />
+            </CardContent>
+          </Card>
+        ));
     }
 
     return searchResults.map((manga) => (
@@ -174,8 +226,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
             height: isMobile ? 200 : "auto",
           }}
           image={
-            manga.coverImage ||
-            "/static/images/cards/contemplative-reptile.jpg"
+            manga.coverImage || "/static/images/cards/contemplative-reptile.jpg"
           }
           alt={manga.title}
         />
@@ -214,7 +265,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
             variant="contained"
             onClick={() => handleCreateManga(manga)}
             disabled={creatingManga === manga.title}
-            sx={{ mt: 1 }}
+            sx={{ mt: 1, mr: 1 }}
           >
             {creatingManga === manga.title ? (
               <>
@@ -224,6 +275,14 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
             ) : (
               "Add to Database"
             )}
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={() => handleOpenVolumeDialog(manga)}
+            disabled={creatingManga === manga.title}
+            sx={{ mt: 1 }}
+          >
+            Add with Volumes
           </Button>
         </CardContent>
       </Card>
@@ -255,7 +314,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   handleSearch();
                 }
               }}
@@ -299,9 +358,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
           {searchResults.length > 0 && (
             <Box mt={2}>
               <Typography variant="h6">Search Results</Typography>
-              <Box>
-                {renderSearchResults()}
-              </Box>
+              <Box>{renderSearchResults()}</Box>
             </Box>
           )}
         </DialogContent>
@@ -313,16 +370,49 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
           onClose={handleCloseSnackbar}
           severity={snackbar.severity}
-          sx={{ width: '100%' }}
+          sx={{ width: "100%" }}
         >
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      <Dialog
+        open={volumeDialogOpen}
+        onClose={() => setVolumeDialogOpen(false)}
+      >
+        <DialogTitle>Add with Volumes</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Enter the volumes you own for{" "}
+            <strong>{selectedMangaForVolume?.title}</strong>.
+            <br />
+            Format: "1-10; 15; 20-25"
+          </Typography>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="volumes"
+            label="Volumes"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={volumeInput}
+            onChange={(e) => setVolumeInput(e.target.value)}
+            placeholder="e.g. 1-10; 12"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setVolumeDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleConfirmVolumeAdd} variant="contained">
+            Add to Database
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

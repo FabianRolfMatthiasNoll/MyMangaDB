@@ -19,6 +19,8 @@ import { Manga, Volume } from "../api/models";
 import { useUser } from "../context/UserContext";
 import { updateMangaDetails } from "../services/mangaService";
 
+import { parseVolumeString } from "../utils/volumeUtils";
+
 interface VolumeManagerProps {
   manga: Manga;
   onUpdate: () => void;
@@ -75,32 +77,10 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
     setLoading(true);
     try {
       // Parse input string
-      const newOwnedVolumes = new Set<number>();
-      const parts = inputString
-        .split(/[;,]+/)
-        .map((s) => s.trim())
-        .filter((s) => s);
-
-      parts.forEach((part) => {
-        if (part.includes("-")) {
-          const [startStr, endStr] = part.split("-");
-          const start = parseInt(startStr, 10);
-          const end = parseInt(endStr, 10);
-          if (!isNaN(start) && !isNaN(end)) {
-            for (let i = start; i <= end; i++) {
-              newOwnedVolumes.add(i);
-            }
-          }
-        } else {
-          const num = parseInt(part, 10);
-          if (!isNaN(num)) {
-            newOwnedVolumes.add(num);
-          }
-        }
-      });
+      const newOwnedVolumes = parseVolumeString(inputString);
 
       // Create new Volume objects
-      const newVolumes: Volume[] = Array.from(newOwnedVolumes).map((num) => ({
+      const newVolumes: Volume[] = newOwnedVolumes.map((num) => ({
         id: 0, // Backend will assign ID
         mangaId: manga.id,
         volumeNumber: num.toString(),
