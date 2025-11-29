@@ -16,17 +16,21 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          python-version: "3.12"
 
-      - name: Install dependencies
+      - name: Install Backend Dependencies
         run: |
           python -m pip install --upgrade pip
-          ls
           pip install -r ./backend/requirements.txt
           pip install pyinstaller
 
@@ -34,40 +38,31 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0
-          sudo apt-get install -y libx11-xcb1 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0
+          sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0 libwebkit2gtk-4.0-dev
           pip install PyGObject
 
-      - name: Build frontend
+      - name: Build Frontend
         working-directory: ./frontend
         run: |
           npm install
-          if ("${{ runner.os }}" -eq 'Windows') {
-            $env:CI="false"
-            npm run build:ci:win
-          } else {
-            npm run build:ci:other
-          }
-        shell: pwsh
-        env:
-          CI: false
+          npm run build
 
-      - name: Build with PyInstaller
+      - name: Build with PyInstaller (Windows)
+        if: runner.os == 'Windows'
         run: |
-          pip freeze
-          if ("${{ runner.os }}" -eq 'Windows') {
-            pyinstaller main.py --onefile --noconsole --add-data="./frontend/dist;dist" --name MyMangaDB
-          } else {
-            pyinstaller main.py --onefile --noconsole --add-data="./frontend/dist:dist" --name MyMangaDB
-          }
-        shell: pwsh
+          pyinstaller run.py --onefile --noconsole --add-data "./frontend/dist;dist" --name MyMangaDB --hidden-import=backend.app.main
+
+      - name: Build with PyInstaller (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          pyinstaller run.py --onefile --noconsole --add-data "./frontend/dist:dist" --name MyMangaDB --hidden-import=backend.app.main
 
       - name: Set Linux Executable Permissions
         if: runner.os == 'Linux'
         run: chmod +x ./dist/MyMangaDB
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ runner.os }}-build
           path: ./dist/*
