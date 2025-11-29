@@ -97,10 +97,17 @@ frontend_url = os.getenv(
     "FRONTEND_URL", "http://localhost:5173"
 )  # Updated to Vite's default port
 
+# Define allowed origins
+origins = [
+    frontend_url,
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+
 # Configure CORS with specific origin
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[frontend_url],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
