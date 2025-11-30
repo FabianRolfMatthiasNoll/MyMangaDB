@@ -58,6 +58,10 @@ The easiest way to deploy MyMangaDB is using Docker. We provide a `docker-compos
 
     Your application should now be accessible at your configured domains with HTTPS enabled.
 
+### Local Home use
+
+Just download the binaries from the latest release and use them. Available for linux and windows.
+
 ### Manual Installation (Development)
 
 For contributors or those who prefer running without Docker.
