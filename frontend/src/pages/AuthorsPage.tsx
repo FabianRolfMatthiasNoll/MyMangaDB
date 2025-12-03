@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Box,
   Typography,
@@ -11,30 +11,21 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { getAuthors } from "../services/authorService";
-import { Author } from "../api/models";
+import { useQuery } from "@tanstack/react-query";
 
 const AuthorsPage: React.FC = () => {
-  const [authors, setAuthors] = useState<Author[]>([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const fetchAuthors = async () => {
-    try {
-      setLoading(true);
-      const response = await getAuthors();
-      setAuthors(response);
-    } catch (error) {
-      console.error("Error fetching authors:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchAuthors();
-  }, []);
+  const {
+    data: authors = [],
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: ["authors"],
+    queryFn: getAuthors,
+  });
 
   const handleAuthorClick = (authorId: number) => {
     navigate(`/authors/${authorId}`);
@@ -42,8 +33,26 @@ const AuthorsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="80vh"
+      >
         <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="80vh"
+      >
+        <Typography color="error">Error loading authors</Typography>
       </Box>
     );
   }
