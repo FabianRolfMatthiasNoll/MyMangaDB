@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Card,
   CardMedia,
@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { Manga } from "../api/models";
 import { Link } from "react-router-dom";
-import { fetchMangaCoverImageAsBlobUrl } from "../services/imageService";
+import { getMangaCoverImageUrl } from "../services/imageService";
 
 interface MangaCardProps {
   manga: Manga;
@@ -20,28 +20,9 @@ interface MangaCardProps {
 
 const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
   const theme = useTheme();
-  const [imageUrl, setImageUrl] = useState("");
-
-  useEffect(() => {
-    let isMounted = true;
-    const fetchImage = async () => {
-      if (manga.coverImage) {
-        const url = await fetchMangaCoverImageAsBlobUrl(manga.coverImage);
-        if (isMounted) {
-          setImageUrl(url);
-        }
-      }
-    };
-
-    fetchImage();
-
-    return () => {
-      isMounted = false;
-      if (imageUrl) {
-        URL.revokeObjectURL(imageUrl);
-      }
-    };
-  }, [manga.coverImage]);
+  const imageUrl = manga.coverImage
+    ? getMangaCoverImageUrl(manga.coverImage)
+    : "";
 
   const cardStyles = {
     maxWidth: 350,

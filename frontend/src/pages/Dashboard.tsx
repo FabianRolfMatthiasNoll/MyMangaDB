@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Container,
   useMediaQuery,
@@ -11,7 +11,6 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import { getMangas } from "../services/mangaService";
-import { Manga } from "../api/models";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useTheme } from "@mui/material/styles";
 import SearchBar from "../components/SearchBar";
@@ -19,11 +18,9 @@ import AdvancedFilters from "../components/AdvancedFilters";
 import MangaList from "../components/MangaList";
 import AutomaticSearchModal from "../components/AutomaticSearchModal";
 import { useNavigate } from "react-router-dom";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 const Dashboard: React.FC = () => {
-  const [mangas, setMangas] = useState<Manga[]>([]);
-  const [page, setPage] = useState<number>(1);
-  const [hasMore, setHasMore] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<string>("asc");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState<boolean>(false);
@@ -41,36 +38,22 @@ const Dashboard: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
 
-  const fetchMangas = async (reset = false) => {
-    try {
-      const nextPage = reset ? 1 : page;
-      const newMangas = await getMangas(nextPage, limit, searchQuery, sortOrder);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ["mangas", searchQuery, sortOrder],
+    queryFn: ({ pageParam = 1 }) =>
+      getMangas(pageParam, limit, searchQuery, sortOrder),
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === limit ? allPages.length + 1 : undefined;
+    },
+    initialPageParam: 1,
+  });
 
-      if (reset || nextPage === 1) {
-        setMangas(newMangas);
-      } else {
-        setMangas(prevMangas => [...prevMangas, ...newMangas]);
-      }
-
-      setPage(nextPage + 1);
-      setHasMore(newMangas.length === limit);
-    } catch (error) {
-      console.error("Failed to fetch mangas", error);
-      setHasMore(false);
-    }
-  };
-
-  useEffect(() => {
-    setMangas([]);
-    setPage(1);
-    setHasMore(true);
-    fetchMangas(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, sortOrder]);
-
-  const fetchMoreMangas = async () => {
-    fetchMangas();
-  };
+  const mangas = data ? data.pages.flat() : [];
 
   const resetFilters = () => {
     setFilterCategory([]);
@@ -146,8 +129,8 @@ const Dashboard: React.FC = () => {
         >
           <InfiniteScroll
             dataLength={mangas.length}
-            next={fetchMoreMangas}
-            hasMore={hasMore}
+            next={fetchNextPage}
+            hasMore={!!hasNextPage}
             scrollThreshold={0.9}
             loader={<></>}
           >
@@ -222,10 +205,7 @@ const Dashboard: React.FC = () => {
         open={showModal}
         onClose={() => setShowModal(false)}
         onMangaAdded={() => {
-          setMangas([]);
-          setPage(1);
-          setHasMore(true);
-          fetchMangas(true);
+          refetch();
         }}
       />
     </Box>
