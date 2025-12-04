@@ -39,16 +39,19 @@ interface MangaFormProps {
   initialLists?: number[];
 }
 
-const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel, initialLists = [] }) => {
+const MangaForm: React.FC<MangaFormProps> = ({
+  manga,
+  onSave,
+  onCancel,
+  initialLists = [],
+}) => {
   const [editableManga, setEditableManga] = useState<Manga>(manga);
   const [availableAuthors, setAvailableAuthors] = useState<Author[]>([]);
   const [availableGenres, setAvailableGenres] = useState<Genre[]>([]);
   const [availableLists, setAvailableLists] = useState<ListModel[]>([]);
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
-  const [selectedLists, setSelectedLists] = useState<number[]>(() => {
-    return initialLists.length > 0 ? initialLists : manga.lists.map(list => list.id);
-  });
+  const [selectedLists, setSelectedLists] = useState<ListModel[]>(manga.lists);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,7 +59,7 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel, initialL
         const [authors, genres, lists] = await Promise.all([
           getAuthors(),
           getGenres(),
-          getAllLists()
+          getAllLists(),
         ]);
         setAvailableAuthors(authors);
         setAvailableGenres(genres);
@@ -67,6 +70,19 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel, initialL
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (
+      initialLists.length > 0 &&
+      availableLists.length > 0 &&
+      selectedLists.length === 0
+    ) {
+      const preselected = availableLists.filter((l) =>
+        initialLists.includes(l.id)
+      );
+      setSelectedLists(preselected);
+    }
+  }, [availableLists, initialLists]);
 
   const handleChange = (field: keyof Manga, value: any) => {
     setEditableManga({ ...editableManga, [field]: value });
@@ -84,14 +100,32 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel, initialL
     }
   };
 
-  const handleListsChange = (_event: React.SyntheticEvent, newValue: ListModel[]) => {
-    setSelectedLists(newValue.map(list => list.id));
+  const handleListsChange = (
+    _event: React.SyntheticEvent,
+    newValue: (ListModel | string)[]
+  ) => {
+    const lists = newValue.reduce((acc: ListModel[], option) => {
+      if (typeof option === "string") {
+        const existingList = availableLists.find(
+          (list) => list.name.toLowerCase() === option.toLowerCase()
+        );
+        if (existingList) {
+          acc.push(existingList);
+        } else {
+          acc.push({ id: 0, name: option });
+        }
+      } else {
+        acc.push(option);
+      }
+      return acc;
+    }, []);
+    setSelectedLists(lists);
   };
 
   const handleSave = () => {
     const mangaToSave = {
       ...editableManga,
-      lists: availableLists.filter(list => selectedLists.includes(list.id))
+      lists: selectedLists,
     };
     onSave(mangaToSave, coverImage || undefined);
   };
@@ -207,15 +241,19 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel, initialL
       />
       <Autocomplete
         multiple
+        freeSolo
         options={availableLists}
-        getOptionLabel={(option) => option.name}
-        value={availableLists.filter(list => selectedLists.includes(list.id))}
+        getOptionLabel={(option) =>
+          typeof option === "string" ? option : option.name
+        }
+        filterSelectedOptions
+        value={selectedLists}
         onChange={handleListsChange}
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Select Lists"
-            margin="normal"
+            label="Lists"
+            placeholder="Add lists"
             fullWidth
           />
         )}
@@ -224,7 +262,7 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel, initialL
             <Chip
               label={option.name}
               {...getTagProps({ index })}
-              key={option.id}
+              key={option.id || index}
             />
           ))
         }
@@ -301,7 +339,11 @@ const MangaForm: React.FC<MangaFormProps> = ({ manga, onSave, onCancel, initialL
           startIcon={<CloudUploadIcon />}
         >
           Upload Cover Image
-          <VisuallyHiddenInput type="file" onChange={handleImageChange} accept="image/*" />
+          <VisuallyHiddenInput
+            type="file"
+            onChange={handleImageChange}
+            accept="image/*"
+          />
         </Button>
         {previewUrl && (
           <Box

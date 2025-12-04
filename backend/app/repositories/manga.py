@@ -53,8 +53,14 @@ class MangaRepository(BaseRepository):
 
         # Volltextsuche (case-insensitive) im Titel
         if search:
-            ilike_term = f"%{search}%"
-            query = query.filter(MangaModel.title.ilike(ilike_term))
+            if search.lower().startswith("list:"):
+                list_name = search[5:].strip()
+                query = query.filter(
+                    MangaModel.lists.any(ListModel.name.ilike(f"%{list_name}%"))
+                )
+            else:
+                ilike_term = f"%{search}%"
+                query = query.filter(MangaModel.title.ilike(ilike_term))
 
         # Sortierung nach Titel
         if sort == "asc":

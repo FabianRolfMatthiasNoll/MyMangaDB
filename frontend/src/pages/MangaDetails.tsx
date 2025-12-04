@@ -33,11 +33,13 @@ import { Manga } from "../api/models";
 import MangaForm from "../components/MangaForm";
 import VolumeManager from "../components/VolumeManager";
 import { useUser } from "../context/UserContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 const MangaDetails: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
+  const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const { isAdmin } = useUser();
   const [manga, setManga] = useState<Manga | null>(null);
@@ -121,6 +123,8 @@ const MangaDetails: React.FC = () => {
     if (id) {
       try {
         await deleteManga(Number(id));
+        await queryClient.invalidateQueries({ queryKey: ["mangas"] });
+        await queryClient.invalidateQueries({ queryKey: ["lists"] });
         navigate("/");
       } catch (error) {
         console.error("Failed to delete manga:", error);
@@ -138,6 +142,8 @@ const MangaDetails: React.FC = () => {
       const savedManga = await updateMangaDetails(updatedManga, coverImage);
       setManga(savedManga);
       setEditMode(false);
+      await queryClient.invalidateQueries({ queryKey: ["mangas"] });
+      await queryClient.invalidateQueries({ queryKey: ["lists"] });
       setNotification({
         open: true,
         message: "Manga updated successfully",

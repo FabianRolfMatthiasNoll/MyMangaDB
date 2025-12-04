@@ -7,8 +7,15 @@ import {
   MenuItem,
   Button,
   Slider,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
-import { OverallStatus, ReadingStatus, Category } from "../api/models";
+import {
+  OverallStatus,
+  ReadingStatus,
+  Category,
+  ListModel,
+} from "../api/models";
 import { SelectChangeEvent } from "@mui/material/Select";
 
 interface AdvancedFiltersProps {
@@ -20,6 +27,9 @@ interface AdvancedFiltersProps {
   setFilterOverallStatus: (status: string[]) => void;
   ratingRange: number[];
   setRatingRange: (range: number[]) => void;
+  availableLists: ListModel[];
+  filterList: ListModel | null;
+  setFilterList: (list: ListModel | null) => void;
   resetFilters: () => void;
 }
 
@@ -32,6 +42,9 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
   setFilterOverallStatus,
   ratingRange,
   setRatingRange,
+  availableLists,
+  filterList,
+  setFilterList,
   resetFilters,
 }) => {
   const handleCategoryChange = (event: SelectChangeEvent<string[]>) => {
@@ -99,6 +112,17 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
             </MenuItem>
           ))}
         </Select>
+      </FormControl>
+      <FormControl variant="outlined" sx={{ mb: 2 }}>
+        <Autocomplete
+          options={availableLists}
+          getOptionLabel={(option) => option.name}
+          value={filterList}
+          onChange={(_event, newValue) => setFilterList(newValue)}
+          renderInput={(params) => (
+            <TextField {...params} label="Filter by List" variant="outlined" />
+          )}
+        />
       </FormControl>
       <Box sx={{ mb: 2 }}>
         <InputLabel>Rating Range</InputLabel>
