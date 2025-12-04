@@ -11,10 +11,12 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MangaForm from "../components/MangaForm";
 import { Manga, MangaCreate, Category } from "../api/models";
 import { createManga } from "../services/mangaService";
+import { useQueryClient } from "@tanstack/react-query";
 
 const CreateManga: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const [selectedLists, setSelectedLists] = useState<number[]>([]);
 
   const initialManga: Manga = {
@@ -91,6 +93,8 @@ const CreateManga: React.FC = () => {
 
       const createdManga = await createManga(mangaCreate);
       if (createdManga) {
+        await queryClient.invalidateQueries({ queryKey: ["mangas"] });
+        await queryClient.invalidateQueries({ queryKey: ["lists"] });
         navigate(`/manga/${createdManga.id}`);
       }
     } catch (error) {
