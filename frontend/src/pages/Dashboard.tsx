@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   useMediaQuery,
@@ -11,6 +11,8 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import { getMangas } from "../services/mangaService";
+import { getAllLists } from "../services/listService";
+import { ListModel } from "../api/models";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useTheme } from "@mui/material/styles";
 import SearchBar from "../components/SearchBar";
@@ -18,16 +20,23 @@ import AdvancedFilters from "../components/AdvancedFilters";
 import MangaList from "../components/MangaList";
 import AutomaticSearchModal from "../components/AutomaticSearchModal";
 import { useNavigate } from "react-router-dom";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 const Dashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<string>("asc");
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState<boolean>(false);
+  const [showAdvancedFilters, setShowAdvancedFilters] =
+    useState<boolean>(false);
   const [filterCategory, setFilterCategory] = useState<string[]>([]);
   const [filterReadingStatus, setFilterReadingStatus] = useState<string[]>([]);
   const [filterOverallStatus, setFilterOverallStatus] = useState<string[]>([]);
   const [ratingRange, setRatingRange] = useState<number[]>([0, 5]);
+  const [filterList, setFilterList] = useState<ListModel | null>(null);
+
+  const { data: availableLists = [] } = useQuery({
+    queryKey: ["lists"],
+    queryFn: getAllLists,
+  });
 
   const [showSecondaryFabs, setShowSecondaryFabs] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -38,15 +47,15 @@ const Dashboard: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    refetch,
-  } = useInfiniteQuery({
-    queryKey: ["mangas", searchQuery, sortOrder],
-    queryFn: ({ pageParam = 1 }) =>
-      getMangas(pageParam, limit, searchQuery, sortOrder),
+  const { data, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery({
+    queryKey: ["mangas", searchQuery, sortOrder, filterList],
+    queryFn: ({ pageParam = 1 }) => {
+      let effectiveSearch = searchQuery;
+      if (filterList) {
+        effectiveSearch = `list:${filterList.name}`;
+      }
+      return getMangas(pageParam, limit, effectiveSearch, sortOrder);
+    },
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length === limit ? allPages.length + 1 : undefined;
     },
@@ -60,6 +69,7 @@ const Dashboard: React.FC = () => {
     setFilterReadingStatus([]);
     setFilterOverallStatus([]);
     setRatingRange([0, 5]);
+    setFilterList(null);
     setSearchQuery("");
     setSortOrder("asc");
   };
@@ -67,21 +77,21 @@ const Dashboard: React.FC = () => {
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: 'calc(100vh - 64px)', // Subtract header height
-        overflow: 'hidden',
-        width: '100%',
+        display: "flex",
+        flexDirection: "column",
+        height: "calc(100vh - 64px)", // Subtract header height
+        overflow: "hidden",
+        width: "100%",
       }}
     >
       <Container
         maxWidth={false}
         disableGutters
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-          width: '100%',
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          width: "100%",
           px: { xs: 2, sm: 3, md: 4 },
           pt: { xs: 2, sm: 3 },
           pb: 2,
@@ -106,24 +116,30 @@ const Dashboard: React.FC = () => {
             setFilterOverallStatus={setFilterOverallStatus}
             ratingRange={ratingRange}
             setRatingRange={setRatingRange}
+            availableLists={availableLists}
+            filterList={filterList}
+            setFilterList={setFilterList}
             resetFilters={resetFilters}
           />
         )}
         <Box
           sx={{
             flex: 1,
-            overflow: 'auto',
+            overflow: "auto",
             mt: 2,
-            width: '100%',
-            '&::-webkit-scrollbar': {
-              width: '8px',
+            width: "100%",
+            "&::-webkit-scrollbar": {
+              width: "8px",
             },
-            '&::-webkit-scrollbar-track': {
-              background: 'transparent',
+            "&::-webkit-scrollbar-track": {
+              background: "transparent",
             },
-            '&::-webkit-scrollbar-thumb': {
-              background: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
-              borderRadius: '4px',
+            "&::-webkit-scrollbar-thumb": {
+              background:
+                theme.palette.mode === "dark"
+                  ? "rgba(255,255,255,0.2)"
+                  : "rgba(0,0,0,0.2)",
+              borderRadius: "4px",
             },
           }}
         >
