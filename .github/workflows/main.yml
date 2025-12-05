@@ -5,12 +5,46 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Release"]
+    types:
+      - completed
+    branches:
+      - main
+      - master
 
 permissions:
   contents: write
 
 jobs:
+  check-release:
+    runs-on: ubuntu-latest
+    outputs:
+      is_release: ${{ steps.check.outputs.is_release }}
+      tag_name: ${{ steps.check.outputs.tag_name }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for release tag
+        id: check
+        run: |
+          git fetch --tags --force
+          TAG=$(git describe --tags --exact-match HEAD 2>/dev/null || echo "")
+          echo "Found tag: '$TAG'"
+
+          if [[ -n "$TAG" ]]; then
+            echo "is_release=true" >> $GITHUB_OUTPUT
+            echo "tag_name=$TAG" >> $GITHUB_OUTPUT
+          else
+            echo "is_release=false" >> $GITHUB_OUTPUT
+          fi
+
   build:
+    needs: check-release
+    if: ${{ needs.check-release.outputs.is_release == 'true' }}
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -20,6 +54,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.check-release.outputs.tag_name }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -72,6 +108,6 @@ jobs:
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: ./dist/*
+          tag_name: ${{ needs.check-release.outputs.tag_name }}
