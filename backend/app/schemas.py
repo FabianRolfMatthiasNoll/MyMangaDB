@@ -184,3 +184,21 @@ class TokenData(BaseModel):
 class UserUpdatePassword(BaseModel):
     username: str
     password: str
+
+
+class StatisticCount(BaseModel):
+    label: str
+    count: int
+
+
+class Statistics(BaseModel):
+    total_mangas: int
+    total_authors: int
+    total_genres: int
+    total_lists: int
+    reading_status_distribution: List[StatisticCount]
+    overall_status_distribution: List[StatisticCount]
+    category_distribution: List[StatisticCount]
+    rating_distribution: List[StatisticCount]
+    top_genres: List[StatisticCount]
+    top_authors: List[StatisticCount]

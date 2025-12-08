@@ -27,6 +27,7 @@ import AuthorDetailPage from "./pages/AuthorDetailPage";
 import GenresPage from "./pages/GenresPage";
 import GenreDetailPage from "./pages/GenreDetailPage";
 import LoginPage from "./pages/LoginPage";
+import StatisticsPage from "./pages/StatisticsPage";
 import { isAuthenticated } from "./services/auth";
 import { useUser } from "./context/UserContext";
 
@@ -93,6 +94,7 @@ function App() {
                         path="/genres/:genreId"
                         element={<GenreDetailPage />}
                       />
+                      <Route path="/statistics" element={<StatisticsPage />} />
                       <Route element={<AdminRoutes />}>
                         <Route path="/create-manga" element={<CreateManga />} />
                         <Route path="/settings" element={<SettingsPage />} />

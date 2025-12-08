@@ -10,6 +10,7 @@ from .endpoints import (
     manga,
     settings,
     source,
+    statistics,
     users,
 )
 
@@ -24,3 +25,4 @@ api_router.include_router(image.router, prefix="/images", tags=["Images"])
 api_router.include_router(list.router, prefix="/lists", tags=["Lists"])
 api_router.include_router(settings.router, prefix="/settings", tags=["Settings"])
 api_router.include_router(database.router, prefix="/database", tags=["Database"])
+api_router.include_router(statistics.router, prefix="/statistics", tags=["Statistics"])

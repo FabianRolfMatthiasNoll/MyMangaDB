@@ -35,6 +35,7 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
     { text: "Lists", path: "/lists" },
     { text: "Authors", path: "/authors" },
     { text: "Genres", path: "/genres" },
+    { text: "Statistics", path: "/statistics" },
     ...(isAdmin ? [{ text: "Settings", path: "/settings" }] : []),
   ];
 

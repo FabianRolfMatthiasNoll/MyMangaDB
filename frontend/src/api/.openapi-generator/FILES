@@ -8,6 +8,7 @@ apis/ListsApi.ts
 apis/MangasApi.ts
 apis/SettingsApi.ts
 apis/SourcesApi.ts
+apis/StatisticsApi.ts
 apis/UsersApi.ts
 apis/index.ts
 index.ts
@@ -26,6 +27,8 @@ models/ReadingStatus.ts
 models/Role.ts
 models/Source.ts
 models/SourceCreate.ts
+models/StatisticCount.ts
+models/Statistics.ts
 models/Token.ts
 models/User.ts
 models/UserUpdatePassword.ts
