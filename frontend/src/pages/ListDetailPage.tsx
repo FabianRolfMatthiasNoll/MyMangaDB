@@ -9,12 +9,22 @@ import {
   Container,
   useTheme,
   useMediaQuery,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { getListById } from "../services/listService";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { getListById, updateList, deleteList } from "../services/listService";
 import { Manga, ListModel } from "../api/models";
 import { getMangasByListId } from "../services/mangaService";
 import MangaList from "../components/MangaList";
+import { useUser } from "../context/UserContext";
 
 const ListDetailPage: React.FC = () => {
   const { listId } = useParams<{ listId: string }>();
@@ -24,6 +34,9 @@ const ListDetailPage: React.FC = () => {
   const [list, setList] = useState<ListModel | null>(null);
   const [mangas, setMangas] = useState<Manga[]>([]);
   const [loading, setLoading] = useState(true);
+  const { isAdmin } = useUser();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [listName, setListName] = useState("");
 
   useEffect(() => {
     const fetchListData = async () => {
@@ -44,6 +57,41 @@ const ListDetailPage: React.FC = () => {
 
     fetchListData();
   }, [listId]);
+
+  const handleOpenDialog = () => {
+    if (list) {
+      setListName(list.name);
+      setDialogOpen(true);
+    }
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setListName("");
+  };
+
+  const handleSaveList = async () => {
+    if (list && listName) {
+      try {
+        await updateList(list.id, listName);
+        setList({ ...list, name: listName });
+        handleCloseDialog();
+      } catch (error) {
+        console.error("Error updating list:", error);
+      }
+    }
+  };
+
+  const handleDeleteList = async () => {
+    if (list && window.confirm("Are you sure you want to delete this list?")) {
+      try {
+        await deleteList(list.id);
+        navigate("/lists");
+      } catch (error) {
+        console.error("Error deleting list:", error);
+      }
+    }
+  };
 
   const handleBack = () => {
     navigate("/lists");
@@ -102,10 +150,38 @@ const ListDetailPage: React.FC = () => {
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
+                flexGrow: 1,
               }}
             >
               {list.name}
             </Typography>
+            {isAdmin && (
+              <Box ml={2} display="flex">
+                <Tooltip title="Edit List">
+                  <IconButton
+                    onClick={handleOpenDialog}
+                    sx={{
+                      mr: 1,
+                      backgroundColor: "background.paper",
+                      "&:hover": { backgroundColor: "action.hover" },
+                    }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete List">
+                  <IconButton
+                    onClick={handleDeleteList}
+                    sx={{
+                      backgroundColor: "background.paper",
+                      "&:hover": { backgroundColor: "action.hover" },
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            )}
           </Box>
 
           {mangas.length === 0 ? (
@@ -133,6 +209,53 @@ const ListDetailPage: React.FC = () => {
             />
           )}
         </Paper>
+
+        <Dialog
+          open={dialogOpen}
+          onClose={handleCloseDialog}
+          PaperProps={{
+            sx: {
+              borderRadius: 2,
+              minWidth: isMobile ? "90%" : "400px",
+            },
+          }}
+        >
+          <DialogTitle sx={{ pb: 1 }}>Edit List</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="List Name"
+              type="text"
+              fullWidth
+              value={listName}
+              onChange={(e) => setListName(e.target.value)}
+              sx={{ mt: 2 }}
+            />
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button
+              onClick={handleCloseDialog}
+              sx={{
+                textTransform: "none",
+                px: 2,
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveList}
+              color="primary"
+              variant="contained"
+              sx={{
+                textTransform: "none",
+                px: 3,
+              }}
+            >
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </Container>
   );
