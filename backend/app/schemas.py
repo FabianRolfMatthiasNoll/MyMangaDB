@@ -193,6 +193,7 @@ class StatisticCount(BaseModel):
 
 class Statistics(BaseModel):
     total_mangas: int
+    total_volumes: int
     total_authors: int
     total_genres: int
     total_lists: int

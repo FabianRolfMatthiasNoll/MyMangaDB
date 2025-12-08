@@ -38,6 +38,12 @@ export interface Statistics {
      * @type {number}
      * @memberof Statistics
      */
+    totalVolumes: number;
+    /**
+     *
+     * @type {number}
+     * @memberof Statistics
+     */
     totalAuthors: number;
     /**
      *
@@ -94,6 +100,7 @@ export interface Statistics {
  */
 export function instanceOfStatistics(value: object): value is Statistics {
     if (!('totalMangas' in value) || value['totalMangas'] === undefined) return false;
+    if (!('totalVolumes' in value) || value['totalVolumes'] === undefined) return false;
     if (!('totalAuthors' in value) || value['totalAuthors'] === undefined) return false;
     if (!('totalGenres' in value) || value['totalGenres'] === undefined) return false;
     if (!('totalLists' in value) || value['totalLists'] === undefined) return false;
@@ -117,6 +124,7 @@ export function StatisticsFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     return {
 
         'totalMangas': json['total_mangas'],
+        'totalVolumes': json['total_volumes'],
         'totalAuthors': json['total_authors'],
         'totalGenres': json['total_genres'],
         'totalLists': json['total_lists'],
@@ -141,6 +149,7 @@ export function StatisticsToJSONTyped(value?: Statistics | null, ignoreDiscrimin
     return {
 
         'total_mangas': value['totalMangas'],
+        'total_volumes': value['totalVolumes'],
         'total_authors': value['totalAuthors'],
         'total_genres': value['totalGenres'],
         'total_lists': value['totalLists'],
