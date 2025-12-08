@@ -123,6 +123,7 @@ const Dashboard: React.FC = () => {
           />
         )}
         <Box
+          id="scrollableDiv"
           sx={{
             flex: 1,
             overflow: "auto",
@@ -149,6 +150,7 @@ const Dashboard: React.FC = () => {
             hasMore={!!hasNextPage}
             scrollThreshold={0.9}
             loader={<></>}
+            scrollableTarget="scrollableDiv"
           >
             <MangaList mangas={mangas} isMobile={isMobile} />
           </InfiniteScroll>

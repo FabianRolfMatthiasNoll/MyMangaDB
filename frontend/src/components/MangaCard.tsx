@@ -97,6 +97,7 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
             component="img"
             image={imageUrl}
             alt="manga cover"
+            loading="lazy"
             sx={cardMediaStyle}
           />
           <Box className="cover" sx={coverStyles}>
