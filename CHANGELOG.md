@@ -1,3 +1,11 @@
+# [2.4.0](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.3.0...v2.4.0) (2025-12-08)
+
+
+### Features
+
+* enhance statistics screen with total volumes and star ratings ([94bef69](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/94bef695431b80d940125c570ee8bef03bd7cf8d))
+* implement statistics screen with backend endpoint and frontend page ([7c38f62](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/7c38f62199158f86028848c08b94904b46a948fd))
+
 # [2.3.0](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.2.0...v2.3.0) (2025-12-08)
 
 
