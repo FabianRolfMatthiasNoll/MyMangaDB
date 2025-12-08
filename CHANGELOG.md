@@ -1,3 +1,15 @@
+# [2.3.0](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.2.0...v2.3.0) (2025-12-08)
+
+
+### Bug Fixes
+
+* infinite scroll on widescreen and lazy load images ([7afb611](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/7afb6111a4d31f4b79470afe862d327a09b03467))
+
+
+### Features
+
+* add edit and delete list functionality to list detail page ([5201392](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/5201392f6378176fad4ebc5d598c87ba0d99c50c))
+
 # [2.2.0](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.1.0...v2.2.0) (2025-12-04)
 
 
