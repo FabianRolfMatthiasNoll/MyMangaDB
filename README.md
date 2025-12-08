@@ -6,6 +6,7 @@
 
 - **Automatic Metadata Fetching**: Simply enter a title, and MyMangaDB fetches all the details.
 - **Collection Management**: Track what you own, what you've read, and what you plan to buy.
+- **Statistics**: Visualize your collection with detailed charts and breakdowns of volumes, authors, genres, and more.
 - **Role-Based Access Control (RBAC)**: Secure your database with Admin and Guest roles.
 - **Responsive Design**: Manage your collection from your desktop or mobile device.
 - **Docker Support**: Easy deployment with Docker and Traefik.
@@ -30,6 +31,9 @@ MyMangaDB relies on excellent external APIs to provide accurate manga data. A sp
 
 ### Automatic Fetching
 ![Automatic Fetching](screenshots/automatic_manga_fetching.png)
+
+### Statistics
+![Statistics](screenshots/statistics.png)
 
 ## 🛠️ Installation & Deployment
 

@@ -15,6 +15,8 @@ export * from './ReadingStatus';
 export * from './Role';
 export * from './Source';
 export * from './SourceCreate';
+export * from './StatisticCount';
+export * from './Statistics';
 export * from './Token';
 export * from './User';
 export * from './UserUpdatePassword';
