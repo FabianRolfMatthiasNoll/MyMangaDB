@@ -35,6 +35,9 @@ MyMangaDB relies on excellent external APIs to provide accurate manga data. A sp
 ### Statistics
 ![Statistics](screenshots/statistics.png)
 
+### Mobile View
+![Mobile View](screenshots/mobile.png)
+
 ## 🛠️ Installation & Deployment
 
 ### Docker (Recommended)
