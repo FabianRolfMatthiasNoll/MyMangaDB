@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -10,10 +10,10 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-} from '@mui/material';
-import BackupIcon from '@mui/icons-material/Backup';
-import RestoreIcon from '@mui/icons-material/Restore';
-import { databaseService } from '../services/databaseService';
+} from "@mui/material";
+import BackupIcon from "@mui/icons-material/Backup";
+import RestoreIcon from "@mui/icons-material/Restore";
+import { databaseService } from "../../services/databaseService";
 
 const DatabaseOperations: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -28,12 +28,12 @@ const DatabaseOperations: React.FC = () => {
       setError(null);
       setSuccess(null);
 
-      console.log('Starting export process');
+      console.log("Starting export process");
       const blob = await databaseService.exportDatabase();
-      console.log('Received blob from service');
+      console.log("Received blob from service");
 
       if (!blob || blob.size === 0) {
-        throw new Error('Received empty response from server');
+        throw new Error("Received empty response from server");
       }
 
       console.log(`Blob size: ${blob.size} bytes`);
@@ -41,24 +41,26 @@ const DatabaseOperations: React.FC = () => {
 
       // Create a download link with a more descriptive name
       const url = window.URL.createObjectURL(blob);
-      console.log('Created object URL');
+      console.log("Created object URL");
 
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      const date = new Date().toISOString().split('T')[0];
+      const date = new Date().toISOString().split("T")[0];
       a.download = `mangadb_export_${date}.zip`;
       document.body.appendChild(a);
-      console.log('Starting download');
+      console.log("Starting download");
       a.click();
 
       // Clean up
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      setSuccess('Database exported successfully');
+      setSuccess("Database exported successfully");
     } catch (err) {
-      console.error('Export error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to export database');
+      console.error("Export error:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to export database"
+      );
     } finally {
       setLoading(false);
     }
@@ -84,12 +86,14 @@ const DatabaseOperations: React.FC = () => {
       setSuccess(null);
 
       await databaseService.importDatabase(selectedFile);
-      setSuccess('Database imported successfully');
+      setSuccess("Database imported successfully");
       setImportDialogOpen(false);
       setSelectedFile(null);
     } catch (err) {
-      console.error('Import error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to import database');
+      console.error("Import error:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to import database"
+      );
     } finally {
       setLoading(false);
     }
@@ -118,7 +122,7 @@ const DatabaseOperations: React.FC = () => {
         </Alert>
       )}
 
-      <Box sx={{ display: 'flex', gap: 2 }}>
+      <Box sx={{ display: "flex", gap: 2 }}>
         <Button
           variant="contained"
           startIcon={<BackupIcon />}
@@ -141,21 +145,18 @@ const DatabaseOperations: React.FC = () => {
         <DialogTitle>Import Database</DialogTitle>
         <DialogContent>
           <Typography sx={{ mb: 2 }}>
-            Select a database backup file to import. This will replace your current database and images.
+            Select a database backup file to import. This will replace your
+            current database and images.
           </Typography>
           <input
             type="file"
             accept=".zip"
             onChange={handleFileSelect}
-            style={{ display: 'none' }}
+            style={{ display: "none" }}
             id="import-file-input"
           />
           <label htmlFor="import-file-input">
-            <Button
-              variant="outlined"
-              component="span"
-              fullWidth
-            >
+            <Button variant="outlined" component="span" fullWidth>
               Select File
             </Button>
           </label>
@@ -179,7 +180,7 @@ const DatabaseOperations: React.FC = () => {
       </Dialog>
 
       {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
           <CircularProgress />
         </Box>
       )}
