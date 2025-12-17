@@ -94,7 +94,11 @@ class MALImporter:
                         try:
                             score = int(my_score_elem.text)
                             if score > 0:
-                                manga_create.star_rating = float(score) / 2.0
+                                rating = float(score) / 2.0
+                                # Ensure rating is at least 1.0 as per schema (ge=1)
+                                if rating < 1.0:
+                                    rating = 1.0
+                                manga_create.star_rating = rating
                         except ValueError:
                             pass
 
