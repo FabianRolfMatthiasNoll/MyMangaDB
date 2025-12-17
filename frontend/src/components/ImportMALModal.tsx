@@ -12,7 +12,12 @@ import {
   List,
   ListItem,
   ListItemText,
+  Chip,
+  Divider,
 } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
+import SkipNextIcon from "@mui/icons-material/SkipNext";
 import { importMalList } from "../services/importService";
 import { ImportResponse } from "../api/models";
 
@@ -71,8 +76,21 @@ const ImportMALModal: React.FC<ImportMALModalProps> = ({
     onClose();
   };
 
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "imported":
+        return <CheckCircleIcon color="success" fontSize="small" />;
+      case "skipped":
+        return <SkipNextIcon color="warning" fontSize="small" />;
+      case "failed":
+        return <ErrorIcon color="error" fontSize="small" />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>Import MyAnimeList</DialogTitle>
       <DialogContent>
         <Box sx={{ my: 2 }}>
@@ -112,18 +130,61 @@ const ImportMALModal: React.FC<ImportMALModalProps> = ({
 
         {result && (
           <Box sx={{ mt: 2 }}>
-            <Alert severity={result.failed > 0 ? "warning" : "success"}>
-              Imported: {result.imported} / {result.total}
-              {result.failed > 0 && ` (${result.failed} failed)`}
+            <Alert
+              severity={result.failed > 0 ? "warning" : "success"}
+              sx={{ mb: 2 }}
+            >
+              Total: {result.total} | Imported: {result.imported} | Skipped:{" "}
+              {result.skipped} | Failed: {result.failed}
             </Alert>
-            {result.errors && result.errors.length > 0 && (
-              <Box sx={{ mt: 2, maxHeight: 200, overflow: "auto" }}>
-                <Typography variant="subtitle2">Errors:</Typography>
+
+            {result.logs && result.logs.length > 0 && (
+              <Box
+                sx={{
+                  mt: 2,
+                  maxHeight: 300,
+                  overflow: "auto",
+                  border: "1px solid #e0e0e0",
+                  borderRadius: 1,
+                }}
+              >
                 <List dense>
-                  {result.errors.map((err, index) => (
-                    <ListItem key={index}>
-                      <ListItemText primary={err} />
-                    </ListItem>
+                  {result.logs.map((log, index) => (
+                    <React.Fragment key={index}>
+                      <ListItem>
+                        <Box
+                          sx={{ mr: 2, display: "flex", alignItems: "center" }}
+                        >
+                          {getStatusIcon(log.status)}
+                        </Box>
+                        <ListItemText
+                          primary={log.title}
+                          secondary={log.info}
+                          primaryTypographyProps={{
+                            fontWeight: "bold",
+                            color:
+                              log.status === "failed"
+                                ? "error"
+                                : log.status === "skipped"
+                                ? "text.secondary"
+                                : "text.primary",
+                          }}
+                        />
+                        <Chip
+                          label={log.status}
+                          size="small"
+                          color={
+                            log.status === "imported"
+                              ? "success"
+                              : log.status === "skipped"
+                              ? "warning"
+                              : "error"
+                          }
+                          variant="outlined"
+                        />
+                      </ListItem>
+                      {index < result.logs.length - 1 && <Divider />}
+                    </React.Fragment>
                   ))}
                 </List>
               </Box>
