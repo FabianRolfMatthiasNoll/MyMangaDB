@@ -205,8 +205,15 @@ class Statistics(BaseModel):
     top_authors: List[StatisticCount]
 
 
+class ImportResultDetail(BaseModel):
+    title: str
+    status: str  # "imported", "skipped", "failed"
+    info: str
+
+
 class ImportResponse(BaseModel):
     total: int
     imported: int
+    skipped: int
     failed: int
-    errors: List[str]
+    logs: List[ImportResultDetail]

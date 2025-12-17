@@ -7,7 +7,12 @@ from sqlalchemy.orm import Session
 
 from backend.app.handlers.jikan import JikanHandler
 from backend.app.repositories.manga import MangaRepository
-from backend.app.schemas import ImportResponse, ReadingStatus
+from backend.app.schemas import (
+    ImportResponse,
+    ImportResultDetail,
+    ReadingStatus,
+    VolumeCreate,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -20,8 +25,9 @@ class MALImporter:
     async def import_list(self, file: UploadFile) -> ImportResponse:
         total = 0
         imported = 0
+        skipped = 0
         failed = 0
-        errors = []
+        logs = []
 
         try:
             # Read the file content
@@ -41,8 +47,15 @@ class MALImporter:
                 return ImportResponse(
                     total=0,
                     imported=0,
+                    skipped=0,
                     failed=0,
-                    errors=[f"Invalid XML file: {str(e)}"],
+                    logs=[
+                        ImportResultDetail(
+                            title="File",
+                            status="failed",
+                            info=f"Invalid XML file: {str(e)}",
+                        )
+                    ],
                 )
 
             mangas = root.findall("manga")
@@ -58,7 +71,14 @@ class MALImporter:
                     # Check if exists
                     existing = MangaRepository.get_by_title(self.db, title)
                     if existing:
-                        # Skip if exists
+                        skipped += 1
+                        logs.append(
+                            ImportResultDetail(
+                                title=title,
+                                status="skipped",
+                                info="Manga already exists in database",
+                            )
+                        )
                         continue
 
                     # Fetch details from Jikan
@@ -84,8 +104,14 @@ class MALImporter:
                             logger.warning(f"Failed to search by title {title}: {e}")
 
                     if not manga_create:
-                        errors.append(f"Could not find details for '{title}'")
                         failed += 1
+                        logs.append(
+                            ImportResultDetail(
+                                title=title,
+                                status="failed",
+                                info="Could not find details in Jikan API",
+                            )
+                        )
                         continue
 
                     # Enrich with MAL data
@@ -115,20 +141,56 @@ class MALImporter:
                             my_status_elem.text, ReadingStatus.not_started
                         )
 
+                    # Volumes
+                    my_read_volumes_elem = manga_elem.find("my_read_volumes")
+                    if my_read_volumes_elem is not None and my_read_volumes_elem.text:
+                        try:
+                            read_volumes = int(my_read_volumes_elem.text)
+                            if read_volumes > 0:
+                                volumes = []
+                                for i in range(1, read_volumes + 1):
+                                    volumes.append(VolumeCreate(volume_number=str(i)))
+                                manga_create.volumes = volumes
+                        except ValueError:
+                            pass
+
                     # Create in DB
                     MangaRepository.create(self.db, manga_create)
                     imported += 1
+                    logs.append(
+                        ImportResultDetail(
+                            title=title,
+                            status="imported",
+                            info="Successfully imported",
+                        )
+                    )
 
                 except Exception as e:
                     logger.error(f"Error importing manga '{title}': {e}")
-                    errors.append(f"Error importing '{title}': {str(e)}")
                     failed += 1
+                    logs.append(
+                        ImportResultDetail(
+                            title=title,
+                            status="failed",
+                            info=f"Error during import: {str(e)}",
+                        )
+                    )
 
         except Exception as e:
             logger.error(f"Fatal error during import: {e}")
-            errors.append(f"Fatal error: {str(e)}")
-            failed = total - imported  # Approximate
+            failed = total - imported - skipped
+            logs.append(
+                ImportResultDetail(
+                    title="System",
+                    status="failed",
+                    info=f"Fatal error: {str(e)}",
+                )
+            )
 
         return ImportResponse(
-            total=total, imported=imported, failed=failed, errors=errors
+            total=total,
+            imported=imported,
+            skipped=skipped,
+            failed=failed,
+            logs=logs,
         )
