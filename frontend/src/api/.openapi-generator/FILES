@@ -4,6 +4,7 @@ apis/DatabaseApi.ts
 apis/DefaultApi.ts
 apis/GenresApi.ts
 apis/ImagesApi.ts
+apis/ImportApi.ts
 apis/ListsApi.ts
 apis/MangasApi.ts
 apis/SettingsApi.ts
@@ -18,6 +19,7 @@ models/Category.ts
 models/Genre.ts
 models/GenreCreate.ts
 models/HTTPValidationError.ts
+models/ImportResponse.ts
 models/ListCreate.ts
 models/ListModel.ts
 models/Manga.ts

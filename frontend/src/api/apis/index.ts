@@ -6,6 +6,7 @@ export * from './DatabaseApi';
 export * from './DefaultApi';
 export * from './GenresApi';
 export * from './ImagesApi';
+export * from './ImportApi';
 export * from './ListsApi';
 export * from './MangasApi';
 export * from './SettingsApi';
