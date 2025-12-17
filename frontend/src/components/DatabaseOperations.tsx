@@ -13,16 +13,13 @@ import {
 } from '@mui/material';
 import BackupIcon from '@mui/icons-material/Backup';
 import RestoreIcon from '@mui/icons-material/Restore';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { databaseService } from '../services/databaseService';
-import ImportMALModal from './ImportMALModal';
 
 const DatabaseOperations: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
-  const [malImportOpen, setMalImportOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleExport = async () => {
@@ -138,14 +135,6 @@ const DatabaseOperations: React.FC = () => {
         >
           Import Database
         </Button>
-        <Button
-          variant="contained"
-          startIcon={<CloudUploadIcon />}
-          onClick={() => setMalImportOpen(true)}
-          disabled={loading}
-        >
-          Import from MAL
-        </Button>
       </Box>
 
       <Dialog open={importDialogOpen} onClose={handleCloseDialog}>
@@ -194,11 +183,6 @@ const DatabaseOperations: React.FC = () => {
           <CircularProgress />
         </Box>
       )}
-      <ImportMALModal
-        open={malImportOpen}
-        onClose={() => setMalImportOpen(false)}
-        onImportSuccess={() => setSuccess("MAL Import completed successfully")}
-      />
     </Paper>
   );
 };

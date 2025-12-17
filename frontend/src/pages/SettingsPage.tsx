@@ -27,6 +27,7 @@ import {
   Settings,
 } from "../services/settingsService";
 import DatabaseOperations from "../components/DatabaseOperations";
+import ImportMALSection from "../components/ImportMALSection";
 import { UsersApi } from "../api";
 import { configuration } from "../services/config";
 
@@ -293,6 +294,7 @@ const SettingsPage: React.FC = () => {
         </Paper>
 
         <DatabaseOperations />
+        <ImportMALSection />
 
         <Dialog open={migrateDialogOpen} onClose={handleMigrateCancel}>
           <DialogTitle>Migrate Data</DialogTitle>
