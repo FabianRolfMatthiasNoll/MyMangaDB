@@ -59,8 +59,8 @@ const ImportMALSection: React.FC = () => {
               <li>
                 <Typography variant="body2">
                   Click "Export Now". A <code>.gz</code> file (e.g.,{" "}
-                  <code>mangalist.gz</code>) or an <code>.xml</code> file will be
-                  downloaded.
+                  <code>mangalist.gz</code>) or an <code>.xml</code> file will
+                  be downloaded.
                 </Typography>
               </li>
               <li>
@@ -91,7 +91,9 @@ const ImportMALSection: React.FC = () => {
       <ImportMALModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        onImportSuccess={() => setSuccessMessage("Import completed successfully!")}
+        onImportSuccess={() =>
+          setSuccessMessage("Import completed successfully!")
+        }
       />
     </Paper>
   );

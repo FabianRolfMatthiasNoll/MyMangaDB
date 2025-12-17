@@ -18,8 +18,8 @@ import {
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
-import { importMalList } from "../services/importService";
-import { ImportResponse } from "../api/models";
+import { importMalList } from "../../services/importService";
+import { ImportResponse } from "../../api/models";
 
 interface ImportMALModalProps {
   open: boolean;
