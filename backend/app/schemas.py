@@ -203,3 +203,10 @@ class Statistics(BaseModel):
     rating_distribution: List[StatisticCount]
     top_genres: List[StatisticCount]
     top_authors: List[StatisticCount]
+
+
+class ImportResponse(BaseModel):
+    total: int
+    imported: int
+    failed: int
+    errors: List[str]
