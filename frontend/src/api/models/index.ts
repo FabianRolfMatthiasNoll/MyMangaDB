@@ -7,6 +7,7 @@ export * from './Genre';
 export * from './GenreCreate';
 export * from './HTTPValidationError';
 export * from './ImportResponse';
+export * from './ImportResultDetail';
 export * from './ListCreate';
 export * from './ListModel';
 export * from './Manga';

@@ -20,6 +20,7 @@ models/Genre.ts
 models/GenreCreate.ts
 models/HTTPValidationError.ts
 models/ImportResponse.ts
+models/ImportResultDetail.ts
 models/ListCreate.ts
 models/ListModel.ts
 models/Manga.ts

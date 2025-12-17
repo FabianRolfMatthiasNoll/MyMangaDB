@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from '../runtime';
+import type { ImportResultDetail } from './ImportResultDetail';
+import {
+    ImportResultDetailFromJSON,
+    ImportResultDetailFromJSONTyped,
+    ImportResultDetailToJSON,
+    ImportResultDetailToJSONTyped,
+} from './ImportResultDetail';
+
 /**
  *
  * @export
@@ -36,13 +44,19 @@ export interface ImportResponse {
      * @type {number}
      * @memberof ImportResponse
      */
+    skipped: number;
+    /**
+     *
+     * @type {number}
+     * @memberof ImportResponse
+     */
     failed: number;
     /**
      *
-     * @type {Array<string>}
+     * @type {Array<ImportResultDetail>}
      * @memberof ImportResponse
      */
-    errors: Array<string>;
+    logs: Array<ImportResultDetail>;
 }
 
 /**
@@ -51,8 +65,9 @@ export interface ImportResponse {
 export function instanceOfImportResponse(value: object): value is ImportResponse {
     if (!('total' in value) || value['total'] === undefined) return false;
     if (!('imported' in value) || value['imported'] === undefined) return false;
+    if (!('skipped' in value) || value['skipped'] === undefined) return false;
     if (!('failed' in value) || value['failed'] === undefined) return false;
-    if (!('errors' in value) || value['errors'] === undefined) return false;
+    if (!('logs' in value) || value['logs'] === undefined) return false;
     return true;
 }
 
@@ -68,8 +83,9 @@ export function ImportResponseFromJSONTyped(json: any, ignoreDiscriminator: bool
 
         'total': json['total'],
         'imported': json['imported'],
+        'skipped': json['skipped'],
         'failed': json['failed'],
-        'errors': json['errors'],
+        'logs': ((json['logs'] as Array<any>).map(ImportResultDetailFromJSON)),
     };
 }
 
@@ -86,7 +102,8 @@ export function ImportResponseToJSONTyped(value?: ImportResponse | null, ignoreD
 
         'total': value['total'],
         'imported': value['imported'],
+        'skipped': value['skipped'],
         'failed': value['failed'],
-        'errors': value['errors'],
+        'logs': ((value['logs'] as Array<any>).map(ImportResultDetailToJSON)),
     };
 }
