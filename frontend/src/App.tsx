@@ -53,6 +53,7 @@ function App() {
       responsiveFontSizes(
         createTheme(
           {
+            cssVariables: true,
             palette: {
               mode,
             },
@@ -75,7 +76,7 @@ function App() {
               element={
                 <>
                   <Header toggleThemeMode={toggleThemeMode} />
-                  <Box style={{ display: "flex" }}>
+                  <Box display="flex">
                     <Routes>
                       <Route path="/" element={<Dashboard />} />
                       <Route path="/manga/:id" element={<MangaDetails />} />

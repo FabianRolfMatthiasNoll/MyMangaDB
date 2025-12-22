@@ -227,7 +227,7 @@ const MangaDetails: React.FC = () => {
       ) : (
         <Grid container spacing={3}>
           {/* Cover Image Section */}
-          <Grid size={{ xs: 12, md: 4 }} >
+          <Grid size={{ xs: 12, md: 4 }}>
             <Paper
               elevation={3}
               sx={{
@@ -249,16 +249,17 @@ const MangaDetails: React.FC = () => {
                     paddingTop: "150%", // Fixed aspect ratio
                   }}
                 >
-                  <img
+                  <Box
+                    component="img"
                     src={imageUrl}
                     alt={manga.title}
-                    style={{
+                    sx={{
                       position: "absolute",
                       top: 0,
                       left: 0,
                       width: "100%",
                       height: "100%",
-                      objectFit: "scale-down", // This will fill the container and crop if necessary
+                      objectFit: "cover",
                     }}
                   />
                 </Box>
