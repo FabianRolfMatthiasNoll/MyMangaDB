@@ -78,7 +78,7 @@ const GenresPage: React.FC = () => {
           ) : (
             <Grid container spacing={isMobile ? 2 : 3}>
               {genres.map((genre) => (
-                <Grid sx={{ xs: 12, sm: 6, md: 4 }} key={genre.id}>
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={genre.id}>
                   <Paper
                     elevation={2}
                     sx={{

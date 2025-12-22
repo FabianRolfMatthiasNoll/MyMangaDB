@@ -195,7 +195,7 @@ const ListsPage: React.FC = () => {
           ) : (
             <Grid container spacing={isMobile ? 2 : 3}>
               {lists.map((list) => (
-                <Grid sx={{ xs: 12, sm: 6, md: 4 }} key={list.id}>
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={list.id}>
                   <Paper
                     elevation={2}
                     sx={{

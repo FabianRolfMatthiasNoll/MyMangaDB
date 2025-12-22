@@ -227,7 +227,7 @@ const MangaDetails: React.FC = () => {
       ) : (
         <Grid container spacing={3}>
           {/* Cover Image Section */}
-          <Grid sx={{ xs: 12, md: 4 }} >
+          <Grid size={{ xs: 12, md: 4 }} >
             <Paper
               elevation={3}
               sx={{
@@ -285,7 +285,7 @@ const MangaDetails: React.FC = () => {
           </Grid>
 
           {/* Details Section */}
-          <Grid sx={{ xs: 12, md: 8 }}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Paper
               elevation={3}
               sx={{
@@ -420,7 +420,7 @@ const MangaDetails: React.FC = () => {
 
               {/* Additional Details */}
               <Grid container spacing={2}>
-                <Grid sx={{ xs: 12, sm: 6 }}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="subtitle2" color="text.secondary">
                     Language
                   </Typography>
@@ -428,7 +428,7 @@ const MangaDetails: React.FC = () => {
                     {manga.language || "N/A"}
                   </Typography>
                 </Grid>
-                <Grid sx={{ xs: 12, sm: 6 }}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="subtitle2" color="text.secondary">
                     Rating
                   </Typography>
@@ -467,7 +467,7 @@ const MangaDetails: React.FC = () => {
           </Grid>
 
           {/* Volumes Section */}
-          <Grid sx={{ xs: 12 }}>
+          <Grid size={{ xs: 12 }}>
             <Paper
               elevation={3}
               sx={{

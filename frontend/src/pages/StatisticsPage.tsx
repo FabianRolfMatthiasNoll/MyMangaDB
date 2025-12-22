@@ -129,53 +129,53 @@ const StatisticsPage: React.FC = () => {
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid sx={{ xs: 6, sm: 4, md: 2.4 }}>
+        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <StatCard title="Total Mangas" value={stats.totalMangas} />
         </Grid>
-        <Grid sx={{ xs: 6, sm: 4, md: 2.4 }}>
+        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <StatCard title="Total Volumes" value={stats.totalVolumes} />
         </Grid>
-        <Grid sx={{ xs: 6, sm: 4, md: 2.4 }}>
+        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <StatCard title="Total Authors" value={stats.totalAuthors} />
         </Grid>
-        <Grid sx={{ xs: 6, sm: 4, md: 2.4 }}>
+        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <StatCard title="Total Genres" value={stats.totalGenres} />
         </Grid>
-        <Grid sx={{ xs: 6, sm: 4, md: 2.4 }}>
+        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <StatCard title="Total Lists" value={stats.totalLists} />
         </Grid>
       </Grid>
 
       <Grid container spacing={3}>
-        <Grid sx={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <DistributionList
             title="Reading Status"
             data={stats.readingStatusDistribution}
           />
         </Grid>
-        <Grid sx={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <DistributionList
             title="Overall Status"
             data={stats.overallStatusDistribution}
           />
         </Grid>
-        <Grid sx={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <DistributionList
             title="Category"
             data={stats.categoryDistribution}
           />
         </Grid>
-        <Grid sx={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <DistributionList
             title="Rating"
             data={stats.ratingDistribution}
             isRating
           />
         </Grid>
-        <Grid sx={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <DistributionList title="Top Genres" data={stats.topGenres} />
         </Grid>
-        <Grid sx={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <DistributionList title="Top Authors" data={stats.topAuthors} />
         </Grid>
       </Grid>
