@@ -87,7 +87,7 @@ const AuthorsPage: React.FC = () => {
           ) : (
             <Grid container spacing={isMobile ? 2 : 3}>
               {authors.map((author) => (
-                <Grid item xs={12} sm={6} md={4} key={author.id}>
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={author.id}>
                   <Paper
                     elevation={2}
                     sx={{

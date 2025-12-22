@@ -21,11 +21,14 @@ import {
   Snackbar,
   Skeleton,
   CircularProgress,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import { getSources, getSearchResults } from "../services/sourceService";
 import { createManga } from "../services/mangaService";
 import { Source, MangaCreate, VolumeCreate } from "../api/models";
 import { parseVolumeString } from "../utils/volumeUtils";
+import { HighlightOff } from "@mui/icons-material";
 
 interface AutomaticSearchModalProps {
   open: boolean;
@@ -319,6 +322,16 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
                 }
               }}
               disabled={isSearching}
+              slotProps={{
+                input: {
+                  endAdornment: <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setSearchQuery("")}>
+                      <HighlightOff />
+                    </IconButton>
+                  </InputAdornment>,
+                },
+              }}
             />
             <FormControl fullWidth>
               <InputLabel>Source</InputLabel>

@@ -227,7 +227,7 @@ const MangaDetails: React.FC = () => {
       ) : (
         <Grid container spacing={3}>
           {/* Cover Image Section */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Paper
               elevation={3}
               sx={{
@@ -249,16 +249,17 @@ const MangaDetails: React.FC = () => {
                     paddingTop: "150%", // Fixed aspect ratio
                   }}
                 >
-                  <img
+                  <Box
+                    component="img"
                     src={imageUrl}
                     alt={manga.title}
-                    style={{
+                    sx={{
                       position: "absolute",
                       top: 0,
                       left: 0,
                       width: "100%",
                       height: "100%",
-                      objectFit: "scale-down", // This will fill the container and crop if necessary
+                      objectFit: "cover",
                     }}
                   />
                 </Box>
@@ -285,7 +286,7 @@ const MangaDetails: React.FC = () => {
           </Grid>
 
           {/* Details Section */}
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Paper
               elevation={3}
               sx={{
@@ -420,7 +421,7 @@ const MangaDetails: React.FC = () => {
 
               {/* Additional Details */}
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="subtitle2" color="text.secondary">
                     Language
                   </Typography>
@@ -428,7 +429,7 @@ const MangaDetails: React.FC = () => {
                     {manga.language || "N/A"}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="subtitle2" color="text.secondary">
                     Rating
                   </Typography>
@@ -467,7 +468,7 @@ const MangaDetails: React.FC = () => {
           </Grid>
 
           {/* Volumes Section */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Paper
               elevation={3}
               sx={{

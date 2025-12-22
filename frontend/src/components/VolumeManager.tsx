@@ -134,7 +134,7 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
           {displayVolumes.map((volNum) => {
             const isOwned = ownedVolumes.has(volNum);
             return (
-              <Grid item key={volNum}>
+              <Grid key={volNum}>
                 <Tooltip title={isOwned ? "Owned" : "Not Owned"}>
                   <Paper
                     elevation={isOwned ? 2 : 0}
