@@ -1,3 +1,10 @@
+# [2.6.0](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.5.0...v2.6.0) (2025-12-22)
+
+
+### Features
+
+* add clear button and update to mui v7 ([9700a96](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/9700a9619fcc780f2f635a2ac923460bb2d77b79))
+
 # [2.5.0](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.4.0...v2.5.0) (2025-12-17)
 
 
