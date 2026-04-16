@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
@@ -11,8 +11,12 @@ router = APIRouter()
 
 
 @router.get("/getAll", response_model=List[Author])
-def get_all_authors(db: Session = Depends(get_db)):
-    return AuthorRepository.get_all(db)
+def get_all_authors(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    return AuthorRepository.get_all(db, skip=skip, limit=limit)
 
 
 @router.get("/{author_id}", response_model=Author)

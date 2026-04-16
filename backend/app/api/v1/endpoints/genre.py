@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
@@ -11,8 +11,12 @@ router = APIRouter()
 
 
 @router.get("/getAll", response_model=List[Genre])
-def get_all_genres(db: Session = Depends(get_db)):
-    return GenreRepository.get_all(db)
+def get_all_genres(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    return GenreRepository.get_all(db, skip=skip, limit=limit)
 
 
 @router.get("/{genre_id}", response_model=Genre)
