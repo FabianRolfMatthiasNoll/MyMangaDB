@@ -32,6 +32,11 @@ export interface CreateGenreApiV1GenresCreatePostRequest {
     genreCreate: GenreCreate;
 }
 
+export interface GetAllGenresApiV1GenresGetAllGetRequest {
+    skip?: number;
+    limit?: number;
+}
+
 export interface GetGenreApiV1GenresGenreIdGetRequest {
     genreId: number;
 }
@@ -80,8 +85,16 @@ export class GenresApi extends runtime.BaseAPI {
     /**
      * Get All Genres
      */
-    async getAllGenresApiV1GenresGetAllGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Genre>>> {
+    async getAllGenresApiV1GenresGetAllGetRaw(requestParameters: GetAllGenresApiV1GenresGetAllGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Genre>>> {
         const queryParameters: any = {};
+
+        if (requestParameters['skip'] != null) {
+            queryParameters['skip'] = requestParameters['skip'];
+        }
+
+        if (requestParameters['limit'] != null) {
+            queryParameters['limit'] = requestParameters['limit'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -98,8 +111,8 @@ export class GenresApi extends runtime.BaseAPI {
     /**
      * Get All Genres
      */
-    async getAllGenresApiV1GenresGetAllGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Genre>> {
-        const response = await this.getAllGenresApiV1GenresGetAllGetRaw(initOverrides);
+    async getAllGenresApiV1GenresGetAllGet(requestParameters: GetAllGenresApiV1GenresGetAllGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Genre>> {
+        const response = await this.getAllGenresApiV1GenresGetAllGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
