@@ -6,8 +6,8 @@ import { Genre, Manga } from "../api/models";
 const genresApi = new GenresApi(configuration);
 const mangasApi = new MangasApi(configuration);
 
-export const getGenres = async (): Promise<Genre[]> =>
-  apiCallWrapper(() => genresApi.getAllGenresApiV1GenresGetAllGet(), []);
+export const getGenres = async (skip: number = 0, limit: number = 10): Promise<Genre[]> =>
+  apiCallWrapper(() => genresApi.getAllGenresApiV1GenresGetAllGet({ skip, limit }), []);
 
 export const getGenreById = async (genreId: number): Promise<Genre | null> =>
   apiCallWrapper(() => genresApi.getGenreApiV1GenresGenreIdGet({ genreId }), null);

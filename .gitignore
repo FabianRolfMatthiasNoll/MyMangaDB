@@ -283,6 +283,16 @@ $RECYCLE.BIN/
 
 # End of https://www.gitignore.io/api/linux,macos,python,pycharm,windows,visualstudiocode
 
+# Claude agent files
+.claude/
+.claude/**/*
+!.claude/.gitkeep
+CLAUDE.md
+
+# Memory system
+memory/
+memory/**/*
+
 # Environment files
 .env
 backend/.env

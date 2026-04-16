@@ -6,8 +6,8 @@ import { Author, Manga } from "../api/models";
 const authorsApi = new AuthorsApi(configuration);
 const mangasApi = new MangasApi(configuration);
 
-export const getAuthors = async (): Promise<Author[]> =>
-  apiCallWrapper(() => authorsApi.getAllAuthorsApiV1AuthorsGetAllGet(), []);
+export const getAuthors = async (skip: number = 0, limit: number = 10): Promise<Author[]> =>
+  apiCallWrapper(() => authorsApi.getAllAuthorsApiV1AuthorsGetAllGet({ skip, limit }), []);
 
 export const getAuthorById = async (authorId: number): Promise<Author | null> =>
   apiCallWrapper(() => authorsApi.getAuthorApiV1AuthorsAuthorIdGet({ authorId }), null);

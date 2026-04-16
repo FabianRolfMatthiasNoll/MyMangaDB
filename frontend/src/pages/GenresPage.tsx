@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Box,
   Typography,
@@ -11,39 +11,49 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { getGenres } from "../services/genreService";
-import { Genre } from "../api/models";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const GenresPage: React.FC = () => {
-  const [genres, setGenres] = useState<Genre[]>([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const fetchGenres = async () => {
-    try {
-      setLoading(true);
-      const response = await getGenres();
-      setGenres(response);
-    } catch (error) {
-      console.error("Error fetching genres:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const limit = 20;
 
-  useEffect(() => {
-    fetchGenres();
-  }, []);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isLoading,
+    error,
+  } = useInfiniteQuery({
+    queryKey: ["genres"],
+    queryFn: ({ pageParam = 0 }) => getGenres(pageParam, limit),
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === limit ? allPages.length * limit : undefined;
+    },
+    initialPageParam: 0,
+  });
+
+  const genres = data ? data.pages.flat() : [];
 
   const handleGenreClick = (genreId: number) => {
     navigate(`/genres/${genreId}`);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
         <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <Typography color="error">Error loading genres</Typography>
       </Box>
     );
   }
@@ -76,48 +86,78 @@ const GenresPage: React.FC = () => {
               </Typography>
             </Box>
           ) : (
-            <Grid container spacing={isMobile ? 2 : 3}>
-              {genres.map((genre) => (
-                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={genre.id}>
-                  <Paper
-                    elevation={2}
-                    sx={{
-                      p: isMobile ? 2 : 3,
-                      cursor: "pointer",
-                      transition: "transform 0.2s, box-shadow 0.2s",
-                      "&:hover": {
-                        transform: "translateY(-4px)",
-                        boxShadow: 4
-                      }
-                    }}
-                    onClick={() => handleGenreClick(genre.id)}
-                  >
-                    <Box>
-                      <Typography
-                        variant={isMobile ? "subtitle1" : "h6"}
+            <Box
+              id="scrollableDiv"
+              sx={{
+                maxHeight: "calc(100vh - 200px)",
+                overflow: "auto",
+                "&::-webkit-scrollbar": {
+                  width: "8px",
+                },
+                "&::-webkit-scrollbar-track": {
+                  background: "transparent",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  background:
+                    theme.palette.mode === "dark"
+                      ? "rgba(255,255,255,0.2)"
+                      : "rgba(0,0,0,0.2)",
+                  borderRadius: "4px",
+                },
+              }}
+            >
+              <InfiniteScroll
+                dataLength={genres.length}
+                next={fetchNextPage}
+                hasMore={!!hasNextPage}
+                scrollThreshold={0.9}
+                loader={<></>}
+                scrollableTarget="scrollableDiv"
+              >
+                <Grid container spacing={isMobile ? 2 : 3}>
+                  {genres.map((genre) => (
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={genre.id}>
+                      <Paper
+                        elevation={2}
                         sx={{
-                          fontWeight: 'bold',
-                          mb: 1
+                          p: isMobile ? 2 : 3,
+                          cursor: "pointer",
+                          transition: "transform 0.2s, box-shadow 0.2s",
+                          "&:hover": {
+                            transform: "translateY(-4px)",
+                            boxShadow: 4
+                          }
                         }}
+                        onClick={() => handleGenreClick(genre.id)}
                       >
-                        {genre.name}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 0.5
-                        }}
-                      >
-                        {genre.mangaCount} manga{genre.mangaCount !== 1 ? "s" : ""}
-                      </Typography>
-                    </Box>
-                  </Paper>
+                        <Box>
+                          <Typography
+                            variant={isMobile ? "subtitle1" : "h6"}
+                            sx={{
+                              fontWeight: 'bold',
+                              mb: 1
+                            }}
+                          >
+                            {genre.name}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 0.5
+                            }}
+                          >
+                            {genre.mangaCount} manga{genre.mangaCount !== 1 ? "s" : ""}
+                          </Typography>
+                        </Box>
+                      </Paper>
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
-            </Grid>
+              </InfiniteScroll>
+            </Box>
           )}
         </Paper>
       </Box>

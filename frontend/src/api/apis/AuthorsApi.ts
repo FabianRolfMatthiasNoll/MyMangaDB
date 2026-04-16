@@ -32,6 +32,11 @@ export interface CreateAuthorApiV1AuthorsCreatePostRequest {
     authorCreate: AuthorCreate;
 }
 
+export interface GetAllAuthorsApiV1AuthorsGetAllGetRequest {
+    skip?: number;
+    limit?: number;
+}
+
 export interface GetAuthorApiV1AuthorsAuthorIdGetRequest {
     authorId: number;
 }
@@ -80,8 +85,16 @@ export class AuthorsApi extends runtime.BaseAPI {
     /**
      * Get All Authors
      */
-    async getAllAuthorsApiV1AuthorsGetAllGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Author>>> {
+    async getAllAuthorsApiV1AuthorsGetAllGetRaw(requestParameters: GetAllAuthorsApiV1AuthorsGetAllGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Author>>> {
         const queryParameters: any = {};
+
+        if (requestParameters['skip'] != null) {
+            queryParameters['skip'] = requestParameters['skip'];
+        }
+
+        if (requestParameters['limit'] != null) {
+            queryParameters['limit'] = requestParameters['limit'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -98,8 +111,8 @@ export class AuthorsApi extends runtime.BaseAPI {
     /**
      * Get All Authors
      */
-    async getAllAuthorsApiV1AuthorsGetAllGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Author>> {
-        const response = await this.getAllAuthorsApiV1AuthorsGetAllGetRaw(initOverrides);
+    async getAllAuthorsApiV1AuthorsGetAllGet(requestParameters: GetAllAuthorsApiV1AuthorsGetAllGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Author>> {
+        const response = await this.getAllAuthorsApiV1AuthorsGetAllGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
