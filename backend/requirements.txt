@@ -11,7 +11,7 @@ qtpy
 bs4
 selenium
 PyJWT==2.8.0
-python-dotenv==1.0.0
+python-dotenv==1.2.2
 bcrypt==4.0.1
 pytest
 httpx
