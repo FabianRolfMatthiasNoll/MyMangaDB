@@ -1,10 +1,13 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - master
-      - main
+  workflow_dispatch:
+    inputs:
+      force-patch:
+        description: "Force a patch bump (e.g. for dependency updates)"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -29,7 +32,21 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Prepare forced patch bump
+        if: inputs.force-patch == true
+        run: |
+          git config user.name "CI Release Bot"
+          git config user.email "release@ci.local"
+          git commit --allow-empty -m "fix:force patch release"
+          git push
+
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
+
+      - name: Revert forced patch commit
+        if: inputs.force-patch == true
+        run: |
+          git revert HEAD --no-edit
+          git push
