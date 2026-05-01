@@ -1,8 +1,24 @@
 import { HTTPValidationError, ValidationError } from "../api";
 import { ResponseError } from "../api/runtime";
+import { logout } from "./auth";
+
+let sessionExpiredShown = false;
 
 export const handleApiError = async (error: unknown) => {
   const responseError = error as ResponseError;
+
+  // Handle 401 Unauthorized / 403 Forbidden - token expired or invalid
+  if (responseError.response && (responseError.response.status === 401 || responseError.response.status === 403)) {
+    if (!sessionExpiredShown) {
+      sessionExpiredShown = true;
+      alert("Your session has expired. Please log in again.");
+      setTimeout(() => {
+        sessionExpiredShown = false;
+      }, 5000);
+    }
+    logout();
+    return;
+  }
 
   if (responseError.response && responseError.response.json) {
     const errorData: HTTPValidationError = await responseError.response.json();
