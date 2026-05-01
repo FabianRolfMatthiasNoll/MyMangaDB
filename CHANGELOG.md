@@ -1,3 +1,18 @@
+# [2.7.0](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.6.1...v2.7.0) (2026-05-01)
+
+
+### Bug Fixes
+
+* **frontend:** logout user if problem with token (expired / invalid) ([9e1ad1d](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/9e1ad1d53000feaeb705ebd1f9dd1e020350235d))
+
+
+### Features
+
+* **frontend:** add translation library ([7a0f99c](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/7a0f99c0e02849b26291a885f74a01884fc2af3b))
+* **translation:** add appropiate translation labels for all string labels in the frontend ([b58ddb6](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/b58ddb611117335bfc85a9e3e9209af25495270f))
+* **translation:** add translation files for english and translate them to german ([7662b56](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/7662b56b0e792bb9351f51435b51a51d2b1a5209))
+* **translation:** change error messages in backend to codes that can be translated ([779a482](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/779a4828c4788b710479f692b6069095d5fb8bce))
+
 ## [2.6.1](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.6.0...v2.6.1) (2026-04-16)
 
 
