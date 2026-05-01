@@ -143,27 +143,6 @@ tasks:
           -o src/api \
           --additional-properties=typescriptThreePlus=true)
 
-  # Docker Tasks
-  docker:build:
-    desc: Build docker images
-    cmds:
-      - docker-compose build
-
-  docker:up:
-    desc: Start services in background
-    cmds:
-      - docker-compose up -d
-
-  docker:down:
-    desc: Stop and remove services
-    cmds:
-      - docker-compose down
-
-  docker:logs:
-    desc: Follow docker logs
-    cmds:
-      - docker-compose logs -f
-
   # Utility Tasks
   clean:
     desc: Clean up generated files and artifacts
