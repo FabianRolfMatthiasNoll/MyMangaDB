@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   TextField,
@@ -45,6 +46,7 @@ const MangaForm: React.FC<MangaFormProps> = ({
   onCancel,
   initialLists = [],
 }) => {
+  const { t } = useTranslation();
   const [editableManga, setEditableManga] = useState<Manga>(manga);
   const [availableAuthors, setAvailableAuthors] = useState<Author[]>([]);
   const [availableGenres, setAvailableGenres] = useState<Genre[]>([]);
@@ -171,14 +173,14 @@ const MangaForm: React.FC<MangaFormProps> = ({
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <TextField
-        label="Title"
+        label={t("manga.title")}
         value={editableManga.title}
         fullWidth
         required
         onChange={(e) => handleChange("title", e.target.value)}
       />
       <TextField
-        label="Japanese Title"
+        label={t("manga.japaneseTitle")}
         value={editableManga.japaneseTitle || ""}
         fullWidth
         onChange={(e) => handleChange("japaneseTitle", e.target.value)}
@@ -196,8 +198,8 @@ const MangaForm: React.FC<MangaFormProps> = ({
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Authors"
-            placeholder="Add authors"
+            label={t("manga.addAuthors")}
+            placeholder={t("manga.addAuthors")}
             fullWidth
           />
         )}
@@ -224,8 +226,8 @@ const MangaForm: React.FC<MangaFormProps> = ({
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Genres"
-            placeholder="Add genres"
+            label={t("manga.addGenres")}
+            placeholder={t("manga.addGenres")}
             fullWidth
           />
         )}
@@ -252,8 +254,8 @@ const MangaForm: React.FC<MangaFormProps> = ({
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Lists"
-            placeholder="Add lists"
+            label={t("manga.addLists")}
+            placeholder={t("manga.addLists")}
             fullWidth
           />
         )}
@@ -268,7 +270,7 @@ const MangaForm: React.FC<MangaFormProps> = ({
         }
       />
       <TextField
-        label="Summary"
+        label={t("manga.summary")}
         value={editableManga.summary || ""}
         fullWidth
         multiline
@@ -276,15 +278,15 @@ const MangaForm: React.FC<MangaFormProps> = ({
         onChange={(e) => handleChange("summary", e.target.value)}
       />
       <TextField
-        label="Language"
+        label={t("manga.language")}
         value={editableManga.language || ""}
         fullWidth
         onChange={(e) => handleChange("language", e.target.value)}
       />
       <FormControl fullWidth>
-        <InputLabel>Category</InputLabel>
+        <InputLabel>{t("manga.category")}</InputLabel>
         <Select
-          label="Category"
+          label={t("manga.category")}
           value={editableManga.category || ""}
           onChange={(e) => handleChange("category", e.target.value)}
         >
@@ -296,9 +298,9 @@ const MangaForm: React.FC<MangaFormProps> = ({
         </Select>
       </FormControl>
       <FormControl fullWidth>
-        <InputLabel>Reading Status</InputLabel>
+        <InputLabel>{t("manga.readingStatus")}</InputLabel>
         <Select
-          label="Reading Status"
+          label={t("manga.readingStatus")}
           value={editableManga.readingStatus || ""}
           onChange={(e) => handleChange("readingStatus", e.target.value)}
         >
@@ -310,9 +312,9 @@ const MangaForm: React.FC<MangaFormProps> = ({
         </Select>
       </FormControl>
       <FormControl fullWidth>
-        <InputLabel>Overall Status</InputLabel>
+        <InputLabel>{t("manga.overallStatus")}</InputLabel>
         <Select
-          label="Overall Status"
+          label={t("manga.overallStatus")}
           value={editableManga.overallStatus || ""}
           onChange={(e) => handleChange("overallStatus", e.target.value)}
         >
@@ -324,7 +326,7 @@ const MangaForm: React.FC<MangaFormProps> = ({
         </Select>
       </FormControl>
       <Box>
-        <Typography>Star Rating</Typography>
+        <Typography>{t("common.starRating")}</Typography>
         <Rating
           name="star-rating"
           value={editableManga.starRating || 0}
@@ -338,7 +340,7 @@ const MangaForm: React.FC<MangaFormProps> = ({
           variant="outlined"
           startIcon={<CloudUploadIcon />}
         >
-          Upload Cover Image
+          {t("manga.uploadCoverImage")}
           <VisuallyHiddenInput
             type="file"
             onChange={handleImageChange}
@@ -361,10 +363,10 @@ const MangaForm: React.FC<MangaFormProps> = ({
       </Box>
       <Box sx={{ display: "flex", gap: 2 }}>
         <Button variant="contained" onClick={handleSave}>
-          Save
+          {t("common.save")}
         </Button>
         <Button variant="outlined" onClick={onCancel}>
-          Cancel
+          {t("common.cancel")}
         </Button>
       </Box>
     </Box>

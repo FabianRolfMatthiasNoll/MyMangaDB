@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   FormControl,
@@ -47,6 +48,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
   setFilterList,
   resetFilters,
 }) => {
+  const { t } = useTranslation();
   const handleCategoryChange = (event: SelectChangeEvent<string[]>) => {
     setFilterCategory(event.target.value as string[]);
   };
@@ -69,12 +71,12 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
   return (
     <Box sx={{ display: "flex", flexDirection: "column", mb: 2 }}>
       <FormControl variant="outlined" sx={{ mb: 2 }}>
-        <InputLabel>Category</InputLabel>
+        <InputLabel>{t("filters.category")}</InputLabel>
         <Select
           multiple
           value={filterCategory}
           onChange={handleCategoryChange}
-          label="Category"
+          label={t("filters.category")}
         >
           {Object.values(Category).map((category) => (
             <MenuItem key={category} value={category}>
@@ -84,12 +86,12 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
         </Select>
       </FormControl>
       <FormControl variant="outlined" sx={{ mb: 2 }}>
-        <InputLabel>Reading Status</InputLabel>
+        <InputLabel>{t("filters.readingStatus")}</InputLabel>
         <Select
           multiple
           value={filterReadingStatus}
           onChange={handleReadingStatusChange}
-          label="Reading Status"
+          label={t("filters.readingStatus")}
         >
           {Object.entries(ReadingStatus).map(([key, value]) => (
             <MenuItem key={key} value={value}>
@@ -99,12 +101,12 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
         </Select>
       </FormControl>
       <FormControl variant="outlined" sx={{ mb: 2 }}>
-        <InputLabel>Overall Status</InputLabel>
+        <InputLabel>{t("filters.overallStatus")}</InputLabel>
         <Select
           multiple
           value={filterOverallStatus}
           onChange={handleOverallStatusChange}
-          label="Overall Status"
+          label={t("filters.overallStatus")}
         >
           {Object.entries(OverallStatus).map(([key, value]) => (
             <MenuItem key={key} value={value}>
@@ -120,12 +122,12 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           value={filterList}
           onChange={(_event, newValue) => setFilterList(newValue)}
           renderInput={(params) => (
-            <TextField {...params} label="Filter by List" variant="outlined" />
+            <TextField {...params} label={t("filters.filterByList")} variant="outlined" />
           )}
         />
       </FormControl>
       <Box sx={{ mb: 2 }}>
-        <InputLabel>Rating Range</InputLabel>
+        <InputLabel>{t("filters.ratingRange")}</InputLabel>
         <Slider
           value={ratingRange}
           onChange={handleRatingRangeChange}
@@ -135,7 +137,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
         />
       </Box>
       <Button variant="contained" onClick={resetFilters}>
-        Reset Filters
+        {t("filters.resetFilters")}
       </Button>
     </Box>
   );

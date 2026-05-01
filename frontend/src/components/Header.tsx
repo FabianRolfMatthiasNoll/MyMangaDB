@@ -4,6 +4,7 @@ import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
+import LanguageIcon from "@mui/icons-material/Language";
 import {
   AppBar,
   Box,
@@ -18,6 +19,7 @@ import {
 } from "@mui/material";
 import { logout } from "../services/auth";
 import { useUser } from "../context/UserContext";
+import { useTranslation } from "react-i18next";
 
 interface NavBarProps {
   toggleThemeMode: () => void;
@@ -28,15 +30,17 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
   const location = useLocation();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [langAnchorEl, setLangAnchorEl] = useState<null | HTMLElement>(null);
   const { isAdmin } = useUser();
+  const { t, i18n } = useTranslation();
 
   const menuItems = [
-    { text: "Dashboard", path: "/" },
-    { text: "Lists", path: "/lists" },
-    { text: "Authors", path: "/authors" },
-    { text: "Genres", path: "/genres" },
-    { text: "Statistics", path: "/statistics" },
-    ...(isAdmin ? [{ text: "Settings", path: "/settings" }] : []),
+    { text: t("nav.dashboard"), path: "/" },
+    { text: t("nav.lists"), path: "/lists" },
+    { text: t("nav.authors"), path: "/authors" },
+    { text: t("nav.genres"), path: "/genres" },
+    { text: t("nav.statistics"), path: "/statistics" },
+    ...(isAdmin ? [{ text: t("nav.settings"), path: "/settings" }] : []),
   ];
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -45,6 +49,19 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleLangMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setLangAnchorEl(event.currentTarget);
+  };
+
+  const handleLangMenuClose = () => {
+    setLangAnchorEl(null);
+  };
+
+  const handleLanguageChange = (lang: string) => {
+    i18n.changeLanguage(lang);
+    handleLangMenuClose();
   };
 
   const handleLogout = () => {
@@ -72,7 +89,7 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
           {item.text}
         </MenuItem>
       ))}
-      <MenuItem onClick={handleLogout}>Logout</MenuItem>
+      <MenuItem onClick={handleLogout}>{t("nav.logout")}</MenuItem>
     </Menu>
   );
 
@@ -182,6 +199,36 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
               gap: 1.5,
             }}
           >
+            <Tooltip title={t("language.select")}>
+              <IconButton
+                onClick={handleLangMenuOpen}
+                sx={{ alignSelf: "center", color: "inherit" }}
+              >
+                <LanguageIcon />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              anchorEl={langAnchorEl}
+              anchorOrigin={{ vertical: "top", horizontal: "right" }}
+              keepMounted
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
+              open={Boolean(langAnchorEl)}
+              onClose={handleLangMenuClose}
+              sx={{ marginTop: 5 }}
+            >
+              <MenuItem
+                onClick={() => handleLanguageChange("en")}
+                selected={i18n.language === "en"}
+              >
+                {t("language.en")}
+              </MenuItem>
+              <MenuItem
+                onClick={() => handleLanguageChange("de")}
+                selected={i18n.language === "de"}
+              >
+                {t("language.de")}
+              </MenuItem>
+            </Menu>
             <IconButton onClick={toggleThemeMode} sx={{ alignSelf: "center" }}>
               {theme.palette.mode === "dark" ? (
                 <LightModeIcon />
@@ -190,7 +237,7 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
               )}
             </IconButton>
             {!isMobile && (
-              <Tooltip title="Logout">
+              <Tooltip title={t("nav.logout")}>
                 <IconButton onClick={handleLogout} sx={{ alignSelf: "center" }}>
                   <LogoutIcon />
                 </IconButton>

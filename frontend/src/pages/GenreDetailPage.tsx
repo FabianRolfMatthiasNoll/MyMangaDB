@@ -14,8 +14,10 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { getGenreById, getMangasByGenreId } from "../services/genreService";
 import { Genre, Manga } from "../api/models";
 import MangaList from "../components/MangaList";
+import { useTranslation } from "react-i18next";
 
 const GenreDetailPage: React.FC = () => {
+  const { t } = useTranslation();
   const { genreId } = useParams<{ genreId: string }>();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -60,7 +62,7 @@ const GenreDetailPage: React.FC = () => {
     return (
       <Container maxWidth="lg">
         <Box p={3}>
-          <Typography variant="h5">Genre not found</Typography>
+          <Typography variant="h5">{t("errors.genreNotFound")}</Typography>
         </Box>
       </Container>
     );
@@ -113,10 +115,10 @@ const GenreDetailPage: React.FC = () => {
               }}
             >
               <Typography variant="h6" color="text.secondary" gutterBottom>
-                No mangas found in this genre
+                {t("genres.noMangaInGenre")}
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                Add mangas with this genre to see them here
+                {t("genres.addMangaWithGenre")}
               </Typography>
             </Box>
           ) : (

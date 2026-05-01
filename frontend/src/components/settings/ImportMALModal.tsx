@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dialog,
@@ -32,6 +33,7 @@ const ImportMALModal: React.FC<ImportMALModalProps> = ({
   onClose,
   onImportSuccess,
 }) => {
+  const { t } = useTranslation();
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ImportResponse | null>(null);
@@ -60,10 +62,10 @@ const ImportMALModal: React.FC<ImportMALModalProps> = ({
           onImportSuccess();
         }
       } else {
-        setError("Import failed. Please try again.");
+        setError(t("errors.failedToImportDatabase"));
       }
     } catch (err) {
-      setError("An error occurred during import.");
+      setError(t("errors.failedToImportDatabase"));
     } finally {
       setLoading(false);
     }
@@ -91,11 +93,11 @@ const ImportMALModal: React.FC<ImportMALModalProps> = ({
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Import MyAnimeList</DialogTitle>
+      <DialogTitle>{t("importMAL.title")}</DialogTitle>
       <DialogContent>
         <Box sx={{ my: 2 }}>
           <Typography variant="body2" gutterBottom>
-            Select your MyAnimeList export file (.xml or .gz).
+            {t("importMAL.selectFile")}
           </Typography>
           <input
             accept=".xml,.gz"
@@ -106,12 +108,12 @@ const ImportMALModal: React.FC<ImportMALModalProps> = ({
           />
           <label htmlFor="raised-button-file">
             <Button variant="outlined" component="span">
-              Choose File
+              {t("importMAL.chooseFile")}
             </Button>
           </label>
           {file && (
             <Typography variant="body2" sx={{ mt: 1 }}>
-              Selected: {file.name}
+              {t("importMAL.selected", { filename: file.name })}
             </Typography>
           )}
         </Box>
@@ -134,8 +136,12 @@ const ImportMALModal: React.FC<ImportMALModalProps> = ({
               severity={result.failed > 0 ? "warning" : "success"}
               sx={{ mb: 2 }}
             >
-              Total: {result.total} | Imported: {result.imported} | Skipped:{" "}
-              {result.skipped} | Failed: {result.failed}
+              {t("importMAL.resultSummary", {
+                total: result.total,
+                imported: result.imported,
+                skipped: result.skipped,
+                failed: result.failed,
+              })}
             </Alert>
 
             {result.logs && result.logs.length > 0 && (
@@ -159,7 +165,7 @@ const ImportMALModal: React.FC<ImportMALModalProps> = ({
                         </Box>
                         <ListItemText
                           primary={log.title}
-                          secondary={log.info}
+                          secondary={t(`errors.infoCodes.${log.infoCode}` as const) || log.infoCode}
                           primaryTypographyProps={{
                             fontWeight: "bold",
                             color:
@@ -193,13 +199,13 @@ const ImportMALModal: React.FC<ImportMALModalProps> = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Close</Button>
+        <Button onClick={handleClose}>{t("common.close")}</Button>
         <Button
           onClick={handleImport}
           variant="contained"
           disabled={!file || loading}
         >
-          Import
+          {t("common.import")}
         </Button>
       </DialogActions>
     </Dialog>

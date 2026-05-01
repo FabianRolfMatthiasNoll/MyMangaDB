@@ -6,18 +6,22 @@ import {
   Typography,
   Paper,
   IconButton,
+  Alert,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MangaForm from "../components/MangaForm";
 import { Manga, MangaCreate, Category } from "../api/models";
 import { createManga } from "../services/mangaService";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 const CreateManga: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const [selectedLists, setSelectedLists] = useState<number[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const initialManga: Manga = {
     id: 0,
@@ -99,7 +103,7 @@ const CreateManga: React.FC = () => {
       }
     } catch (error) {
       console.error("Error creating manga:", error);
-      alert("Failed to create manga. Please try again.");
+      setError(t("errors.failedToCreateManga"));
     }
   };
 
@@ -119,9 +123,15 @@ const CreateManga: React.FC = () => {
               <ArrowBackIcon />
             </IconButton>
             <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-              Add New Manga
+              {t("manga.addNewManga")}
             </Typography>
           </Box>
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
 
           <MangaForm
             manga={initialManga}

@@ -1,6 +1,7 @@
 import { HTTPValidationError, ValidationError } from "../api";
 import { ResponseError } from "../api/runtime";
 import { logout } from "./auth";
+import i18n from "../i18n";
 
 let sessionExpiredShown = false;
 
@@ -11,7 +12,7 @@ export const handleApiError = async (error: unknown) => {
   if (responseError.response && (responseError.response.status === 401 || responseError.response.status === 403)) {
     if (!sessionExpiredShown) {
       sessionExpiredShown = true;
-      alert("Your session has expired. Please log in again.");
+      alert(i18n.t("errors.sessionExpired"));
       setTimeout(() => {
         sessionExpiredShown = false;
       }, 5000);
@@ -39,14 +40,14 @@ export const handleApiError = async (error: unknown) => {
           })
           .join("\n");
 
-        alert(`Validation failed:\n${validationErrors}`);
+        alert(`${i18n.t("errors.validationFailed")}\n${validationErrors}`);
         return;
       }
     }
   }
 
   // Fallback for unknown errors
-  alert("An unexpected error occurred. Please try again later.");
+  alert(i18n.t("errors.unexpected"));
 };
 
 export const apiCallWrapper = async <T>(apiCall: () => Promise<T>, fallback: T) => {

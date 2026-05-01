@@ -14,8 +14,10 @@ import {
 } from "@mui/material";
 import { getStatistics } from "../services/statisticsService";
 import { Statistics, StatisticCount } from "../api/models";
+import { useTranslation } from "react-i18next";
 
 const StatisticsPage: React.FC = () => {
+  const { t } = useTranslation();
   const [stats, setStats] = useState<Statistics | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -49,7 +51,7 @@ const StatisticsPage: React.FC = () => {
   if (!stats) {
     return (
       <Container>
-        <Typography variant="h5">Failed to load statistics</Typography>
+        <Typography variant="h5">{t("common.errorLoading")}</Typography>
       </Container>
     );
   }
@@ -95,7 +97,7 @@ const StatisticsPage: React.FC = () => {
                 isRating ? (
                   <Box display="flex" alignItems="center">
                     {item.label === "Unrated" ? (
-                      <Typography variant="body2">Unrated</Typography>
+                      <Typography variant="body2">{t("common.unrated")}</Typography>
                     ) : (
                       <>
                         <Rating
@@ -125,58 +127,58 @@ const StatisticsPage: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
-        Statistics
+        {t("settings.title")}
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <StatCard title="Total Mangas" value={stats.totalMangas} />
+          <StatCard title={t("manga.title")} value={stats.totalMangas} />
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <StatCard title="Total Volumes" value={stats.totalVolumes} />
+          <StatCard title={t("common.volumes")} value={stats.totalVolumes} />
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <StatCard title="Total Authors" value={stats.totalAuthors} />
+          <StatCard title={t("common.authors")} value={stats.totalAuthors} />
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <StatCard title="Total Genres" value={stats.totalGenres} />
+          <StatCard title={t("common.genres")} value={stats.totalGenres} />
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <StatCard title="Total Lists" value={stats.totalLists} />
+          <StatCard title={t("common.lists")} value={stats.totalLists} />
         </Grid>
       </Grid>
 
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6 }}>
           <DistributionList
-            title="Reading Status"
+            title={t("manga.readingStatus")}
             data={stats.readingStatusDistribution}
           />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
           <DistributionList
-            title="Overall Status"
+            title={t("manga.overallStatus")}
             data={stats.overallStatusDistribution}
           />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
           <DistributionList
-            title="Category"
+            title={t("manga.category")}
             data={stats.categoryDistribution}
           />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
           <DistributionList
-            title="Rating"
+            title={t("common.starRating")}
             data={stats.ratingDistribution}
             isRating
           />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
-          <DistributionList title="Top Genres" data={stats.topGenres} />
+          <DistributionList title={t("common.genres")} data={stats.topGenres} />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
-          <DistributionList title="Top Authors" data={stats.topAuthors} />
+          <DistributionList title={t("common.authors")} data={stats.topAuthors} />
         </Grid>
       </Grid>
     </Container>

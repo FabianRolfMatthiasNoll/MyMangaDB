@@ -14,8 +14,10 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { getAuthorById, getMangasByAuthorId } from "../services/authorService";
 import { Author, Manga } from "../api/models";
 import MangaList from "../components/MangaList";
+import { useTranslation } from "react-i18next";
 
 const AuthorDetailPage: React.FC = () => {
+  const { t } = useTranslation();
   const { authorId } = useParams<{ authorId: string }>();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -60,7 +62,7 @@ const AuthorDetailPage: React.FC = () => {
     return (
       <Container maxWidth="lg">
         <Box p={3}>
-          <Typography variant="h5">Author not found</Typography>
+          <Typography variant="h5">{t("errors.authorNotFound")}</Typography>
         </Box>
       </Container>
     );
@@ -113,10 +115,10 @@ const AuthorDetailPage: React.FC = () => {
               }}
             >
               <Typography variant="h6" color="text.secondary" gutterBottom>
-                No mangas found for this author
+                {t("authors.noMangaForAuthor")}
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                Add mangas with this author to see them here
+                {t("authors.addMangaWithAuthor")}
               </Typography>
             </Box>
           ) : (

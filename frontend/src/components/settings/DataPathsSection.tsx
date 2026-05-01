@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Typography,
@@ -30,6 +31,7 @@ const DataPathsSection: React.FC<DataPathsSectionProps> = ({
   onError,
   onSuccess,
 }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [migrateDialogOpen, setMigrateDialogOpen] = useState(false);
   const [pendingChange, setPendingChange] = useState<{
@@ -63,10 +65,10 @@ const DataPathsSection: React.FC<DataPathsSectionProps> = ({
     try {
       setLoading(true);
       await updateSetting(pendingChange.key, pendingChange.value, true);
-      onSuccess("Settings updated and data migrated successfully");
+      onSuccess(t("settings.migrateSuccess"));
       onSettingsUpdated();
     } catch (err) {
-      onError("Failed to update settings and migrate data");
+      onError(t("settings.migrateFailed"));
     } finally {
       setLoading(false);
       setMigrateDialogOpen(false);
@@ -82,7 +84,7 @@ const DataPathsSection: React.FC<DataPathsSectionProps> = ({
   return (
     <Paper sx={{ p: 3, mt: 3 }}>
       <Typography variant="h6" gutterBottom>
-        Data Paths
+        {t("settings.dataPaths")}
       </Typography>
 
       {loading && (
@@ -95,7 +97,7 @@ const DataPathsSection: React.FC<DataPathsSectionProps> = ({
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <TextField
             fullWidth
-            label="Database Path"
+            label={t("settings.databasePath")}
             value={
               editingPath === "database_path"
                 ? tempPath
@@ -104,7 +106,7 @@ const DataPathsSection: React.FC<DataPathsSectionProps> = ({
             onChange={(e) => setTempPath(e.target.value)}
             disabled={editingPath !== "database_path" || loading}
             margin="normal"
-            helperText="Path to store the SQLite database file"
+            helperText={t("settings.databasePath")}
           />
           {editingPath === "database_path" ? (
             <>
@@ -138,7 +140,7 @@ const DataPathsSection: React.FC<DataPathsSectionProps> = ({
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <TextField
             fullWidth
-            label="Images Path"
+            label={t("settings.imagesPath")}
             value={
               editingPath === "image_path"
                 ? tempPath
@@ -147,7 +149,7 @@ const DataPathsSection: React.FC<DataPathsSectionProps> = ({
             onChange={(e) => setTempPath(e.target.value)}
             disabled={editingPath !== "image_path" || loading}
             margin="normal"
-            helperText="Path to store the images directory"
+            helperText={t("settings.imagesPath")}
           />
           {editingPath === "image_path" ? (
             <>
@@ -178,16 +180,15 @@ const DataPathsSection: React.FC<DataPathsSectionProps> = ({
       </Box>
 
       <Dialog open={migrateDialogOpen} onClose={handleMigrateCancel}>
-        <DialogTitle>Migrate Data</DialogTitle>
+        <DialogTitle>{t("settings.migrateData")}</DialogTitle>
         <DialogContent>
           <Typography>
-            Would you like to migrate the existing data to the new location?
-            This will copy all files to the new path.
+            {t("settings.migrateDataContent")}
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleMigrateCancel} disabled={loading}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button
             onClick={handleMigrateConfirm}
@@ -195,7 +196,7 @@ const DataPathsSection: React.FC<DataPathsSectionProps> = ({
             color="primary"
             disabled={loading}
           >
-            Migrate Data
+            {t("settings.migrateData")}
           </Button>
         </DialogActions>
       </Dialog>

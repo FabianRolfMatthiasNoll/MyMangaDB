@@ -34,8 +34,10 @@ import MangaForm from "../components/MangaForm";
 import VolumeManager from "../components/VolumeManager";
 import { useUser } from "../context/UserContext";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 const MangaDetails: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
@@ -98,7 +100,7 @@ const MangaDetails: React.FC = () => {
           minHeight: "100vh",
         }}
       >
-        <Typography>Loading...</Typography>
+        <Typography>{t("common.loading")}</Typography>
       </Box>
     );
   }
@@ -146,14 +148,14 @@ const MangaDetails: React.FC = () => {
       await queryClient.invalidateQueries({ queryKey: ["lists"] });
       setNotification({
         open: true,
-        message: "Manga updated successfully",
+        message: t("manga.updatedSuccess"),
         severity: "success",
       });
     } catch (error) {
       console.error("Failed to update manga:", error);
       setNotification({
         open: true,
-        message: "Failed to update manga",
+        message: t("manga.updateFailed"),
         severity: "error",
       });
     }
@@ -187,8 +189,8 @@ const MangaDetails: React.FC = () => {
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
         <Button startIcon={<ArrowBackIcon />} onClick={handleBackClick}>
           {location.state?.from === "list-detail"
-            ? "Back to List"
-            : "Back to Dashboard"}
+            ? t("common.backToList")
+            : t("common.backToDashboard")}
         </Button>
         {isAdmin && (
           <Box>
@@ -203,21 +205,18 @@ const MangaDetails: React.FC = () => {
       </Box>
 
       <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
-        <DialogTitle>Delete Manga</DialogTitle>
+        <DialogTitle>{t("manga.deleteTitle")}</DialogTitle>
         <DialogContent>
-          <Typography>
-            Are you sure you want to delete "{manga.title}"? This action cannot
-            be undone.
-          </Typography>
+          <Typography>{t("manga.deleteConfirm")}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDeleteCancel}>Cancel</Button>
+          <Button onClick={handleDeleteCancel}>{t("common.cancel")}</Button>
           <Button
             onClick={handleDeleteConfirm}
             color="error"
             variant="contained"
           >
-            Delete
+            {t("common.delete")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -278,7 +277,7 @@ const MangaDetails: React.FC = () => {
                   }}
                 >
                   <Typography variant="h6" color="text.secondary">
-                    No Cover Image
+                    {t("common.noCoverImage")}
                   </Typography>
                 </Box>
               )}
@@ -369,7 +368,7 @@ const MangaDetails: React.FC = () => {
                   color="text.secondary"
                   gutterBottom
                 >
-                  Authors
+                  {t("common.authors")}
                 </Typography>
                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
                   {manga.authors.map((author) => (
@@ -387,7 +386,7 @@ const MangaDetails: React.FC = () => {
                   color="text.secondary"
                   gutterBottom
                 >
-                  Genres
+                  {t("common.genres")}
                 </Typography>
                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                   {manga.genres.map((genre) => (
@@ -411,7 +410,7 @@ const MangaDetails: React.FC = () => {
                     color="text.secondary"
                     gutterBottom
                   >
-                    Summary
+                    {t("common.summary")}
                   </Typography>
                   <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
                     {manga.summary}
@@ -423,7 +422,7 @@ const MangaDetails: React.FC = () => {
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="subtitle2" color="text.secondary">
-                    Language
+                    {t("common.language")}
                   </Typography>
                   <Typography variant="body1" gutterBottom>
                     {manga.language || "N/A"}
@@ -431,7 +430,7 @@ const MangaDetails: React.FC = () => {
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="subtitle2" color="text.secondary">
-                    Rating
+                    {t("common.rating")}
                   </Typography>
                   <Rating
                     value={manga.starRating || 0}
@@ -450,7 +449,7 @@ const MangaDetails: React.FC = () => {
                     color="text.secondary"
                     gutterBottom
                   >
-                    Lists
+                    {t("common.lists")}
                   </Typography>
                   <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                     {manga.lists.map((list) => (
@@ -480,9 +479,6 @@ const MangaDetails: React.FC = () => {
                     : alpha(theme.palette.background.paper, 0.9),
               }}
             >
-              <Typography variant="h6" gutterBottom>
-                Volumes
-              </Typography>
               {manga && (
                 <VolumeManager
                   manga={manga}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Typography,
@@ -27,6 +28,7 @@ interface VolumeManagerProps {
 }
 
 const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const { isAdmin } = useUser();
   const [open, setOpen] = useState(false);
@@ -111,7 +113,7 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
         }}
       >
         <Typography variant="h6">
-          Volumes ({ownedVolumes.size} Owned)
+          {t("volume.volumesOwned", { count: ownedVolumes.size })}
         </Typography>
         {isAdmin && (
           <Button
@@ -120,14 +122,14 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
             size="small"
             onClick={() => setOpen(true)}
           >
-            Manage Volumes
+            {t("volume.manageVolumesTitle")}
           </Button>
         )}
       </Box>
 
       {displayVolumes.length === 0 ? (
         <Typography variant="body2" color="text.secondary">
-          No volumes tracked yet.
+          {t("volume.noVolumesTracked")}
         </Typography>
       ) : (
         <Grid container spacing={1}>
@@ -135,7 +137,7 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
             const isOwned = ownedVolumes.has(volNum);
             return (
               <Grid key={volNum}>
-                <Tooltip title={isOwned ? "Owned" : "Not Owned"}>
+                <Tooltip title={isOwned ? t("volume.owned") : t("volume.notOwned")}>
                   <Paper
                     elevation={isOwned ? 2 : 0}
                     sx={{
@@ -172,17 +174,16 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>Manage Volumes</DialogTitle>
+        <DialogTitle>{t("volume.manageVolumesTitle")}</DialogTitle>
         <DialogContent>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Enter volumes you own. You can use ranges (e.g., "1-10") and
-            separate with semicolons or commas (e.g., "1-10; 15; 20").
+            {t("volume.enterVolumesYouOwn")}
           </Typography>
           <TextField
             autoFocus
             margin="dense"
             id="volumes"
-            label="Volumes"
+            label={t("volume.volumes")}
             type="text"
             fullWidth
             multiline
@@ -190,13 +191,13 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
             variant="outlined"
             value={inputString}
             onChange={(e) => setInputString(e.target.value)}
-            placeholder="e.g. 1-10; 12; 15-20"
+            placeholder={t("volume.e.gVolumes")}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button onClick={() => setOpen(false)}>{t("common.cancel")}</Button>
           <Button onClick={handleSave} variant="contained" disabled={loading}>
-            {loading ? "Saving..." : "Save"}
+            {loading ? t("common.saving") : t("common.save")}
           </Button>
         </DialogActions>
       </Dialog>

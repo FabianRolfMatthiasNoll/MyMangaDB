@@ -14,6 +14,7 @@ import {
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Avatar from "@mui/material/Avatar";
 import { useUser } from "../context/UserContext";
+import { useTranslation } from "react-i18next";
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -22,6 +23,7 @@ const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { refreshUser } = useUser();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +34,7 @@ const LoginPage: React.FC = () => {
       await refreshUser();
       navigate("/");
     } catch (err) {
-      setError("Invalid username or password");
+      setError(t("auth.loginError"));
     } finally {
       setLoading(false);
     }
@@ -62,7 +64,7 @@ const LoginPage: React.FC = () => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            {t("auth.signIn")}
           </Typography>
           <Box
             component="form"
@@ -79,7 +81,7 @@ const LoginPage: React.FC = () => {
               required
               fullWidth
               id="username"
-              label="Username"
+              label={t("auth.username")}
               name="username"
               autoComplete="username"
               autoFocus
@@ -92,7 +94,7 @@ const LoginPage: React.FC = () => {
               required
               fullWidth
               name="password"
-              label="Password"
+              label={t("auth.password")}
               type="password"
               id="password"
               autoComplete="current-password"
@@ -107,7 +109,7 @@ const LoginPage: React.FC = () => {
               sx={{ mt: 3, mb: 2 }}
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} /> : "Sign In"}
+              {loading ? <CircularProgress size={24} /> : t("auth.signIn")}
             </Button>
           </Box>
         </Paper>

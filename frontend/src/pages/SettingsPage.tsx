@@ -11,8 +11,11 @@ import DatabaseOperations from "../components/settings/DatabaseOperations";
 import ImportMALSection from "../components/settings/ImportMALSection";
 import DataPathsSection from "../components/settings/DataPathsSection";
 import UserManagementSection from "../components/settings/UserManagementSection";
+import { useTranslation } from "react-i18next";
 
 const SettingsPage: React.FC = () => {
+  const { t } = useTranslation();
+
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +55,7 @@ const SettingsPage: React.FC = () => {
     <Container maxWidth="md">
       <Box py={4}>
         <Typography variant="h4" gutterBottom>
-          Settings
+          {t("settings.title")}
         </Typography>
 
         {error && (

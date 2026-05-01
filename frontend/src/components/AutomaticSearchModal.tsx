@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
@@ -41,6 +42,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
   onClose,
   onMangaAdded,
 }) => {
+  const { t } = useTranslation();
   const [sources, setSources] = useState<Source[]>([]);
   const [selectedSource, setSelectedSource] = useState<Source | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -80,7 +82,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
 
   const handleSearch = async () => {
     if (searchQuery === "") {
-      alert("Please enter a search query.");
+      alert(t("manga.pleaseEnterQuery"));
       return;
     }
 
@@ -95,14 +97,14 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
         if (results.length === 0) {
           setSnackbar({
             open: true,
-            message: "No results found.",
+            message: t("common.noResults"),
             severity: "error",
           });
         }
       } catch (error) {
         setSnackbar({
           open: true,
-          message: "An error occurred while searching.",
+          message: t("common.errorLoading"),
           severity: "error",
         });
       } finally {
@@ -111,7 +113,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
     } else {
       setSnackbar({
         open: true,
-        message: "Please select a source to search from.",
+        message: t("manga.pleaseSelectSource"),
         severity: "error",
       });
     }
@@ -123,7 +125,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
       await createManga(manga);
       setSnackbar({
         open: true,
-        message: `Successfully added "${manga.title}" to database`,
+        message: t("manga.addedSuccess"),
         severity: "success",
       });
       // Call the callback to refresh dashboard
@@ -131,7 +133,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
     } catch (error) {
       setSnackbar({
         open: true,
-        message: "An error occurred while adding the manga.",
+        message: t("manga.addError"),
         severity: "error",
       });
     } finally {
@@ -273,10 +275,10 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
             {creatingManga === manga.title ? (
               <>
                 <CircularProgress size={20} sx={{ mr: 1 }} color="inherit" />
-                Adding...
+                {t("common.adding")}
               </>
             ) : (
-              "Add to Database"
+              t("manga.addToDatabase")
             )}
           </Button>
           <Button
@@ -285,7 +287,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
             disabled={creatingManga === manga.title}
             sx={{ mt: 1 }}
           >
-            Add with Volumes
+            {t("common.addWithVolumes")}
           </Button>
         </CardContent>
       </Card>
@@ -295,11 +297,11 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
   return (
     <>
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-        <DialogTitle>Automatic Manga Search</DialogTitle>
+        <DialogTitle>{t("manga.searchManga")}</DialogTitle>
         <DialogContent>
           {noSourcesAvailable && (
             <Alert severity="warning" sx={{ mb: 2 }}>
-              No sources are currently available. Please try again later.
+              {t("manga.noSourcesAvailable")}
             </Alert>
           )}
           <Box
@@ -313,7 +315,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
           >
             <TextField
               fullWidth
-              label="Search Manga"
+              label={t("manga.searchManga")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
@@ -334,7 +336,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
               }}
             />
             <FormControl fullWidth>
-              <InputLabel>Source</InputLabel>
+              <InputLabel>{t("manga.selectSource")}</InputLabel>
               <Select
                 value={selectedSource ? selectedSource.id : ""}
                 onChange={(e) => {
@@ -342,7 +344,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
                   setSelectedSource(source || null);
                 }}
                 fullWidth
-                label="Source"
+                label={t("manga.selectSource")}
                 disabled={isSearching}
               >
                 {sources.map((source) => (
@@ -361,22 +363,22 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
               {isSearching ? (
                 <>
                   <CircularProgress size={20} sx={{ mr: 1 }} color="inherit" />
-                  Searching...
+                  {t("common.searching")}
                 </>
               ) : (
-                "Search"
+                t("common.search")
               )}
             </Button>
           </Box>
           {searchResults.length > 0 && (
             <Box mt={2}>
-              <Typography variant="h6">Search Results</Typography>
+              <Typography variant="h6">{t("manga.searchResults")}</Typography>
               <Box>{renderSearchResults()}</Box>
             </Box>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Close</Button>
+          <Button onClick={onClose}>{t("common.close")}</Button>
         </DialogActions>
       </Dialog>
       <Snackbar
@@ -398,31 +400,28 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
         open={volumeDialogOpen}
         onClose={() => setVolumeDialogOpen(false)}
       >
-        <DialogTitle>Add with Volumes</DialogTitle>
+        <DialogTitle>{t("common.addWithVolumes")}</DialogTitle>
         <DialogContent>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Enter the volumes you own for{" "}
-            <strong>{selectedMangaForVolume?.title}</strong>.
-            <br />
-            Format: "1-10; 15; 20-25"
+            {t("volume.enterVolumesYouOwn")}
           </Typography>
           <TextField
             autoFocus
             margin="dense"
             id="volumes"
-            label="Volumes"
+            label={t("volume.volumes")}
             type="text"
             fullWidth
             variant="outlined"
             value={volumeInput}
             onChange={(e) => setVolumeInput(e.target.value)}
-            placeholder="e.g. 1-10; 12"
+            placeholder={t("volume.e.gVolumes")}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setVolumeDialogOpen(false)}>Cancel</Button>
+          <Button onClick={() => setVolumeDialogOpen(false)}>{t("common.cancel")}</Button>
           <Button onClick={handleConfirmVolumeAdd} variant="contained">
-            Add to Database
+            {t("manga.addToDatabase")}
           </Button>
         </DialogActions>
       </Dialog>

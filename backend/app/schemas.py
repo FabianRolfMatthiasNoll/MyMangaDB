@@ -208,7 +208,7 @@ class Statistics(BaseModel):
 class ImportResultDetail(BaseModel):
     title: str
     status: str  # "imported", "skipped", "failed"
-    info: str
+    info_code: str  # "MANGA_EXISTS", "FETCH_FAILED", etc.
 
 
 class ImportResponse(BaseModel):
