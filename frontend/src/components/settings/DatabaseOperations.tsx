@@ -163,7 +163,7 @@ const DatabaseOperations: React.FC = () => {
           </label>
           {selectedFile && (
             <Typography sx={{ mt: 2 }}>
-              {t("common.selectedFile")}: {selectedFile.name}
+              {t("common.selectedFile", { fileName: selectedFile.name })}
             </Typography>
           )}
         </DialogContent>

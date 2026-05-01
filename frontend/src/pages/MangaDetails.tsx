@@ -207,9 +207,7 @@ const MangaDetails: React.FC = () => {
       <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
         <DialogTitle>{t("manga.deleteTitle")}</DialogTitle>
         <DialogContent>
-          <Typography>
-            {t("manga.deleteConfirm")}
-          </Typography>
+          <Typography>{t("manga.deleteConfirm")}</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDeleteCancel}>{t("common.cancel")}</Button>
@@ -481,9 +479,6 @@ const MangaDetails: React.FC = () => {
                     : alpha(theme.palette.background.paper, 0.9),
               }}
             >
-              <Typography variant="h6" gutterBottom>
-                {t("common.volumes")}
-              </Typography>
               {manga && (
                 <VolumeManager
                   manga={manga}

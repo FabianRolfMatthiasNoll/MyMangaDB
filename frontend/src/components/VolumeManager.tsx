@@ -113,7 +113,7 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
         }}
       >
         <Typography variant="h6">
-          {t("common.volumes")} ({ownedVolumes.size} {t("volume.owned")})
+          {t("volume.volumesOwned", { count: ownedVolumes.size })}
         </Typography>
         {isAdmin && (
           <Button

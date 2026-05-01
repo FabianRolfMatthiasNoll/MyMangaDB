@@ -232,8 +232,7 @@
     "selectFile": "Select your MyAnimeList export file...",
     "chooseFile": "Choose File",
     "selected": "Selected: {{filename}}",
-    "import": "Import",
-    "total": "Total: {{total}} | Imported: {{imported}} | Skipped: {{skipped}} | Failed: {{failed}}",
+    "resultSummary": "Total: {{total}} | Imported: {{imported}} | Skipped: {{skipped}} | Failed: {{failed}}",
     "close": "Close"
   }
 }

@@ -232,8 +232,7 @@
     "selectFile": "Wählen Sie Ihre MyAnimeList-Exportdatei...",
     "chooseFile": "Datei auswählen",
     "selected": "Ausgewählt: {{filename}}",
-    "import": "Importieren",
-    "total": "Gesamt: {{total}} | Importiert: {{imported}} | Übersprungen: {{skipped}} | Fehlgeschlagen: {{failed}}",
+    "resultSummary": "Gesamt: {{total}} | Importiert: {{imported}} | Übersprungen: {{skipped}} | Fehlgeschlagen: {{failed}}",
     "close": "Schließen"
   }
 }

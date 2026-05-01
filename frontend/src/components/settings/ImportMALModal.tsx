@@ -113,7 +113,7 @@ const ImportMALModal: React.FC<ImportMALModalProps> = ({
           </label>
           {file && (
             <Typography variant="body2" sx={{ mt: 1 }}>
-              {t("importMAL.selected")}: {file.name}
+              {t("importMAL.selected", { filename: file.name })}
             </Typography>
           )}
         </Box>
@@ -136,9 +136,12 @@ const ImportMALModal: React.FC<ImportMALModalProps> = ({
               severity={result.failed > 0 ? "warning" : "success"}
               sx={{ mb: 2 }}
             >
-              {t("importMAL.total")}: {result.total} | {t("common.create")}:{" "}
-              {result.imported} | {t("common.searching")}: {result.skipped} |{" "}
-              {t("common.language")}: {result.failed}
+              {t("importMAL.resultSummary", {
+                total: result.total,
+                imported: result.imported,
+                skipped: result.skipped,
+                failed: result.failed,
+              })}
             </Alert>
 
             {result.logs && result.logs.length > 0 && (
