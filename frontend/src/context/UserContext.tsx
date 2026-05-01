@@ -6,7 +6,8 @@ import React, {
   ReactNode,
 } from "react";
 import { User, Role } from "../api";
-import { getCurrentUser, isAuthenticated } from "../services/auth";
+import { getCurrentUser, isAuthenticated, logout } from "../services/auth";
+import { ResponseError } from "../api/runtime";
 
 interface UserContextType {
   user: User | null;
@@ -29,6 +30,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
         const userData = await getCurrentUser();
         setUser(userData);
       } catch (error) {
+        // If token is invalid/expired (401/403), logout and redirect to login
+        if (error instanceof ResponseError && error.response?.status === 401) {
+          logout();
+          return;
+        }
         console.error("Failed to fetch user info", error);
         setUser(null);
       }
