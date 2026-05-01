@@ -11,6 +11,7 @@
 - **Role-Based Access Control (RBAC)**: Secure your database with Admin and Guest roles.
 - **Responsive Design**: Manage your collection from your desktop or mobile device.
 - **Docker Support**: Easy deployment with Docker and Traefik.
+- **Multi-Language Support**: Available in English and German, with easy setup for additional languages.
 
 ## 🤝 Data Providers
 
@@ -22,24 +23,31 @@ MyMangaDB relies on excellent external APIs to provide accurate manga data. A sp
 ## 📸 Gallery
 
 ### Dashboard
+
 ![Dashboard](screenshots/dashboard.png)
 
 ### Manga Overview
+
 ![Manga Overview](screenshots/manga_overview.png)
 
 ### Editing Manga
+
 ![Editing Manga](screenshots/manga_editing.png)
 
 ### Automatic Fetching
+
 ![Automatic Fetching](screenshots/automatic_manga_fetching.png)
 
 ### Statistics
+
 ![Statistics](screenshots/statistics.png)
 
 ### Import from MyAnimeList
+
 ![Import from MyAnimeList](screenshots/mal_import.png)
 
 ### Mobile View
+
 ![Mobile View](screenshots/mobile.png)
 
 ## 🛠️ Installation & Deployment
@@ -49,6 +57,7 @@ MyMangaDB relies on excellent external APIs to provide accurate manga data. A sp
 The easiest way to deploy MyMangaDB is using Docker. We provide a `docker-compose.yml` configured with Traefik for easy reverse proxying and SSL management.
 
 1.  **Clone the Repository**
+
     ```bash
     git clone https://github.com/FabianRolfMatthiasNoll/MyMangaDB.git
     cd MyMangaDB
@@ -56,13 +65,15 @@ The easiest way to deploy MyMangaDB is using Docker. We provide a `docker-compos
 
 2.  **Configure Environment**
     Open `docker-compose.yml` and update the following:
+
     - **Traefik Labels**: Replace `<FrontendDomain>` and `<BackendDomain>` with your actual domains.
     - **Email**: Update `<MyEmail>` for Let's Encrypt SSL notifications.
     - **Environment Variables**:
-        - `API_TOKEN`: Set this to a secure, random string.
-        - `VITE_API_KEY`: Must match `API_TOKEN`.
+      - `API_TOKEN`: Set this to a secure, random string.
+      - `VITE_API_KEY`: Must match `API_TOKEN`.
 
 3.  **Run the Application**
+
     ```bash
     docker-compose up -d
     ```
@@ -78,14 +89,17 @@ Just download the binaries from the latest release and use them. Available for l
 For contributors or those who prefer running without Docker.
 
 **Prerequisites:**
+
 - Python 3.12+
 - Node.js 20+
 - [Task](https://taskfile.dev/) (Taskfile runner)
 
 1.  **Setup Environment**
+
     ```bash
     task setup
     ```
+
     This command creates virtual environments, installs dependencies, and generates `.env` files.
 
 2.  **Run in Development Mode**
@@ -98,10 +112,10 @@ For contributors or those who prefer running without Docker.
 
 MyMangaDB comes with pre-configured users. **Please change these passwords immediately after deployment.**
 
-| Role | Username | Password | Access |
-|------|----------|----------|--------|
-| **Admin** | `admin` | `admin` | Full access (Create, Edit, Delete) |
-| **Guest** | `guest` | `guest` | Read-only access |
+| Role      | Username | Password | Access                             |
+| --------- | -------- | -------- | ---------------------------------- |
+| **Admin** | `admin`  | `admin`  | Full access (Create, Edit, Delete) |
+| **Guest** | `guest`  | `guest`  | Read-only access                   |
 
 ## 🤝 Contributing
 
