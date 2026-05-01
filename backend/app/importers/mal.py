@@ -43,7 +43,7 @@ class MALImporter:
             # Parse XML
             try:
                 root = ET.fromstring(xml_content)
-            except ET.ParseError as e:
+            except ET.ParseError:
                 return ImportResponse(
                     total=0,
                     imported=0,
@@ -53,7 +53,7 @@ class MALImporter:
                         ImportResultDetail(
                             title="File",
                             status="failed",
-                            info=f"Invalid XML file: {str(e)}",
+                            info_code="INVALID_XML",
                         )
                     ],
                 )
@@ -76,7 +76,7 @@ class MALImporter:
                             ImportResultDetail(
                                 title=title,
                                 status="skipped",
-                                info="Manga already exists in database",
+                                info_code="MANGA_EXISTS",
                             )
                         )
                         continue
@@ -109,7 +109,7 @@ class MALImporter:
                             ImportResultDetail(
                                 title=title,
                                 status="failed",
-                                info="Could not find details in Jikan API",
+                                info_code="JIKAN_FETCH_FAILED",
                             )
                         )
                         continue
@@ -161,7 +161,7 @@ class MALImporter:
                         ImportResultDetail(
                             title=title,
                             status="imported",
-                            info="Successfully imported",
+                            info_code="IMPORTED_SUCCESS",
                         )
                     )
 
@@ -172,7 +172,7 @@ class MALImporter:
                         ImportResultDetail(
                             title=title,
                             status="failed",
-                            info=f"Error during import: {str(e)}",
+                            info_code="IMPORT_ERROR",
                         )
                     )
 
@@ -183,7 +183,7 @@ class MALImporter:
                 ImportResultDetail(
                     title="System",
                     status="failed",
-                    info=f"Fatal error: {str(e)}",
+                    info_code="FATAL_ERROR",
                 )
             )
 

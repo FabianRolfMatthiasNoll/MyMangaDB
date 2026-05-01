@@ -144,7 +144,16 @@
     "authorNotFound": "Author not found",
     "genreNotFound": "Genre not found",
     "failedToCreateManga": "Failed to create manga. Please try again.",
-    "searchError": "An error occurred while searching."
+    "searchError": "An error occurred while searching.",
+    "mangaAlreadyExists": "Manga already exists in database",
+    "infoCodes": {
+      "MANGA_EXISTS": "Manga already exists in database",
+      "INVALID_XML": "Invalid XML file",
+      "JIKAN_FETCH_FAILED": "Could not fetch manga details",
+      "IMPORT_ERROR": "Error during import",
+      "FATAL_ERROR": "Fatal error during import",
+      "IMPORTED_SUCCESS": "Successfully imported"
+    }
   },
   "auth": {
     "signIn": "Sign in",

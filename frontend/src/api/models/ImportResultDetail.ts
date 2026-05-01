@@ -36,7 +36,7 @@ export interface ImportResultDetail {
      * @type {string}
      * @memberof ImportResultDetail
      */
-    info: string;
+    infoCode: string;
 }
 
 /**
@@ -45,7 +45,7 @@ export interface ImportResultDetail {
 export function instanceOfImportResultDetail(value: object): value is ImportResultDetail {
     if (!('title' in value) || value['title'] === undefined) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
-    if (!('info' in value) || value['info'] === undefined) return false;
+    if (!('infoCode' in value) || value['infoCode'] === undefined) return false;
     return true;
 }
 
@@ -61,7 +61,7 @@ export function ImportResultDetailFromJSONTyped(json: any, ignoreDiscriminator: 
 
         'title': json['title'],
         'status': json['status'],
-        'info': json['info'],
+        'infoCode': json['info_code'],
     };
 }
 
@@ -78,6 +78,6 @@ export function ImportResultDetailToJSONTyped(value?: ImportResultDetail | null,
 
         'title': value['title'],
         'status': value['status'],
-        'info': value['info'],
+        'info_code': value['infoCode'],
     };
 }

@@ -165,7 +165,7 @@ const ImportMALModal: React.FC<ImportMALModalProps> = ({
                         </Box>
                         <ListItemText
                           primary={log.title}
-                          secondary={log.info}
+                          secondary={t(`errors.infoCodes.${log.infoCode}` as const) || log.infoCode}
                           primaryTypographyProps={{
                             fontWeight: "bold",
                             color:
