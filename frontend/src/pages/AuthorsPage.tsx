@@ -13,8 +13,10 @@ import { useNavigate } from "react-router-dom";
 import { getAuthors } from "../services/authorService";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useTranslation } from "react-i18next";
 
 const AuthorsPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -63,7 +65,7 @@ const AuthorsPage: React.FC = () => {
         alignItems="center"
         minHeight="80vh"
       >
-        <Typography color="error">Error loading authors</Typography>
+        <Typography color="error">{t("errors.errorLoadingAuthors")}</Typography>
       </Box>
     );
   }
@@ -74,7 +76,7 @@ const AuthorsPage: React.FC = () => {
         <Paper elevation={0} sx={{ p: isMobile ? 2 : 3, mb: 4, backgroundColor: 'transparent' }}>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
             <Typography variant={isMobile ? "h5" : "h4"} sx={{ fontWeight: 'bold' }}>
-              Authors
+              {t("authors.title")}
             </Typography>
           </Box>
 
@@ -89,10 +91,10 @@ const AuthorsPage: React.FC = () => {
               }}
             >
               <Typography variant="h6" color="text.secondary" gutterBottom>
-                No authors found
+                {t("authors.noAuthorsFound")}
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                Authors will be added automatically when you add manga
+                {t("authors.authorsAutoAdded")}
               </Typography>
             </Box>
           ) : (

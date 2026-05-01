@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
@@ -15,13 +16,14 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import ImportMALModal from "./ImportMALModal";
 
 const ImportMALSection: React.FC = () => {
+  const { t } = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   return (
     <Paper sx={{ p: 3, mt: 3 }}>
       <Typography variant="h6" gutterBottom>
-        Import from MyAnimeList
+        {t("settings.importMAL")}
       </Typography>
 
       <Box sx={{ mb: 2 }}>
@@ -29,13 +31,12 @@ const ImportMALSection: React.FC = () => {
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <HelpOutlineIcon color="primary" />
-              <Typography>How to export your list from MyAnimeList</Typography>
+              <Typography>{t("settings.howToExport")}</Typography>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
             <Typography variant="body2" paragraph>
-              To import your manga list, you first need to export it from
-              MyAnimeList. Follow these steps:
+              {t("importMAL.title")}
             </Typography>
             <ol>
               <li>
@@ -53,7 +54,7 @@ const ImportMALSection: React.FC = () => {
               </li>
               <li>
                 <Typography variant="body2">
-                  Select "Manga List" from the options.
+                  {t("importMAL.selectFile")}
                 </Typography>
               </li>
               <li>
@@ -65,8 +66,7 @@ const ImportMALSection: React.FC = () => {
               </li>
               <li>
                 <Typography variant="body2">
-                  Come back here and click the "Import from MAL" button below to
-                  upload that file.
+                  {t("importMAL.selected")}
                 </Typography>
               </li>
             </ol>
@@ -85,14 +85,14 @@ const ImportMALSection: React.FC = () => {
         startIcon={<CloudUploadIcon />}
         onClick={() => setModalOpen(true)}
       >
-        Import from MAL
+        {t("settings.importMAL")}
       </Button>
 
       <ImportMALModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onImportSuccess={() =>
-          setSuccessMessage("Import completed successfully!")
+          setSuccessMessage(t("errors.databaseImportedSuccess"))
         }
       />
     </Paper>

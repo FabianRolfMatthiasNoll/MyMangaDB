@@ -21,8 +21,10 @@ import MangaList from "../components/MangaList";
 import AutomaticSearchModal from "../components/AutomaticSearchModal";
 import { useNavigate } from "react-router-dom";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 const Dashboard: React.FC = () => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<string>("asc");
   const [showAdvancedFilters, setShowAdvancedFilters] =
@@ -175,7 +177,7 @@ const Dashboard: React.FC = () => {
         onMouseLeave={() => setShowSecondaryFabs(false)}
       >
         <Zoom in={showSecondaryFabs} style={{ transitionDelay: "100ms" }}>
-          <Tooltip title="Manual" placement="left">
+          <Tooltip title={t("dashboard.manual")} placement="left">
             <Fab
               color="secondary"
               aria-label="manual"
@@ -194,7 +196,7 @@ const Dashboard: React.FC = () => {
           </Tooltip>
         </Zoom>
         <Zoom in={showSecondaryFabs} style={{ transitionDelay: "200ms" }}>
-          <Tooltip title="Automatic" placement="left">
+          <Tooltip title={t("dashboard.automatic")} placement="left">
             <Fab
               color="secondary"
               aria-label="automatic"

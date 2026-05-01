@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Typography,
@@ -18,6 +19,7 @@ import { configuration } from "../../services/config";
 const usersApi = new UsersApi(configuration);
 
 const UserManagementSection: React.FC = () => {
+  const { t } = useTranslation();
   const [selectedUser, setSelectedUser] = useState("admin");
   const [newPassword, setNewPassword] = useState("");
   const [passwordLoading, setPasswordLoading] = useState(false);
@@ -28,7 +30,7 @@ const UserManagementSection: React.FC = () => {
 
   const handlePasswordChange = async () => {
     if (!newPassword) {
-      setPasswordMessage({ type: "error", text: "Password cannot be empty" });
+      setPasswordMessage({ type: "error", text: t("errors.passwordCannotBeEmpty") });
       return;
     }
     setPasswordLoading(true);
@@ -42,13 +44,13 @@ const UserManagementSection: React.FC = () => {
       });
       setPasswordMessage({
         type: "success",
-        text: "Password updated successfully",
+        text: t("errors.passwordUpdateSuccess"),
       });
       setNewPassword("");
     } catch (err) {
       setPasswordMessage({
         type: "error",
-        text: "Failed to update password. Ensure you are an admin.",
+        text: t("errors.passwordUpdateFailed"),
       });
     } finally {
       setPasswordLoading(false);
@@ -58,10 +60,10 @@ const UserManagementSection: React.FC = () => {
   return (
     <Paper sx={{ p: 3, mt: 3 }}>
       <Typography variant="h6" gutterBottom>
-        User Management
+        {t("settings.userManagement")}
       </Typography>
       <Typography variant="subtitle1" gutterBottom>
-        Change Password
+        {t("settings.changePassword")}
       </Typography>
       {passwordMessage && (
         <Alert severity={passwordMessage.type} sx={{ mb: 2 }}>
@@ -77,11 +79,11 @@ const UserManagementSection: React.FC = () => {
         }}
       >
         <FormControl sx={{ minWidth: 120 }}>
-          <InputLabel id="user-select-label">User</InputLabel>
+          <InputLabel id="user-select-label">{t("settings.user")}</InputLabel>
           <Select
             labelId="user-select-label"
             value={selectedUser}
-            label="User"
+            label={t("settings.user")}
             onChange={(e) => setSelectedUser(e.target.value)}
           >
             <MenuItem value="admin">Admin</MenuItem>
@@ -89,7 +91,7 @@ const UserManagementSection: React.FC = () => {
           </Select>
         </FormControl>
         <TextField
-          label="New Password"
+          label={t("settings.newPassword")}
           type="password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
@@ -101,7 +103,7 @@ const UserManagementSection: React.FC = () => {
           disabled={passwordLoading || !newPassword}
           sx={{ height: 56 }}
         >
-          {passwordLoading ? <CircularProgress size={24} /> : "Update"}
+          {passwordLoading ? <CircularProgress size={24} /> : t("settings.update")}
         </Button>
       </Box>
     </Paper>

@@ -29,8 +29,10 @@ import {
   ListWithCount,
 } from "../services/listService";
 import { useUser } from "../context/UserContext";
+import { useTranslation } from "react-i18next";
 
 const ListsPage: React.FC = () => {
+  const { t } = useTranslation();
   const [lists, setLists] = useState<ListWithCount[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -92,7 +94,7 @@ const ListsPage: React.FC = () => {
   };
 
   const handleDeleteList = async (listId: number) => {
-    if (window.confirm("Are you sure you want to delete this list?")) {
+    if (window.confirm(t("lists.deleteListConfirm"))) {
       try {
         await deleteList(listId);
         fetchLists();
@@ -136,7 +138,7 @@ const ListsPage: React.FC = () => {
               variant={isMobile ? "h5" : "h4"}
               sx={{ fontWeight: "bold" }}
             >
-              My Lists
+              {t("lists.myLists")}
             </Typography>
             {isAdmin && lists.length > 0 && (
               <Button
@@ -152,7 +154,7 @@ const ListsPage: React.FC = () => {
                   fontSize: isMobile ? "0.875rem" : "1rem",
                 }}
               >
-                Create New List
+                {t("lists.createNewList")}
               </Button>
             )}
           </Box>
@@ -168,10 +170,10 @@ const ListsPage: React.FC = () => {
               }}
             >
               <Typography variant="h6" color="text.secondary" gutterBottom>
-                No lists yet
+                {t("lists.noListsYet")}
               </Typography>
               <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                Create your first list to start organizing your manga collection
+                {t("lists.createFirstList")}
               </Typography>
               {isAdmin && (
                 <Button
@@ -188,7 +190,7 @@ const ListsPage: React.FC = () => {
                     fontSize: isMobile ? "1rem" : "1.1rem",
                   }}
                 >
-                  Create Your First List
+                  {t("lists.createYourFirstList")}
                 </Button>
               )}
             </Box>
@@ -239,7 +241,7 @@ const ListsPage: React.FC = () => {
                       </Box>
                       {isAdmin && (
                         <Box>
-                          <Tooltip title="Edit List">
+                          <Tooltip title={t("common.edit")}>
                             <IconButton
                               size="small"
                               onClick={(e) => {
@@ -254,7 +256,7 @@ const ListsPage: React.FC = () => {
                               <EditIcon />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="Delete List">
+                          <Tooltip title={t("common.delete")}>
                             <IconButton
                               size="small"
                               onClick={(e) => {
@@ -290,13 +292,13 @@ const ListsPage: React.FC = () => {
           }}
         >
           <DialogTitle sx={{ pb: 1 }}>
-            {editingList ? "Edit List" : "Create New List"}
+            {editingList ? t("lists.editList") : t("lists.createNewList")}
           </DialogTitle>
           <DialogContent>
             <TextField
               autoFocus
               margin="dense"
-              label="List Name"
+              label={t("lists.listName")}
               type="text"
               fullWidth
               value={listName}
@@ -312,7 +314,7 @@ const ListsPage: React.FC = () => {
                 px: 2,
               }}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               onClick={handleSaveList}
@@ -323,7 +325,7 @@ const ListsPage: React.FC = () => {
                 px: 3,
               }}
             >
-              {editingList ? "Save" : "Create"}
+              {editingList ? t("common.save") : t("common.create")}
             </Button>
           </DialogActions>
         </Dialog>

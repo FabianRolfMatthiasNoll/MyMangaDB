@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   TextField,
@@ -23,6 +24,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   setSortOrder,
   toggleAdvancedFilters,
 }) => {
+  const { t } = useTranslation();
   return (
     <Box
       sx={{
@@ -33,7 +35,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       }}
     >
       <TextField
-        label="Search"
+        label={t("search.searchPlaceholder")}
         variant="outlined"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
@@ -45,8 +47,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
           value={sortOrder}
           onChange={(e) => setSortOrder(e.target.value)}
         >
-          <MenuItem value="asc">Asc</MenuItem>
-          <MenuItem value="desc">Desc</MenuItem>
+          <MenuItem value="asc">{t("search.asc")}</MenuItem>
+          <MenuItem value="desc">{t("search.desc")}</MenuItem>
         </Select>
       </FormControl>
       <Button
@@ -54,7 +56,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         onClick={toggleAdvancedFilters}
         sx={{ maxWidth: 110 }}
       >
-        Advanced Filters
+        {t("search.advancedFilters")}
       </Button>
     </Box>
   );

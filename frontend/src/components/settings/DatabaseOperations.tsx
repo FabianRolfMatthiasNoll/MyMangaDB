@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
@@ -16,6 +17,7 @@ import RestoreIcon from "@mui/icons-material/Restore";
 import { databaseService } from "../../services/databaseService";
 
 const DatabaseOperations: React.FC = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -55,11 +57,11 @@ const DatabaseOperations: React.FC = () => {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      setSuccess("Database exported successfully");
+      setSuccess(t("errors.databaseExportedSuccess"));
     } catch (err) {
       console.error("Export error:", err);
       setError(
-        err instanceof Error ? err.message : "Failed to export database"
+        err instanceof Error ? err.message : t("errors.failedToExportDatabase")
       );
     } finally {
       setLoading(false);
@@ -86,13 +88,13 @@ const DatabaseOperations: React.FC = () => {
       setSuccess(null);
 
       await databaseService.importDatabase(selectedFile);
-      setSuccess("Database imported successfully");
+      setSuccess(t("errors.databaseImportedSuccess"));
       setImportDialogOpen(false);
       setSelectedFile(null);
     } catch (err) {
       console.error("Import error:", err);
       setError(
-        err instanceof Error ? err.message : "Failed to import database"
+        err instanceof Error ? err.message : t("errors.failedToImportDatabase")
       );
     } finally {
       setLoading(false);
@@ -107,7 +109,7 @@ const DatabaseOperations: React.FC = () => {
   return (
     <Paper sx={{ p: 3, mt: 3 }}>
       <Typography variant="h6" gutterBottom>
-        Database Operations
+        {t("settings.databaseOperations")}
       </Typography>
 
       {error && (
@@ -129,7 +131,7 @@ const DatabaseOperations: React.FC = () => {
           onClick={handleExport}
           disabled={loading}
         >
-          Export Database
+          {t("common.export")}
         </Button>
         <Button
           variant="contained"
@@ -137,16 +139,15 @@ const DatabaseOperations: React.FC = () => {
           onClick={handleImportClick}
           disabled={loading}
         >
-          Import Database
+          {t("common.import")}
         </Button>
       </Box>
 
       <Dialog open={importDialogOpen} onClose={handleCloseDialog}>
-        <DialogTitle>Import Database</DialogTitle>
+        <DialogTitle>{t("settings.importDatabaseTitle")}</DialogTitle>
         <DialogContent>
           <Typography sx={{ mb: 2 }}>
-            Select a database backup file to import. This will replace your
-            current database and images.
+            {t("settings.howToExport")}
           </Typography>
           <input
             type="file"
@@ -157,24 +158,24 @@ const DatabaseOperations: React.FC = () => {
           />
           <label htmlFor="import-file-input">
             <Button variant="outlined" component="span" fullWidth>
-              Select File
+              {t("common.selectFile")}
             </Button>
           </label>
           {selectedFile && (
             <Typography sx={{ mt: 2 }}>
-              Selected file: {selectedFile.name}
+              {t("common.selectedFile")}: {selectedFile.name}
             </Typography>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button onClick={handleCloseDialog}>{t("common.cancel")}</Button>
           <Button
             onClick={handleImport}
             variant="contained"
             color="primary"
             disabled={!selectedFile || loading}
           >
-            Import
+            {t("common.import")}
           </Button>
         </DialogActions>
       </Dialog>

@@ -25,8 +25,10 @@ import { Manga, ListModel } from "../api/models";
 import { getMangasByListId } from "../services/mangaService";
 import MangaList from "../components/MangaList";
 import { useUser } from "../context/UserContext";
+import { useTranslation } from "react-i18next";
 
 const ListDetailPage: React.FC = () => {
+  const { t } = useTranslation();
   const { listId } = useParams<{ listId: string }>();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -83,7 +85,7 @@ const ListDetailPage: React.FC = () => {
   };
 
   const handleDeleteList = async () => {
-    if (list && window.confirm("Are you sure you want to delete this list?")) {
+    if (list && window.confirm(t("lists.deleteListConfirm"))) {
       try {
         await deleteList(list.id);
         navigate("/lists");
@@ -114,7 +116,7 @@ const ListDetailPage: React.FC = () => {
     return (
       <Container maxWidth="lg">
         <Box p={3}>
-          <Typography variant="h5">List not found</Typography>
+          <Typography variant="h5">{t("errors.listNotFound")}</Typography>
         </Box>
       </Container>
     );
@@ -157,7 +159,7 @@ const ListDetailPage: React.FC = () => {
             </Typography>
             {isAdmin && (
               <Box ml={2} display="flex">
-                <Tooltip title="Edit List">
+                <Tooltip title={t("common.edit")}>
                   <IconButton
                     onClick={handleOpenDialog}
                     sx={{
@@ -169,7 +171,7 @@ const ListDetailPage: React.FC = () => {
                     <EditIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Delete List">
+                <Tooltip title={t("common.delete")}>
                   <IconButton
                     onClick={handleDeleteList}
                     sx={{
@@ -195,10 +197,10 @@ const ListDetailPage: React.FC = () => {
               }}
             >
               <Typography variant="h6" color="text.secondary" gutterBottom>
-                No mangas in this list yet
+                {t("lists.noMangaInList")}
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                Add mangas to this list from the manga details page
+                {t("lists.addMangasFromDetails")}
               </Typography>
             </Box>
           ) : (
@@ -220,12 +222,12 @@ const ListDetailPage: React.FC = () => {
             },
           }}
         >
-          <DialogTitle sx={{ pb: 1 }}>Edit List</DialogTitle>
+          <DialogTitle sx={{ pb: 1 }}>{t("lists.editList")}</DialogTitle>
           <DialogContent>
             <TextField
               autoFocus
               margin="dense"
-              label="List Name"
+              label={t("lists.listName")}
               type="text"
               fullWidth
               value={listName}
@@ -241,7 +243,7 @@ const ListDetailPage: React.FC = () => {
                 px: 2,
               }}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               onClick={handleSaveList}
@@ -252,7 +254,7 @@ const ListDetailPage: React.FC = () => {
                 px: 3,
               }}
             >
-              Save
+              {t("common.save")}
             </Button>
           </DialogActions>
         </Dialog>

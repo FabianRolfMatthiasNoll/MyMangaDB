@@ -13,8 +13,10 @@ import { useNavigate } from "react-router-dom";
 import { getGenres } from "../services/genreService";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useTranslation } from "react-i18next";
 
 const GenresPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -53,7 +55,7 @@ const GenresPage: React.FC = () => {
   if (error) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-        <Typography color="error">Error loading genres</Typography>
+        <Typography color="error">{t("errors.errorLoadingGenres")}</Typography>
       </Box>
     );
   }
@@ -64,7 +66,7 @@ const GenresPage: React.FC = () => {
         <Paper elevation={0} sx={{ p: isMobile ? 2 : 3, mb: 4, backgroundColor: 'transparent' }}>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
             <Typography variant={isMobile ? "h5" : "h4"} sx={{ fontWeight: 'bold' }}>
-              Genres
+              {t("genres.title")}
             </Typography>
           </Box>
 
@@ -79,10 +81,10 @@ const GenresPage: React.FC = () => {
               }}
             >
               <Typography variant="h6" color="text.secondary" gutterBottom>
-                No genres found
+                {t("genres.noGenresFound")}
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                Genres will be added automatically when you add manga
+                {t("genres.genresAutoAdded")}
               </Typography>
             </Box>
           ) : (
