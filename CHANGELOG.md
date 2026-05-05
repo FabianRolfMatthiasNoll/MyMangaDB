@@ -1,3 +1,13 @@
+## [2.7.1](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.7.0...v2.7.1) (2026-05-05)
+
+
+### Bug Fixes
+
+* **frontend:** remove redundant and conflicting logic ([7e4a850](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/7e4a85095c09113ed815073e412effae20062131))
+* **frontend:** showing both success and failure notifications on failure ([6c7ca61](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/6c7ca61354530a268340e0a0f9b9f562bd6ca8bd))
+* **manga-creation:** remove old hardcoded way of uploading cover images ([b708ba7](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/b708ba7b389637143e44235517cb853f544bc74b))
+* **translation:** title missing in notification ([d60295a](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/d60295af4dd1377f821081170083212a6468e5c7))
+
 # [2.7.0](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.6.1...v2.7.0) (2026-05-01)
 
 
