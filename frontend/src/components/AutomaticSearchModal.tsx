@@ -125,7 +125,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
       await createManga(manga);
       setSnackbar({
         open: true,
-        message: t("manga.addedSuccess"),
+        message: t("manga.addedSuccess", { title: manga.title }),
         severity: "success",
       });
       // Call the callback to refresh dashboard

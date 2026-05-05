@@ -168,13 +168,7 @@ const Dashboard: React.FC = () => {
           flexDirection: "column",
           alignItems: "center",
           gap: 1,
-          "&:hover .secondary-fab": {
-            visibility: "visible",
-            opacity: 1,
-          },
         }}
-        onMouseEnter={() => setShowSecondaryFabs(true)}
-        onMouseLeave={() => setShowSecondaryFabs(false)}
       >
         <Zoom in={showSecondaryFabs} style={{ transitionDelay: "100ms" }}>
           <Tooltip title={t("dashboard.manual")} placement="left">
@@ -182,13 +176,7 @@ const Dashboard: React.FC = () => {
               color="secondary"
               aria-label="manual"
               size="small"
-              className="secondary-fab"
-              sx={{
-                mb: 1,
-                visibility: "hidden",
-                opacity: 0,
-                transition: "visibility 0.2s, opacity 0.2s",
-              }}
+              sx={{ mb: 1 }}
               onClick={() => navigate("/create-manga")}
             >
               <EditIcon />
@@ -201,13 +189,7 @@ const Dashboard: React.FC = () => {
               color="secondary"
               aria-label="automatic"
               size="small"
-              className="secondary-fab"
-              sx={{
-                mb: 1,
-                visibility: "hidden",
-                opacity: 0,
-                transition: "visibility 0.2s, opacity 0.2s",
-              }}
+              sx={{ mb: 1 }}
               onClick={() => setShowModal(true)}
             >
               <AutorenewIcon />
@@ -215,7 +197,11 @@ const Dashboard: React.FC = () => {
           </Tooltip>
         </Zoom>
         <Zoom in={true}>
-          <Fab color="primary" aria-label="add">
+          <Fab
+            color="primary"
+            aria-label="add"
+            onClick={() => setShowSecondaryFabs(!showSecondaryFabs)}
+          >
             <AddIcon />
           </Fab>
         </Zoom>

@@ -1,7 +1,7 @@
 import { Manga, MangaCreate } from "../api";
 import { MangasApi } from "../api/apis";
 import { configuration } from "./config";
-import { apiCallWrapper } from "./errorService";
+import { apiCallWrapper, handleApiError } from "./errorService";
 import { saveMangaCover } from "./imageService";
 
 const mangasApi = new MangasApi(configuration);
@@ -64,11 +64,14 @@ export const updateMangaDetails = async (manga: Manga, coverImage?: File) => {
   }
 };
 
-export const createManga = async (mangaCreate: MangaCreate) =>
-  apiCallWrapper(
-    () => mangasApi.createMangaApiV1MangasCreatePost({ mangaCreate }),
-    null
-  );
+export const createManga = async (mangaCreate: MangaCreate) => {
+  try {
+    return await mangasApi.createMangaApiV1MangasCreatePost({ mangaCreate });
+  } catch (error) {
+    await handleApiError(error);
+    throw error; // Re-throw so caller knows it failed
+  }
+};
 
 export const getMangasByListId = async (listId: number) =>
   apiCallWrapper(

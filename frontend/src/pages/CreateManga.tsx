@@ -12,6 +12,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MangaForm from "../components/MangaForm";
 import { Manga, MangaCreate, Category } from "../api/models";
 import { createManga } from "../services/mangaService";
+import { saveMangaCover } from "../services/imageService";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
@@ -55,28 +56,7 @@ const CreateManga: React.FC = () => {
       if (coverImage) {
         // Create a unique filename using UUID and .jpg extension
         const uniqueFilename = `${crypto.randomUUID()}.jpg`;
-        coverImagePath = uniqueFilename;
-
-        // Save the file to the backend's image directory
-        const formData = new FormData();
-        formData.append('file', coverImage);
-        formData.append('filename', uniqueFilename);
-
-        const response = await fetch('http://localhost:8000/api/v1/images/manga/save', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to save cover image');
-        }
-
-        // Wait for the response to ensure the file is saved
-        const result = await response.json();
-        if (!result.filename) {
-          throw new Error('Failed to get filename from server');
-        }
-        coverImagePath = result.filename;
+        coverImagePath = await saveMangaCover(coverImage, uniqueFilename);
       }
 
       const mangaCreate: MangaCreate = {
