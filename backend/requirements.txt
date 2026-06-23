@@ -10,7 +10,7 @@ PyQtWebEngine
 qtpy
 bs4
 selenium
-PyJWT==2.8.0
+PyJWT==2.13.0
 python-dotenv==1.2.2
 bcrypt==4.0.1
 pytest
