@@ -40,6 +40,13 @@ export class DatabaseApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration.accessToken) {
+            const token = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+            if (token) {
+                headerParameters["Authorization"] = `Bearer ${token.replace(/^Bearer\s+/i, "")}`;
+            }
+        }
+
         const response = await this.request({
             path: `/api/v1/database/export`,
             method: 'GET',
@@ -73,6 +80,13 @@ export class DatabaseApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration.accessToken) {
+            const token = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+            if (token) {
+                headerParameters["Authorization"] = `Bearer ${token.replace(/^Bearer\s+/i, "")}`;
+            }
+        }
 
         const consumes: runtime.Consume[] = [
             { contentType: 'multipart/form-data' },
