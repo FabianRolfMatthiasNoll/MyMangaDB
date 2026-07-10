@@ -55,6 +55,13 @@ export class ImagesApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration.accessToken) {
+            const token = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+            if (token) {
+                headerParameters["Authorization"] = `Bearer ${token.replace(/^Bearer\s+/i, "")}`;
+            }
+        }
+
         const response = await this.request({
             path: `/api/v1/images/manga/{filename}`.replace(`{${"filename"}}`, encodeURIComponent(String(requestParameters['filename']))),
             method: 'GET',
@@ -91,6 +98,13 @@ export class ImagesApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration.accessToken) {
+            const token = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+            if (token) {
+                headerParameters["Authorization"] = `Bearer ${token.replace(/^Bearer\s+/i, "")}`;
+            }
+        }
 
         const response = await this.request({
             path: `/api/v1/images/volume/{filename}`.replace(`{${"filename"}}`, encodeURIComponent(String(requestParameters['filename']))),
@@ -135,6 +149,13 @@ export class ImagesApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration.accessToken) {
+            const token = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+            if (token) {
+                headerParameters["Authorization"] = `Bearer ${token.replace(/^Bearer\s+/i, "")}`;
+            }
+        }
 
         const consumes: runtime.Consume[] = [
             { contentType: 'multipart/form-data' },

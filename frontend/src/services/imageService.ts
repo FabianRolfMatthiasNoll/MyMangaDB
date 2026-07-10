@@ -14,11 +14,18 @@ export const fetchMangaCoverImageAsBlobUrl = async (
   if (!filepath) return "";
   const imageUrl = getMangaCoverImageUrl(filepath);
   try {
-    const response = await fetch(imageUrl, {
-      headers: {
-        "X-API-Key": API_KEY,
-      },
-    });
+    // ``getMangaCoverImage`` and ``getVolumeCoverImage`` are gated by
+    // ``deps.get_current_user`` on the backend, so we need to attach the
+    // bearer token to keep unauthenticated clients from being rejected.
+    const token = localStorage.getItem("token") || "";
+    const headers: Record<string, string> = {};
+    if (API_KEY) {
+      headers["X-API-Key"] = API_KEY;
+    }
+    if (token) {
+      headers["Authorization"] = `Bearer ${token.replace(/^Bearer\s+/i, "")}`;
+    }
+    const response = await fetch(imageUrl, { headers });
 
     if (!response.ok) {
       // check for 404 and return specific message or empty string
