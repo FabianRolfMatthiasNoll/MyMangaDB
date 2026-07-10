@@ -1,3 +1,10 @@
+## [2.7.2](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.7.1...v2.7.2) (2026-07-10)
+
+
+### Bug Fixes
+
+* **security:** harden entrypoints of both frontend and backend ([2ad34ea](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/2ad34ea785c01d096b38a01420d56fc5a1078db4))
+
 ## [2.7.1](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.7.0...v2.7.1) (2026-05-05)
 
 
