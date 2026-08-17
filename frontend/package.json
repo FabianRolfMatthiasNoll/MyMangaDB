@@ -24,7 +24,7 @@
     "react-dom": "^18.2.0",
     "react-i18next": "^17.0.6",
     "react-infinite-scroll-component": "^6.1.0",
-    "react-router-dom": "^7.17.0"
+    "react-router-dom": "^7.18.2"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.40.1",
