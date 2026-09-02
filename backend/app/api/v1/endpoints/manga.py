@@ -54,15 +54,33 @@ def get_mangas(
     sort: Optional[str] = Query(
         "asc", regex="^(asc|desc)$", description="Sort by title"
     ),
+    categories: Optional[List[str]] = Query(None, description="Filter by categories"),
+    reading_statuses: Optional[List[str]] = Query(
+        None, description="Filter by reading statuses"
+    ),
+    overall_statuses: Optional[List[str]] = Query(
+        None, description="Filter by overall statuses"
+    ),
+    rating_min: Optional[float] = Query(None, ge=0, le=5, description="Minimum rating"),
+    rating_max: Optional[float] = Query(None, ge=0, le=5, description="Maximum rating"),
     db: Session = Depends(get_db),
 ):
     """
-    Liefert eine paginierte Liste von Mangas zurück. Optional können
-    Suchbegriff (title LIKE) und Sortierreihenfolge angegeben werden.
+    Delivers a paginated list of mangas. Optional search (title LIKE),
+    filters (category, status, rating), and sort order can be specified.
     """
     try:
         return MangaRepository.get_all(
-            db, skip=skip, limit=limit, search=search, sort=sort
+            db,
+            skip=skip,
+            limit=limit,
+            search=search,
+            sort=sort,
+            categories=categories,
+            reading_statuses=reading_statuses,
+            overall_statuses=overall_statuses,
+            rating_min=rating_min,
+            rating_max=rating_max,
         )  # Implementierung in Repository
     except Exception:
         raise HTTPException(status_code=500, detail="Failed to fetch mangas")
