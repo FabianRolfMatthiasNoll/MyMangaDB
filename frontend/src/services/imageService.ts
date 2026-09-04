@@ -1,47 +1,16 @@
-import { configuration, API_KEY, API_URL } from "./config";
+import { API_URL } from "./config";
 import { ImagesApi } from "../api/apis";
 
-const imagesApi = new ImagesApi(configuration);
+const imagesApi = new ImagesApi();
 
+/**
+ * Absolute URL for a manga cover stored on the backend. The GET endpoint is
+ * intentionally unauthenticated, so this string can be used directly as an
+ * `<img src>` without any bearer-token plumbing.
+ */
 export const getMangaCoverImageUrl = (filepath: string): string => {
   if (!filepath) return "";
   return `${API_URL}/api/v1/images/manga/${filepath}`;
-};
-
-export const fetchMangaCoverImageAsBlobUrl = async (
-  filepath: string
-): Promise<string> => {
-  if (!filepath) return "";
-  const imageUrl = getMangaCoverImageUrl(filepath);
-  try {
-    // ``getMangaCoverImage`` and ``getVolumeCoverImage`` are gated by
-    // ``deps.get_current_user`` on the backend, so we need to attach the
-    // bearer token to keep unauthenticated clients from being rejected.
-    const token = localStorage.getItem("token") || "";
-    const headers: Record<string, string> = {};
-    if (API_KEY) {
-      headers["X-API-Key"] = API_KEY;
-    }
-    if (token) {
-      headers["Authorization"] = `Bearer ${token.replace(/^Bearer\s+/i, "")}`;
-    }
-    const response = await fetch(imageUrl, { headers });
-
-    if (!response.ok) {
-      // check for 404 and return specific message or empty string
-      if (response.status === 404) {
-        return ""; // or a path to a placeholder image
-      }
-      throw new Error(`Failed to fetch image: ${response.statusText}`);
-    }
-
-    const blob = await response.blob();
-    const objectUrl = URL.createObjectURL(blob);
-    return objectUrl;
-  } catch (error) {
-    console.error("Error fetching manga cover:", error);
-    return ""; // return a default/empty string on error
-  }
 };
 
 export const uploadMangaCover = async (file: File): Promise<string> => {

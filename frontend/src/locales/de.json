@@ -85,7 +85,9 @@
     "addError": "Beim Hinzufügen des Mangas ist ein Fehler aufgetreten.",
     "addToDatabase": "Zur Datenbank hinzufügen",
     "enterVolumesYouOwn": "Geben Sie die Bände ein, die Sie besitzen für {{title}}",
-    "e.gVolumes": "z.B. 1-10; 12; 15-20"
+    "e.gVolumes": "z.B. 1-10; 12; 15-20",
+    "readMore": "Mehr anzeigen",
+    "showLess": "Weniger anzeigen"
   },
   "volume": {
     "volumesOwned": "Bände ({{count}} vorhanden)",
@@ -97,7 +99,16 @@
     "enterVolumesYouOwn": "Geben Sie die Bände ein, die Sie besitzen...",
     "volumes": "Bände",
     "e.gVolumes": "z.B. 1-10; 12; 15-20",
-    "saveFailed": "Bände konnten nicht aktualisiert werden"
+    "saveFailed": "Bände konnten nicht aktualisiert werden",
+    "shelfOwned": "Vorhanden",
+    "shelfMissing": "Fehlt",
+    "drawerTitle": "Band {{n}}",
+    "uploadCover": "Cover hochladen",
+    "removeCover": "Cover entfernen",
+    "noCover": "Noch kein Cover hochgeladen",
+    "coverUpdatedSuccess": "Cover erfolgreich aktualisiert",
+    "coverUpdateFailed": "Cover konnte nicht aktualisiert werden",
+    "coverRemovedSuccess": "Cover entfernt"
   },
   "search": {
     "searchPlaceholder": "Suchen",

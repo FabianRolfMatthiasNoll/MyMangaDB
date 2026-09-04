@@ -12,6 +12,7 @@ import {
 import { Manga } from "../api/models";
 import { Link } from "react-router-dom";
 import { getMangaCoverImageUrl } from "../services/imageService";
+import MangaStatusChip from "./MangaStatusChip";
 
 interface MangaCardProps {
   manga: Manga;
@@ -69,20 +70,6 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
     objectFit: "cover",
   };
 
-  const getStatusColor = (status: string) => {
-    const statusColors: { [key: string]: string } = {
-      "Not Started": theme.palette.error.main,
-      Reading: theme.palette.info.main,
-      Completed: theme.palette.success.main,
-      "On Hold": theme.palette.warning.main,
-      Dropped: theme.palette.error.main,
-      "Plan to Read": theme.palette.secondary.main,
-      Ongoing: theme.palette.info.main,
-      Hiatus: theme.palette.warning.main,
-      Discontinued: theme.palette.error.main,
-    };
-    return statusColors[status] || theme.palette.grey[500];
-  };
 
   return (
     <Card
@@ -141,30 +128,8 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
                 {manga.authors.map((author) => author.name).join(", ")}
               </Typography>
               <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-                {manga.readingStatus && (
-                  <Chip
-                    label={manga.readingStatus}
-                    size="small"
-                    sx={{
-                      bgcolor: getStatusColor(manga.readingStatus),
-                      color: "white",
-                      fontSize: "0.75rem",
-                      height: 20,
-                    }}
-                  />
-                )}
-                {manga.overallStatus && (
-                  <Chip
-                    label={manga.overallStatus}
-                    size="small"
-                    sx={{
-                      bgcolor: getStatusColor(manga.overallStatus),
-                      color: "white",
-                      fontSize: "0.75rem",
-                      height: 20,
-                    }}
-                  />
-                )}
+                <MangaStatusChip status={manga.readingStatus} />
+                <MangaStatusChip status={manga.overallStatus} />
               </Box>
               <Box
                 sx={{ display: "flex", gap: 0.5, flexWrap: "wrap", mt: 0.5 }}

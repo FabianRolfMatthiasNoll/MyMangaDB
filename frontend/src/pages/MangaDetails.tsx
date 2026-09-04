@@ -1,40 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
-  Container,
-  Grid,
-  Box,
-  Typography,
-  Chip,
-  Rating,
-  Button,
-  Paper,
-  Divider,
-  IconButton,
-  useTheme,
-  alpha,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Snackbar,
   Alert,
+  Box,
+  Button,
+  Chip,
+  Collapse,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Grid,
+  IconButton,
+  Rating,
+  Snackbar,
+  Typography,
+  useTheme,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { fetchMangaCoverImageAsBlobUrl } from "../services/imageService";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+
+import MangaForm from "../components/MangaForm";
+import MangaStatusChip from "../components/MangaStatusChip";
+import VolumeShelf from "../components/volumeShelf/VolumeShelf";
+import { useUser } from "../context/UserContext";
+import { Manga } from "../api/models";
 import {
+  deleteManga,
   getMangaDetails,
   updateMangaDetails,
-  deleteManga,
 } from "../services/mangaService";
-import { Manga } from "../api/models";
-import MangaForm from "../components/MangaForm";
-import VolumeManager from "../components/VolumeManager";
-import { useUser } from "../context/UserContext";
-import { useQueryClient } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
+import { getMangaCoverImageUrl } from "../services/imageService";
+
+const SUMMARY_COLLAPSE_THRESHOLD = 280;
 
 const MangaDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -44,53 +47,71 @@ const MangaDetails: React.FC = () => {
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const { isAdmin } = useUser();
-  const [manga, setManga] = useState<Manga | null>(null);
-  const [imageUrl, setImageUrl] = useState<string>("");
-  const [editMode, setEditMode] = useState<boolean>(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+
+  const mangaId = id ? Number(id) : 0;
+  const queryKey = ["manga", mangaId];
+
+  const mangaQuery = useQuery<Manga | null>({
+    queryKey,
+    queryFn: async () => (mangaId ? await getMangaDetails(mangaId) : null),
+    enabled: mangaId > 0,
+  });
+
+  const [editMode, setEditMode] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [summaryExpanded, setSummaryExpanded] = useState(false);
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
     severity: "success" | "error";
-  }>({
-    open: false,
-    message: "",
-    severity: "success",
-  });
+  }>({ open: false, message: "", severity: "success" });
 
-  useEffect(() => {
-    const fetchManga = async () => {
-      if (id) {
-        const mangaData = await getMangaDetails(Number(id));
-        setManga(mangaData);
-      }
-    };
+  const manga = mangaQuery.data ?? null;
 
-    fetchManga();
-  }, [id]);
+  const notify = (message: string, severity: "success" | "error" = "success") =>
+    setNotification({ open: true, message, severity });
 
-  useEffect(() => {
-    if (manga && manga.coverImage) {
-      let isMounted = true;
-      const fetchImage = async () => {
-        const url = await fetchMangaCoverImageAsBlobUrl(manga.coverImage!);
-        if (isMounted) {
-          setImageUrl(url);
-        }
-      };
-
-      fetchImage();
-
-      return () => {
-        isMounted = false;
-        if (imageUrl) {
-          URL.revokeObjectURL(imageUrl);
-        }
-      };
+  const handleBackClick = () => {
+    if (location.state?.from === "list-detail" && location.state?.listId) {
+      navigate(`/lists/${location.state.listId}`);
+    } else {
+      navigate("/");
     }
-  }, [manga?.coverImage]);
+  };
 
-  if (!manga) {
+  const handleDeleteConfirm = async () => {
+    try {
+      await deleteManga(mangaId);
+      await queryClient.invalidateQueries({ queryKey: ["mangas"] });
+      await queryClient.invalidateQueries({ queryKey: ["lists"] });
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to delete manga:", error);
+      notify(t("manga.deleteFailed"), "error");
+    } finally {
+      setDeleteDialogOpen(false);
+    }
+  };
+
+  const handleSave = async (updatedManga: Manga, coverImage?: File) => {
+    try {
+      const saved = await updateMangaDetails(updatedManga, coverImage);
+      queryClient.setQueryData(queryKey, saved);
+      await queryClient.invalidateQueries({ queryKey: ["mangas"] });
+      await queryClient.invalidateQueries({ queryKey: ["lists"] });
+      setEditMode(false);
+      notify(t("manga.updatedSuccess"), "success");
+    } catch (error) {
+      console.error("Failed to update manga:", error);
+      notify(t("manga.updateFailed"), "error");
+    }
+  };
+
+  const handleCancel = () => setEditMode(false);
+  const handleCloseNotification = () =>
+    setNotification((prev) => ({ ...prev, open: false }));
+
+  if (mangaQuery.isLoading || !manga) {
     return (
       <Box
         sx={{
@@ -105,88 +126,111 @@ const MangaDetails: React.FC = () => {
     );
   }
 
-  const handleToggleEditMode = () => {
-    setEditMode(!editMode);
-  };
+  const summaryTooLong =
+    !!manga.summary && manga.summary.length > SUMMARY_COLLAPSE_THRESHOLD;
 
-  const handleBackClick = () => {
-    if (location.state?.from === "list-detail" && location.state?.listId) {
-      navigate(`/lists/${location.state.listId}`);
-    } else {
-      navigate("/");
-    }
-  };
+  // ---- Wood-grain "table" backdrop ----
+  // Layered: warm wood base + vertical wood-grain stripes + a soft warm light
+  // from above + a vignette toward the edges.
+  const tableBg = `
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 18px,
+      rgba(40, 18, 6, 0.18) 18px,
+      rgba(40, 18, 6, 0.18) 19px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 60px,
+      rgba(60, 28, 10, 0.22) 60px,
+      rgba(60, 28, 10, 0.22) 62px,
+      transparent 62px,
+      transparent 110px,
+      rgba(80, 40, 16, 0.12) 110px,
+      rgba(80, 40, 16, 0.12) 112px
+    ),
+    radial-gradient(ellipse 90% 60% at 50% 25%, rgba(255, 220, 165, 0.55), transparent 65%),
+    radial-gradient(ellipse 100% 100% at 50% 50%, transparent 30%, rgba(20, 8, 0, 0.45) 95%),
+    linear-gradient(180deg, #8b5a2b 0%, #6b3f1c 50%, #4a2810 100%)
+  `;
 
-  const handleDeleteClick = () => {
-    setDeleteDialogOpen(true);
-  };
+  // ---- Paper surface for the open book ----
+  // Layered: very subtle paper fiber + warm cream gradient + a darker edge
+  // vignette around the page to mimic how paper looks darker at the binding.
+  const pageBg = `
+    repeating-linear-gradient(
+      0deg,
+      rgba(120, 90, 60, 0.05) 0 1px,
+      transparent 1px 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(120, 90, 60, 0.03) 0 1px,
+      transparent 1px 4px
+    ),
+    radial-gradient(ellipse at center, #fff7e2 0%, #f3e6c1 70%, #e0cf9d 100%)
+  `;
+  const pageBgDark = `
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 240, 200, 0.04) 0 1px,
+      transparent 1px 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 240, 200, 0.03) 0 1px,
+      transparent 1px 4px
+    ),
+    radial-gradient(ellipse at center, #3a2c1e 0%, #2a1f15 70%, #1a1208 100%)
+  `;
 
-  const handleDeleteConfirm = async () => {
-    if (id) {
-      try {
-        await deleteManga(Number(id));
-        await queryClient.invalidateQueries({ queryKey: ["mangas"] });
-        await queryClient.invalidateQueries({ queryKey: ["lists"] });
-        navigate("/");
-      } catch (error) {
-        console.error("Failed to delete manga:", error);
-      }
-    }
-    setDeleteDialogOpen(false);
-  };
+  // Spine gutter — a darker wood strip between the two pages.
+  const spineBg = theme.palette.mode === "dark"
+    ? "linear-gradient(90deg, #1a120a 0%, #3a2410 50%, #1a120a 100%)"
+    : "linear-gradient(90deg, #6b4015 0%, #8b5a2b 50%, #6b4015 100%)";
 
-  const handleDeleteCancel = () => {
-    setDeleteDialogOpen(false);
-  };
+  // Big, grounded shadow under the whole spread.
+  const spreadShadow = `
+    0 50px 100px rgba(20, 8, 0, 0.55),
+    0 20px 40px rgba(20, 8, 0, 0.4),
+    0 6px 12px rgba(20, 8, 0, 0.25)
+  `;
 
-  const handleSave = async (updatedManga: Manga, coverImage?: File) => {
-    try {
-      const savedManga = await updateMangaDetails(updatedManga, coverImage);
-      setManga(savedManga);
-      setEditMode(false);
-      await queryClient.invalidateQueries({ queryKey: ["mangas"] });
-      await queryClient.invalidateQueries({ queryKey: ["lists"] });
-      setNotification({
-        open: true,
-        message: t("manga.updatedSuccess"),
-        severity: "success",
-      });
-    } catch (error) {
-      console.error("Failed to update manga:", error);
-      setNotification({
-        open: true,
-        message: t("manga.updateFailed"),
-        severity: "error",
-      });
-    }
-  };
+  const isDark = theme.palette.mode === "dark";
+  const pageSurface = isDark ? pageBgDark : pageBg;
+  const spineColor = spineBg;
 
-  const handleCancel = () => {
-    setEditMode(false);
-  };
-
-  const getStatusColor = (status: string) => {
-    const statusColors: { [key: string]: string } = {
-      "Not Started": theme.palette.error.main,
-      Reading: theme.palette.info.main,
-      Completed: theme.palette.success.main,
-      "On Hold": theme.palette.warning.main,
-      Dropped: theme.palette.error.main,
-      "Plan to Read": theme.palette.secondary.main,
-      Ongoing: theme.palette.info.main,
-      Hiatus: theme.palette.warning.main,
-      Discontinued: theme.palette.error.main,
-    };
-    return statusColors[status] || theme.palette.grey[500];
-  };
-
-  const handleCloseNotification = () => {
-    setNotification((prev) => ({ ...prev, open: false }));
-  };
+  const coverUrl = manga.coverImage
+    ? getMangaCoverImageUrl(manga.coverImage)
+    : "";
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        width: "100%",
+        background: tableBg,
+        backgroundAttachment: "fixed",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        py: { xs: 4, md: 6 },
+        px: 2,
+      }}
+    >
+      {/* Top toolbar — caps at the spread width. */}
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: 1280,
+          display: "flex",
+          justifyContent: "space-between",
+          mb: 3,
+        }}
+      >
         <Button startIcon={<ArrowBackIcon />} onClick={handleBackClick}>
           {location.state?.from === "list-detail"
             ? t("common.backToList")
@@ -194,23 +238,36 @@ const MangaDetails: React.FC = () => {
         </Button>
         {isAdmin && (
           <Box>
-            <IconButton onClick={handleToggleEditMode} sx={{ mr: 1 }}>
+            <IconButton
+              onClick={() => setEditMode((v) => !v)}
+              sx={{ mr: 1 }}
+              aria-label="edit"
+            >
               <EditIcon />
             </IconButton>
-            <IconButton onClick={handleDeleteClick} color="error">
+            <IconButton
+              onClick={() => setDeleteDialogOpen(true)}
+              color="error"
+              aria-label="delete"
+            >
               <DeleteIcon />
             </IconButton>
           </Box>
         )}
       </Box>
 
-      <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
         <DialogTitle>{t("manga.deleteTitle")}</DialogTitle>
         <DialogContent>
           <Typography>{t("manga.deleteConfirm")}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDeleteCancel}>{t("common.cancel")}</Button>
+          <Button onClick={() => setDeleteDialogOpen(false)}>
+            {t("common.cancel")}
+          </Button>
           <Button
             onClick={handleDeleteConfirm}
             color="error"
@@ -224,274 +281,290 @@ const MangaDetails: React.FC = () => {
       {editMode ? (
         <MangaForm manga={manga} onSave={handleSave} onCancel={handleCancel} />
       ) : (
-        <Grid container spacing={3}>
-          {/* Cover Image Section */}
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Paper
-              elevation={3}
-              sx={{
-                position: "relative",
-                borderRadius: 2,
-                overflow: "hidden",
-                height: "fit-content",
-                background:
-                  theme.palette.mode === "dark"
-                    ? alpha(theme.palette.background.paper, 0.8)
-                    : alpha(theme.palette.background.paper, 0.9),
-              }}
-            >
-              {manga.coverImage ? (
-                <Box
-                  sx={{
-                    position: "relative",
-                    width: "100%",
-                    paddingTop: "150%", // Fixed aspect ratio
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src={imageUrl}
-                    alt={manga.title}
-                    sx={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                </Box>
-              ) : (
-                <Box
-                  sx={{
-                    width: "100%",
-                    paddingTop: "140%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    bgcolor:
-                      theme.palette.mode === "dark"
-                        ? alpha(theme.palette.grey[900], 0.8)
-                        : alpha(theme.palette.grey[200], 0.8),
-                  }}
-                >
-                  <Typography variant="h6" color="text.secondary">
-                    {t("common.noCoverImage")}
-                  </Typography>
-                </Box>
-              )}
-            </Paper>
-          </Grid>
-
-          {/* Details Section */}
-          <Grid size={{ xs: 12, md: 8 }}>
-            <Paper
-              elevation={3}
-              sx={{
-                p: 3,
-                borderRadius: 2,
-                height: "fit-content",
-                display: "flex",
-                flexDirection: "column",
-                background:
-                  theme.palette.mode === "dark"
-                    ? alpha(theme.palette.background.paper, 0.8)
-                    : alpha(theme.palette.background.paper, 0.9),
-              }}
-            >
+        /* THE OPENED BOOK — fills the viewport: wide spread, big pages, real
+           drop shadow. Both pages share a fixed height via matching
+           aspect-ratio so the layout never shifts. */
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: 1280,
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1fr 14px 1fr" },
+            gap: { xs: 2, md: 0 },
+            borderRadius: 4,
+            overflow: "hidden",
+            boxShadow: spreadShadow,
+            transform: {
+              xs: "none",
+              md: "perspective(2400px) rotateZ(1.2deg)",
+            },
+            transformOrigin: "50% 50%",
+          }}
+        >
+          {/* LEFT PAGE — cover. Fixed manga-cover aspect (2:3). */}
+          <Box
+            sx={{
+              position: "relative",
+              background: pageSurface,
+              // 2:3 portrait aspect — always the same regardless of info-page
+              // content. Insets the cover inside the page with paper showing.
+              paddingTop: { xs: "140%", md: "150%" },
+              borderRight: {
+                md: "1px solid rgba(0,0,0,0.06)",
+              },
+              // Inner shadow at the spine gutter + a soft outer vignette.
+              boxShadow:
+                "inset -22px 0 28px -18px rgba(40,20,8,0.45), inset 0 0 80px rgba(40,20,8,0.18)",
+            }}
+          >
+            {coverUrl ? (
+              <Box
+                component="img"
+                src={coverUrl}
+                alt={manga.title}
+                loading="lazy"
+                sx={{
+                  position: "absolute",
+                  top: "6%",
+                  left: "9%",
+                  right: "9%",
+                  bottom: "7%",
+                  width: "82%",
+                  height: "87%",
+                  objectFit: "contain",
+                  borderRadius: "2px",
+                  // Tilt the cover on the page so it looks casually placed.
+                  transform:
+                    "perspective(1200px) rotateZ(-1.5deg) rotateY(10deg)",
+                  transformOrigin: "center center",
+                  boxShadow: `
+                    0 22px 38px rgba(0,0,0,0.5),
+                    0 6px 12px rgba(0,0,0,0.35),
+                    inset 0 0 0 1px rgba(255,255,255,0.05)
+                  `,
+                }}
+              />
+            ) : (
               <Box
                 sx={{
+                  position: "absolute",
+                  inset: "10%",
                   display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  mb: 2,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "2px dashed",
+                  borderColor: "divider",
+                  borderRadius: 1,
                 }}
               >
-                <Box>
-                  <Typography variant="h4" gutterBottom>
-                    {manga.title}
-                  </Typography>
-                  {manga.japaneseTitle && (
-                    <Typography
-                      variant="subtitle1"
-                      color="text.secondary"
-                      gutterBottom
-                    >
-                      {manga.japaneseTitle}
-                    </Typography>
-                  )}
-                </Box>
-              </Box>
-
-              {/* Status Badges */}
-              <Box sx={{ display: "flex", gap: 1, mb: 3, flexWrap: "wrap" }}>
-                {manga.readingStatus && (
-                  <Chip
-                    label={`Reading: ${manga.readingStatus}`}
-                    sx={{
-                      bgcolor: getStatusColor(manga.readingStatus),
-                      color: "white",
-                      fontWeight: 500,
-                    }}
-                  />
-                )}
-                {manga.overallStatus && (
-                  <Chip
-                    label={`Collection: ${manga.overallStatus}`}
-                    sx={{
-                      bgcolor: getStatusColor(manga.overallStatus),
-                      color: "white",
-                      fontWeight: 500,
-                    }}
-                  />
-                )}
-                {manga.category && (
-                  <Chip
-                    label={manga.category}
-                    sx={{
-                      bgcolor:
-                        theme.palette.mode === "dark"
-                          ? alpha(theme.palette.primary.main, 0.9)
-                          : theme.palette.primary.main,
-                      color: "white",
-                      fontWeight: 500,
-                    }}
-                  />
-                )}
-              </Box>
-
-              {/* Authors and Genres */}
-              <Box sx={{ mb: 3 }}>
-                <Typography
-                  variant="subtitle2"
-                  color="text.secondary"
-                  gutterBottom
-                >
-                  {t("common.authors")}
+                <Typography variant="h6" color="text.secondary">
+                  {t("common.noCoverImage")}
                 </Typography>
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
-                  {manga.authors.map((author) => (
-                    <Chip
-                      key={author.id}
-                      label={author.name}
-                      variant="outlined"
-                      size="small"
-                    />
-                  ))}
-                </Box>
-
-                <Typography
-                  variant="subtitle2"
-                  color="text.secondary"
-                  gutterBottom
-                >
-                  {t("common.genres")}
-                </Typography>
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                  {manga.genres.map((genre) => (
-                    <Chip
-                      key={genre.id}
-                      label={genre.name}
-                      variant="outlined"
-                      size="small"
-                    />
-                  ))}
-                </Box>
               </Box>
+            )}
+          </Box>
 
-              <Divider sx={{ my: 2 }} />
+          {/* CENTER SPINE — narrow wooden strip with a paper-edge gradient. */}
+          <Box
+            sx={{
+              display: { xs: "none", md: "block" },
+              background: spineColor,
+              boxShadow: `
+                inset 2px 0 4px rgba(0,0,0,0.6),
+                inset -2px 0 4px rgba(0,0,0,0.6),
+                0 0 8px rgba(0,0,0,0.3)
+              `,
+            }}
+          />
 
-              {/* Summary */}
-              {manga.summary && (
-                <Box sx={{ mb: 3, flex: 1 }}>
+          {/* RIGHT PAGE — info. Matches the cover page's height via aspect-
+              ratio so both pages are exactly the same size; internal scroll
+              if content overflows. */}
+          <Box
+            sx={{
+              position: "relative",
+              background: pageSurface,
+              p: { xs: 3, md: 5 },
+              display: "flex",
+              flexDirection: "column",
+              gap: 1.75,
+              // Match cover page aspect exactly so both columns are the same
+              // height — height never changes regardless of summary state.
+              aspectRatio: { xs: "auto", md: "1 / 1.5" },
+              overflowY: { xs: "visible", md: "auto" },
+              boxShadow: `
+                inset 22px 0 28px -18px rgba(40,20,8,0.45),
+                inset 0 0 80px rgba(40,20,8,0.18)
+              `,
+            }}
+          >
+            <Box>
+              <Typography
+                variant="h3"
+                sx={{
+                  fontWeight: 800,
+                  letterSpacing: -0.5,
+                  lineHeight: 1.1,
+                }}
+              >
+                {manga.title}
+              </Typography>
+              {manga.japaneseTitle && (
+                <Typography
+                  variant="subtitle1"
+                  color="text.secondary"
+                  sx={{ fontStyle: "italic", mt: 0.5 }}
+                >
+                  {manga.japaneseTitle}
+                </Typography>
+              )}
+            </Box>
+
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+              <MangaStatusChip status={manga.readingStatus} />
+              <MangaStatusChip status={manga.overallStatus} />
+              {manga.category && (
+                <Chip label={manga.category} size="small" sx={{ fontWeight: 500 }} />
+              )}
+            </Box>
+
+            <Box>
+              <Typography
+                variant="overline"
+                color="text.secondary"
+                sx={{ letterSpacing: 1 }}
+              >
+                {t("common.authors")}
+              </Typography>
+              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 0.5 }}>
+                {manga.authors.map((author) => (
+                  <Chip
+                    key={author.id}
+                    label={author.name}
+                    variant="outlined"
+                    size="small"
+                  />
+                ))}
+              </Box>
+            </Box>
+
+            <Box>
+              <Typography
+                variant="overline"
+                color="text.secondary"
+                sx={{ letterSpacing: 1 }}
+              >
+                {t("common.genres")}
+              </Typography>
+              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 0.5 }}>
+                {manga.genres.map((genre) => (
+                  <Chip
+                    key={genre.id}
+                    label={genre.name}
+                    variant="outlined"
+                    size="small"
+                  />
+                ))}
+              </Box>
+            </Box>
+
+            <Divider sx={{ my: 0.5 }} />
+
+            {manga.summary && (
+              <Box>
+                <Typography
+                  variant="overline"
+                  color="text.secondary"
+                  sx={{ letterSpacing: 1 }}
+                >
+                  {t("common.summary")}
+                </Typography>
+                <Collapse
+                  in={summaryExpanded || !summaryTooLong}
+                  collapsedSize={summaryTooLong ? "5em" : undefined}
+                >
                   <Typography
-                    variant="subtitle2"
-                    color="text.secondary"
-                    gutterBottom
+                    variant="body1"
+                    sx={{ whiteSpace: "pre-wrap", mt: 0.5 }}
                   >
-                    {t("common.summary")}
-                  </Typography>
-                  <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
                     {manga.summary}
                   </Typography>
-                </Box>
-              )}
-
-              {/* Additional Details */}
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    {t("common.language")}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    {manga.language || "N/A"}
-                  </Typography>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    {t("common.rating")}
-                  </Typography>
-                  <Rating
-                    value={manga.starRating || 0}
-                    precision={0.5}
-                    readOnly
-                    sx={{ mt: 0.5 }}
-                  />
-                </Grid>
-              </Grid>
-
-              {/* Lists */}
-              {manga.lists.length > 0 && (
-                <Box sx={{ mt: 3 }}>
-                  <Typography
-                    variant="subtitle2"
-                    color="text.secondary"
-                    gutterBottom
+                </Collapse>
+                {summaryTooLong && (
+                  <Button
+                    size="small"
+                    onClick={() => setSummaryExpanded((v) => !v)}
+                    sx={{ mt: 0.5, px: 0 }}
                   >
-                    {t("common.lists")}
-                  </Typography>
-                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                    {manga.lists.map((list) => (
-                      <Chip
-                        key={list.id}
-                        label={list.name}
-                        variant="outlined"
-                        size="small"
-                      />
-                    ))}
-                  </Box>
-                </Box>
-              )}
-            </Paper>
-          </Grid>
+                    {summaryExpanded ? t("manga.showLess") : t("manga.readMore")}
+                  </Button>
+                )}
+              </Box>
+            )}
 
-          {/* Volumes Section */}
-          <Grid size={{ xs: 12 }}>
-            <Paper
-              elevation={3}
-              sx={{
-                p: 3,
-                borderRadius: 2,
-                background:
-                  theme.palette.mode === "dark"
-                    ? alpha(theme.palette.background.paper, 0.8)
-                    : alpha(theme.palette.background.paper, 0.9),
-              }}
-            >
-              {manga && (
-                <VolumeManager
-                  manga={manga}
-                  onUpdate={async () => {
-                    const updatedManga = await getMangaDetails(manga.id);
-                    setManga(updatedManga);
-                  }}
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 6 }}>
+                <Typography
+                  variant="overline"
+                  color="text.secondary"
+                  sx={{ letterSpacing: 1 }}
+                >
+                  {t("common.language")}
+                </Typography>
+                <Typography variant="body1" sx={{ mt: 0.25 }}>
+                  {manga.language || "N/A"}
+                </Typography>
+              </Grid>
+              <Grid size={{ xs: 6 }}>
+                <Typography
+                  variant="overline"
+                  color="text.secondary"
+                  sx={{ letterSpacing: 1 }}
+                >
+                  {t("common.rating")}
+                </Typography>
+                <Rating
+                  value={manga.starRating || 0}
+                  precision={0.5}
+                  readOnly
+                  sx={{ mt: 0.25 }}
                 />
-              )}
-            </Paper>
-          </Grid>
-        </Grid>
+              </Grid>
+            </Grid>
+
+            {manga.lists.length > 0 && (
+              <Box>
+                <Typography
+                  variant="overline"
+                  color="text.secondary"
+                  sx={{ letterSpacing: 1 }}
+                >
+                  {t("common.lists")}
+                </Typography>
+                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 0.5 }}>
+                  {manga.lists.map((list) => (
+                    <Chip
+                      key={list.id}
+                      label={list.name}
+                      variant="outlined"
+                      size="small"
+                    />
+                  ))}
+                </Box>
+              </Box>
+            )}
+          </Box>
+        </Box>
       )}
+
+      {/* SHELF — caps at the spread's width so it stays centered. */}
+      <Box sx={{ width: "100%", maxWidth: 1280, mt: 5 }}>
+        <VolumeShelf
+          manga={manga}
+          onChanged={() => mangaQuery.refetch()}
+          onError={(msg) => notify(msg, "error")}
+        />
+      </Box>
 
       <Snackbar
         open={notification.open}
@@ -507,7 +580,7 @@ const MangaDetails: React.FC = () => {
           {notification.message}
         </Alert>
       </Snackbar>
-    </Container>
+    </Box>
   );
 };
 

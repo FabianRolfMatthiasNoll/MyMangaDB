@@ -30,7 +30,19 @@ export interface GetVolumeCoverImageApiV1ImagesVolumeFilenameGetRequest {
     filename: string;
 }
 
+export interface RemoveVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdDeleteRequest {
+    mangaId: number;
+    volumeId: number;
+}
+
 export interface SaveMangaCoverApiV1ImagesMangaSavePostRequest {
+    file: Blob;
+    filename: string;
+}
+
+export interface SaveVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdPutRequest {
+    mangaId: number;
+    volumeId: number;
     file: Blob;
     filename: string;
 }
@@ -41,6 +53,7 @@ export interface SaveMangaCoverApiV1ImagesMangaSavePostRequest {
 export class ImagesApi extends runtime.BaseAPI {
 
     /**
+     * Return a manga cover image. The path parameter is untrusted, so it is sanitized via :func:`_sanitize_filename` and confined to :data:`IMAGE_SAVE_PATH` via :func:`_safe_join` to defend against path traversal.  Note: this endpoint is intentionally unauthenticated. Cover art is already visible to anyone who can read manga metadata via the auth-gated ``/api/v1/mangas/...`` endpoints, and the frontend renders these images via raw ``<img src>`` tags which cannot attach bearer tokens. Filename sanitization is the real defense here.
      * Get Manga Cover Image
      */
     async getMangaCoverImageApiV1ImagesMangaFilenameGetRaw(requestParameters: GetMangaCoverImageApiV1ImagesMangaFilenameGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
@@ -54,13 +67,6 @@ export class ImagesApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration.accessToken) {
-            const token = await this.configuration.accessToken("OAuth2PasswordBearer", []);
-            if (token) {
-                headerParameters["Authorization"] = `Bearer ${token.replace(/^Bearer\s+/i, "")}`;
-            }
-        }
 
         const response = await this.request({
             path: `/api/v1/images/manga/{filename}`.replace(`{${"filename"}}`, encodeURIComponent(String(requestParameters['filename']))),
@@ -77,6 +83,7 @@ export class ImagesApi extends runtime.BaseAPI {
     }
 
     /**
+     * Return a manga cover image. The path parameter is untrusted, so it is sanitized via :func:`_sanitize_filename` and confined to :data:`IMAGE_SAVE_PATH` via :func:`_safe_join` to defend against path traversal.  Note: this endpoint is intentionally unauthenticated. Cover art is already visible to anyone who can read manga metadata via the auth-gated ``/api/v1/mangas/...`` endpoints, and the frontend renders these images via raw ``<img src>`` tags which cannot attach bearer tokens. Filename sanitization is the real defense here.
      * Get Manga Cover Image
      */
     async getMangaCoverImageApiV1ImagesMangaFilenameGet(requestParameters: GetMangaCoverImageApiV1ImagesMangaFilenameGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
@@ -85,6 +92,7 @@ export class ImagesApi extends runtime.BaseAPI {
     }
 
     /**
+     * Return a volume cover image. See :func:`get_manga_cover_image` for the rationale on authentication and path-traversal protection.
      * Get Volume Cover Image
      */
     async getVolumeCoverImageApiV1ImagesVolumeFilenameGetRaw(requestParameters: GetVolumeCoverImageApiV1ImagesVolumeFilenameGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
@@ -98,13 +106,6 @@ export class ImagesApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration.accessToken) {
-            const token = await this.configuration.accessToken("OAuth2PasswordBearer", []);
-            if (token) {
-                headerParameters["Authorization"] = `Bearer ${token.replace(/^Bearer\s+/i, "")}`;
-            }
-        }
 
         const response = await this.request({
             path: `/api/v1/images/volume/{filename}`.replace(`{${"filename"}}`, encodeURIComponent(String(requestParameters['filename']))),
@@ -121,6 +122,7 @@ export class ImagesApi extends runtime.BaseAPI {
     }
 
     /**
+     * Return a volume cover image. See :func:`get_manga_cover_image` for the rationale on authentication and path-traversal protection.
      * Get Volume Cover Image
      */
     async getVolumeCoverImageApiV1ImagesVolumeFilenameGet(requestParameters: GetVolumeCoverImageApiV1ImagesVolumeFilenameGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
@@ -129,6 +131,58 @@ export class ImagesApi extends runtime.BaseAPI {
     }
 
     /**
+     * Remove a volume\'s cover image (file + DB column).
+     * Remove Volume Cover
+     */
+    async removeVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdDeleteRaw(requestParameters: RemoveVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+        if (requestParameters['mangaId'] == null) {
+            throw new runtime.RequiredError(
+                'mangaId',
+                'Required parameter "mangaId" was null or undefined when calling removeVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdDelete().'
+            );
+        }
+
+        if (requestParameters['volumeId'] == null) {
+            throw new runtime.RequiredError(
+                'volumeId',
+                'Required parameter "volumeId" was null or undefined when calling removeVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdDelete().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/images/volume/{manga_id}/{volume_id}`.replace(`{${"manga_id"}}`, encodeURIComponent(String(requestParameters['mangaId']))).replace(`{${"volume_id"}}`, encodeURIComponent(String(requestParameters['volumeId']))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<any>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
+    }
+
+    /**
+     * Remove a volume\'s cover image (file + DB column).
+     * Remove Volume Cover
+     */
+    async removeVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdDelete(requestParameters: RemoveVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
+        const response = await this.removeVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdDeleteRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Save a cover image. Requires an authenticated admin user. Matches the write-vs-read auth split used in :mod:`backend.app.api.v1.endpoints.manga` where mutating endpoints are gated by :func:`deps.get_current_active_superuser`.
      * Save Manga Cover
      */
     async saveMangaCoverApiV1ImagesMangaSavePostRaw(requestParameters: SaveMangaCoverApiV1ImagesMangaSavePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
@@ -150,11 +204,9 @@ export class ImagesApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration.accessToken) {
-            const token = await this.configuration.accessToken("OAuth2PasswordBearer", []);
-            if (token) {
-                headerParameters["Authorization"] = `Bearer ${token.replace(/^Bearer\s+/i, "")}`;
-            }
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
         }
 
         const consumes: runtime.Consume[] = [
@@ -197,10 +249,101 @@ export class ImagesApi extends runtime.BaseAPI {
     }
 
     /**
+     * Save a cover image. Requires an authenticated admin user. Matches the write-vs-read auth split used in :mod:`backend.app.api.v1.endpoints.manga` where mutating endpoints are gated by :func:`deps.get_current_active_superuser`.
      * Save Manga Cover
      */
     async saveMangaCoverApiV1ImagesMangaSavePost(requestParameters: SaveMangaCoverApiV1ImagesMangaSavePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
         const response = await this.saveMangaCoverApiV1ImagesMangaSavePostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Save a per-volume cover image and link it to the volume row.  Requires an authenticated admin user (the volume collection already belongs to a manga, so authorizing the write here implicitly authorizes the manga edit too). The upload inherits the same defenses as the manga cover endpoint via :func:`_save_uploaded_image`. The volume\'s previous cover file, if any, is removed by :class:`VolumeRepository` when the new filename differs.
+     * Save Volume Cover
+     */
+    async saveVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdPutRaw(requestParameters: SaveVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+        if (requestParameters['mangaId'] == null) {
+            throw new runtime.RequiredError(
+                'mangaId',
+                'Required parameter "mangaId" was null or undefined when calling saveVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdPut().'
+            );
+        }
+
+        if (requestParameters['volumeId'] == null) {
+            throw new runtime.RequiredError(
+                'volumeId',
+                'Required parameter "volumeId" was null or undefined when calling saveVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdPut().'
+            );
+        }
+
+        if (requestParameters['file'] == null) {
+            throw new runtime.RequiredError(
+                'file',
+                'Required parameter "file" was null or undefined when calling saveVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdPut().'
+            );
+        }
+
+        if (requestParameters['filename'] == null) {
+            throw new runtime.RequiredError(
+                'filename',
+                'Required parameter "filename" was null or undefined when calling saveVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdPut().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
+        }
+
+        const consumes: runtime.Consume[] = [
+            { contentType: 'multipart/form-data' },
+        ];
+        // @ts-ignore: canConsumeForm may be unused
+        const canConsumeForm = runtime.canConsumeForm(consumes);
+
+        let formParams: { append(param: string, value: any): any };
+        let useForm = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        useForm = canConsumeForm;
+        if (useForm) {
+            formParams = new FormData();
+        } else {
+            formParams = new URLSearchParams();
+        }
+
+        if (requestParameters['file'] != null) {
+            formParams.append('file', requestParameters['file'] as any);
+        }
+
+        if (requestParameters['filename'] != null) {
+            formParams.append('filename', requestParameters['filename'] as any);
+        }
+
+        const response = await this.request({
+            path: `/api/v1/images/volume/{manga_id}/{volume_id}`.replace(`{${"manga_id"}}`, encodeURIComponent(String(requestParameters['mangaId']))).replace(`{${"volume_id"}}`, encodeURIComponent(String(requestParameters['volumeId']))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: formParams,
+        }, initOverrides);
+
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<any>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
+    }
+
+    /**
+     * Save a per-volume cover image and link it to the volume row.  Requires an authenticated admin user (the volume collection already belongs to a manga, so authorizing the write here implicitly authorizes the manga edit too). The upload inherits the same defenses as the manga cover endpoint via :func:`_save_uploaded_image`. The volume\'s previous cover file, if any, is removed by :class:`VolumeRepository` when the new filename differs.
+     * Save Volume Cover
+     */
+    async saveVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdPut(requestParameters: SaveVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
+        const response = await this.saveVolumeCoverApiV1ImagesVolumeMangaIdVolumeIdPutRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

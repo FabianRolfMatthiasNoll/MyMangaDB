@@ -14,7 +14,7 @@ import {
   Outlet,
 } from "react-router-dom";
 import NotFound from "./pages/NotFound";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { deDE } from "@mui/material/locale";
 import Dashboard from "./pages/Dashboard";
 import MangaDetails from "./pages/MangaDetails";
@@ -31,6 +31,8 @@ import StatisticsPage from "./pages/StatisticsPage";
 import { isAuthenticated } from "./services/auth";
 import { useUser } from "./context/UserContext";
 
+const THEME_STORAGE_KEY = "themeMode";
+
 const PrivateRoutes = () => {
   return isAuthenticated() ? <Outlet /> : <Navigate to="/login" />;
 };
@@ -42,7 +44,14 @@ const AdminRoutes = () => {
 };
 
 function App() {
-  const [mode, setMode] = useState<"light" | "dark">("dark");
+  const [mode, setMode] = useState<"light" | "dark">(() => {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    return saved === "light" || saved === "dark" ? saved : "dark";
+  });
+
+  useEffect(() => {
+    localStorage.setItem(THEME_STORAGE_KEY, mode);
+  }, [mode]);
 
   const toggleThemeMode = () => {
     setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));

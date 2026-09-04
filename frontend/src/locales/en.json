@@ -85,7 +85,9 @@
     "addError": "An error occurred while adding the manga.",
     "addToDatabase": "Add to Database",
     "enterVolumesYouOwn": "Enter the volumes you own for {{title}}",
-    "e.gVolumes": "e.g. 1-10; 12; 15-20"
+    "e.gVolumes": "e.g. 1-10; 12; 15-20",
+    "readMore": "Read more",
+    "showLess": "Show less"
   },
   "volume": {
     "volumesOwned": "Volumes ({{count}} Owned)",
@@ -97,7 +99,16 @@
     "enterVolumesYouOwn": "Enter volumes you own...",
     "volumes": "Volumes",
     "e.gVolumes": "e.g. 1-10; 12; 15-20",
-    "saveFailed": "Failed to update volumes"
+    "saveFailed": "Failed to update volumes",
+    "shelfOwned": "Owned",
+    "shelfMissing": "Missing",
+    "drawerTitle": "Volume {{n}}",
+    "uploadCover": "Upload Cover",
+    "removeCover": "Remove Cover",
+    "noCover": "No cover uploaded yet",
+    "coverUpdatedSuccess": "Cover updated successfully",
+    "coverUpdateFailed": "Failed to update cover",
+    "coverRemovedSuccess": "Cover removed"
   },
   "search": {
     "searchPlaceholder": "Search",
