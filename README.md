@@ -69,8 +69,8 @@ The easiest way to deploy MyMangaDB is using Docker. We provide a `docker-compos
     - **Traefik Labels**: Replace `<FrontendDomain>` and `<BackendDomain>` with your actual domains.
     - **Email**: Update `<MyEmail>` for Let's Encrypt SSL notifications.
     - **Environment Variables**:
-      - `API_TOKEN`: Set this to a secure, random string.
-      - `VITE_API_KEY`: Must match `API_TOKEN`.
+      - `API_TOKEN`: Set this to a secure, random string. It signs authentication
+        tokens, so treat it as a server-side secret and never expose it to the frontend.
 
 3.  **Run the Application**
 
