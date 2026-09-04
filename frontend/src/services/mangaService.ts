@@ -10,7 +10,12 @@ export const getMangas = async (
   page: number,
   limit: number,
   search?: string,
-  sort?: string
+  sort?: string,
+  categories?: string[],
+  readingStatuses?: string[],
+  overallStatuses?: string[],
+  ratingMin?: number,
+  ratingMax?: number,
 ) =>
   apiCallWrapper(
     () =>
@@ -19,8 +24,13 @@ export const getMangas = async (
         limit,
         search: search || undefined,
         sort: sort || undefined,
+        categories: categories?.length ? categories : undefined,
+        readingStatuses: readingStatuses?.length ? readingStatuses : undefined,
+        overallStatuses: overallStatuses?.length ? overallStatuses : undefined,
+        ratingMin: ratingMin !== undefined ? ratingMin : undefined,
+        ratingMax: ratingMax !== undefined ? ratingMax : undefined,
       }),
-    []
+    [],
   );
 
 export const getMangaDetails = async (mangaId: number) =>
@@ -29,7 +39,7 @@ export const getMangaDetails = async (mangaId: number) =>
       mangasApi.getMangaByIdApiV1MangasMangaIdGet({
         mangaId,
       }),
-    null
+    null,
   );
 
 export const deleteManga = async (mangaId: number) =>
@@ -38,7 +48,7 @@ export const deleteManga = async (mangaId: number) =>
       mangasApi.deleteMangaApiV1MangasMangaIdDelete({
         mangaId,
       }),
-    null
+    null,
   );
 
 export const updateMangaDetails = async (manga: Manga, coverImage?: File) => {
@@ -51,12 +61,12 @@ export const updateMangaDetails = async (manga: Manga, coverImage?: File) => {
 
     const mangaToUpdate = {
       ...manga,
-      coverImage: coverImagePath
+      coverImage: coverImagePath,
     };
 
     return await apiCallWrapper(
       () => mangasApi.updateMangaApiV1MangasUpdatePut({ manga: mangaToUpdate }),
-      null
+      null,
     );
   } catch (error) {
     console.error("Error updating manga:", error);
@@ -79,5 +89,5 @@ export const getMangasByListId = async (listId: number) =>
       mangasApi.getMangasByListApiV1MangasByListListIdGet({
         listId,
       }),
-    []
+    [],
   );

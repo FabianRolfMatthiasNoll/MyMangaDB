@@ -49,6 +49,11 @@ export interface GetMangasApiV1MangasGetAllGetRequest {
     limit?: number;
     search?: string | null;
     sort?: string | null;
+    categories?: Array<string> | null;
+    readingStatuses?: Array<string> | null;
+    overallStatuses?: Array<string> | null;
+    ratingMin?: number | null;
+    ratingMax?: number | null;
 }
 
 export interface GetMangasByAuthorApiV1MangasByAuthorAuthorIdGetRequest {
@@ -235,7 +240,7 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Liefert eine paginierte Liste von Mangas zurück. Optional können Suchbegriff (title LIKE) und Sortierreihenfolge angegeben werden.
+     * Liefert eine paginierte Liste von Mangas zurück. Optional können Suchbegriff (title LIKE), Filter (Kategorie, Status, Rating) und Sortierreihenfolge angegeben werden.
      * Get mangas with server-side paging, search and sort
      */
     async getMangasApiV1MangasGetAllGetRaw(requestParameters: GetMangasApiV1MangasGetAllGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
@@ -257,6 +262,26 @@ export class MangasApi extends runtime.BaseAPI {
             queryParameters['sort'] = requestParameters['sort'];
         }
 
+        if (requestParameters['categories'] != null) {
+            queryParameters['categories'] = requestParameters['categories'];
+        }
+
+        if (requestParameters['readingStatuses'] != null) {
+            queryParameters['reading_statuses'] = requestParameters['readingStatuses'];
+        }
+
+        if (requestParameters['overallStatuses'] != null) {
+            queryParameters['overall_statuses'] = requestParameters['overallStatuses'];
+        }
+
+        if (requestParameters['ratingMin'] != null) {
+            queryParameters['rating_min'] = requestParameters['ratingMin'];
+        }
+
+        if (requestParameters['ratingMax'] != null) {
+            queryParameters['rating_max'] = requestParameters['ratingMax'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         if (this.configuration && this.configuration.accessToken) {
@@ -275,7 +300,7 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Liefert eine paginierte Liste von Mangas zurück. Optional können Suchbegriff (title LIKE) und Sortierreihenfolge angegeben werden.
+     * Liefert eine paginierte Liste von Mangas zurück. Optional können Suchbegriff (title LIKE), Filter (Kategorie, Status, Rating) und Sortierreihenfolge angegeben werden.
      * Get mangas with server-side paging, search and sort
      */
     async getMangasApiV1MangasGetAllGet(requestParameters: GetMangasApiV1MangasGetAllGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Manga>> {

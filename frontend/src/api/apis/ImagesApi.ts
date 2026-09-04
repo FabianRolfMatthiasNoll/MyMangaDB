@@ -31,7 +31,7 @@ export interface GetVolumeCoverImageApiV1ImagesVolumeFilenameGetRequest {
 }
 
 export interface SaveMangaCoverApiV1ImagesMangaSavePostRequest {
-    file: Blob;
+    file: string;
     filename: string;
 }
 
@@ -41,6 +41,7 @@ export interface SaveMangaCoverApiV1ImagesMangaSavePostRequest {
 export class ImagesApi extends runtime.BaseAPI {
 
     /**
+     * Return a manga cover image. The path parameter is untrusted, so it is sanitized via :func:`_sanitize_filename` and confined to :data:`IMAGE_SAVE_PATH` via :func:`_safe_join` to defend against path traversal.  Note: this endpoint is intentionally unauthenticated. Cover art is already visible to anyone who can read manga metadata via the auth-gated ``/api/v1/mangas/...`` endpoints, and the frontend renders these images via raw ``<img src>`` tags which cannot attach bearer tokens. Filename sanitization is the real defense here.
      * Get Manga Cover Image
      */
     async getMangaCoverImageApiV1ImagesMangaFilenameGetRaw(requestParameters: GetMangaCoverImageApiV1ImagesMangaFilenameGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
@@ -54,13 +55,6 @@ export class ImagesApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration.accessToken) {
-            const token = await this.configuration.accessToken("OAuth2PasswordBearer", []);
-            if (token) {
-                headerParameters["Authorization"] = `Bearer ${token.replace(/^Bearer\s+/i, "")}`;
-            }
-        }
 
         const response = await this.request({
             path: `/api/v1/images/manga/{filename}`.replace(`{${"filename"}}`, encodeURIComponent(String(requestParameters['filename']))),
@@ -77,6 +71,7 @@ export class ImagesApi extends runtime.BaseAPI {
     }
 
     /**
+     * Return a manga cover image. The path parameter is untrusted, so it is sanitized via :func:`_sanitize_filename` and confined to :data:`IMAGE_SAVE_PATH` via :func:`_safe_join` to defend against path traversal.  Note: this endpoint is intentionally unauthenticated. Cover art is already visible to anyone who can read manga metadata via the auth-gated ``/api/v1/mangas/...`` endpoints, and the frontend renders these images via raw ``<img src>`` tags which cannot attach bearer tokens. Filename sanitization is the real defense here.
      * Get Manga Cover Image
      */
     async getMangaCoverImageApiV1ImagesMangaFilenameGet(requestParameters: GetMangaCoverImageApiV1ImagesMangaFilenameGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
@@ -85,6 +80,7 @@ export class ImagesApi extends runtime.BaseAPI {
     }
 
     /**
+     * Return a volume cover image. See :func:`get_manga_cover_image` for the rationale on authentication and path-traversal protection.
      * Get Volume Cover Image
      */
     async getVolumeCoverImageApiV1ImagesVolumeFilenameGetRaw(requestParameters: GetVolumeCoverImageApiV1ImagesVolumeFilenameGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
@@ -98,13 +94,6 @@ export class ImagesApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration.accessToken) {
-            const token = await this.configuration.accessToken("OAuth2PasswordBearer", []);
-            if (token) {
-                headerParameters["Authorization"] = `Bearer ${token.replace(/^Bearer\s+/i, "")}`;
-            }
-        }
 
         const response = await this.request({
             path: `/api/v1/images/volume/{filename}`.replace(`{${"filename"}}`, encodeURIComponent(String(requestParameters['filename']))),
@@ -121,6 +110,7 @@ export class ImagesApi extends runtime.BaseAPI {
     }
 
     /**
+     * Return a volume cover image. See :func:`get_manga_cover_image` for the rationale on authentication and path-traversal protection.
      * Get Volume Cover Image
      */
     async getVolumeCoverImageApiV1ImagesVolumeFilenameGet(requestParameters: GetVolumeCoverImageApiV1ImagesVolumeFilenameGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
@@ -129,6 +119,7 @@ export class ImagesApi extends runtime.BaseAPI {
     }
 
     /**
+     * Save a cover image. Requires an authenticated admin user. Matches the write-vs-read auth split used in :mod:`backend.app.api.v1.endpoints.manga` where mutating endpoints are gated by :func:`deps.get_current_active_superuser`.
      * Save Manga Cover
      */
     async saveMangaCoverApiV1ImagesMangaSavePostRaw(requestParameters: SaveMangaCoverApiV1ImagesMangaSavePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
@@ -150,11 +141,9 @@ export class ImagesApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration.accessToken) {
-            const token = await this.configuration.accessToken("OAuth2PasswordBearer", []);
-            if (token) {
-                headerParameters["Authorization"] = `Bearer ${token.replace(/^Bearer\s+/i, "")}`;
-            }
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
         }
 
         const consumes: runtime.Consume[] = [
@@ -165,8 +154,6 @@ export class ImagesApi extends runtime.BaseAPI {
 
         let formParams: { append(param: string, value: any): any };
         let useForm = false;
-        // use FormData to transmit files using content-type "multipart/form-data"
-        useForm = canConsumeForm;
         if (useForm) {
             formParams = new FormData();
         } else {
@@ -197,6 +184,7 @@ export class ImagesApi extends runtime.BaseAPI {
     }
 
     /**
+     * Save a cover image. Requires an authenticated admin user. Matches the write-vs-read auth split used in :mod:`backend.app.api.v1.endpoints.manga` where mutating endpoints are gated by :func:`deps.get_current_active_superuser`.
      * Save Manga Cover
      */
     async saveMangaCoverApiV1ImagesMangaSavePost(requestParameters: SaveMangaCoverApiV1ImagesMangaSavePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {

@@ -44,10 +44,16 @@ class MangaRepository(BaseRepository):
         limit: int = 10,
         search: Optional[str] = None,
         sort: Optional[str] = "asc",
+        categories: Optional[TypedList[str]] = None,
+        reading_statuses: Optional[TypedList[str]] = None,
+        overall_statuses: Optional[TypedList[str]] = None,
+        rating_min: Optional[float] = None,
+        rating_max: Optional[float] = None,
     ) -> TypedList[Manga]:
         """
         Holt Mangas mit Paging.
-        Optional: Filter nach Titel (ILIKE '%search%'), Sortierung.
+        Optional: Filter nach Titel (ILIKE '%search%'),
+        Kategorie, Reading Status, Overall Status, Rating, Sortierung.
         """
         query = db.query(MangaModel)
 
@@ -61,6 +67,24 @@ class MangaRepository(BaseRepository):
             else:
                 ilike_term = f"%{search}%"
                 query = query.filter(MangaModel.title.ilike(ilike_term))
+
+        # Filter by category
+        if categories:
+            query = query.filter(MangaModel.category.in_(categories))
+
+        # Filter by reading status
+        if reading_statuses:
+            query = query.filter(MangaModel.reading_status.in_(reading_statuses))
+
+        # Filter by overall status
+        if overall_statuses:
+            query = query.filter(MangaModel.overall_status.in_(overall_statuses))
+
+        # Filter by rating range
+        if rating_min is not None:
+            query = query.filter(MangaModel.star_rating >= rating_min)
+        if rating_max is not None:
+            query = query.filter(MangaModel.star_rating <= rating_max)
 
         # Sortierung nach Titel
         if sort == "asc":

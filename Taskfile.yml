@@ -115,6 +115,12 @@ tasks:
     cmds:
       - npm run lint
 
+  frontend:test:
+    desc: Run frontend tests
+    dir: frontend
+    cmds:
+      - npm test
+
   frontend:generate-api:
     desc: Generate TypeScript API client from Backend
     cmds:

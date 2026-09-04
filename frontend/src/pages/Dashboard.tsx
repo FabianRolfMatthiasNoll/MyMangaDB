@@ -50,13 +50,32 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
 
   const { data, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery({
-    queryKey: ["mangas", searchQuery, sortOrder, filterList],
+    queryKey: [
+      "mangas",
+      searchQuery,
+      sortOrder,
+      filterList,
+      filterCategory,
+      filterReadingStatus,
+      filterOverallStatus,
+      ratingRange,
+    ],
     queryFn: ({ pageParam = 1 }) => {
       let effectiveSearch = searchQuery;
       if (filterList) {
         effectiveSearch = `list:${filterList.name}`;
       }
-      return getMangas(pageParam, limit, effectiveSearch, sortOrder);
+      return getMangas(
+        pageParam,
+        limit,
+        effectiveSearch,
+        sortOrder,
+        filterCategory.length > 0 ? filterCategory : undefined,
+        filterReadingStatus.length > 0 ? filterReadingStatus : undefined,
+        filterOverallStatus.length > 0 ? filterOverallStatus : undefined,
+        ratingRange[0],
+        ratingRange[1],
+      );
     },
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length === limit ? allPages.length + 1 : undefined;
