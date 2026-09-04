@@ -12,28 +12,47 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  HTTPValidationError,
-  Token,
-  User,
-} from '../models/index';
 import {
+    type HTTPValidationError,
     HTTPValidationErrorFromJSON,
     HTTPValidationErrorToJSON,
+} from '../models/HTTPValidationError';
+import {
+    type Token,
     TokenFromJSON,
     TokenToJSON,
+} from '../models/Token';
+import {
+    type User,
     UserFromJSON,
     UserToJSON,
-} from '../models/index';
+} from '../models/User';
 
 export interface LoginAccessTokenApiV1AuthLoginPostRequest {
+    /**
+     *
+     */
     username: string;
+    /**
+     *
+     */
     password: string;
+    /**
+     *
+     */
     grantType?: string | null;
+    /**
+     *
+     */
     scope?: string;
+    /**
+     *
+     */
     clientId?: string | null;
+    /**
+     *
+     */
     clientSecret?: string | null;
 }
 
@@ -43,10 +62,9 @@ export interface LoginAccessTokenApiV1AuthLoginPostRequest {
 export class AuthApi extends runtime.BaseAPI {
 
     /**
-     * OAuth2 compatible token login, get an access token for future requests
-     * Login Access Token
+     * Creates request options for loginAccessTokenApiV1AuthLoginPost without sending the request
      */
-    async loginAccessTokenApiV1AuthLoginPostRaw(requestParameters: LoginAccessTokenApiV1AuthLoginPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Token>> {
+    async loginAccessTokenApiV1AuthLoginPostRequestOpts(requestParameters: LoginAccessTokenApiV1AuthLoginPostRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['username'] == null) {
             throw new runtime.RequiredError(
                 'username',
@@ -103,13 +121,25 @@ export class AuthApi extends runtime.BaseAPI {
             formParams.append('client_secret', requestParameters['clientSecret'] as any);
         }
 
-        const response = await this.request({
-            path: `/api/v1/auth/login`,
+
+        let urlPath = `/api/v1/auth/login`;
+
+        return {
+            path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: formParams,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * OAuth2 compatible token login, get an access token for future requests
+     * Login Access Token
+     */
+    async loginAccessTokenApiV1AuthLoginPostRaw(requestParameters: LoginAccessTokenApiV1AuthLoginPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Token>> {
+        const requestOptions = await this.loginAccessTokenApiV1AuthLoginPostRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => TokenFromJSON(jsonValue));
     }
@@ -124,10 +154,9 @@ export class AuthApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get current user.
-     * Read Users Me
+     * Creates request options for readUsersMeApiV1AuthMeGet without sending the request
      */
-    async readUsersMeApiV1AuthMeGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+    async readUsersMeApiV1AuthMeGetRequestOpts(): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -137,12 +166,24 @@ export class AuthApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
         }
 
-        const response = await this.request({
-            path: `/api/v1/auth/me`,
+
+        let urlPath = `/api/v1/auth/me`;
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get current user.
+     * Read Users Me
+     */
+    async readUsersMeApiV1AuthMeGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+        const requestOptions = await this.readUsersMeApiV1AuthMeGetRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
     }

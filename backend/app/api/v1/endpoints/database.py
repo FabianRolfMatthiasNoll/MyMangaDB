@@ -6,6 +6,7 @@ import shutil
 import tempfile
 import zipfile
 from pathlib import Path
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse, Response
@@ -156,7 +157,7 @@ async def cleanup_file(file_path: str):
     dependencies=[Depends(deps.get_current_active_superuser)],
 )
 async def import_database(
-    file: UploadFile = File(...),
+    file: Annotated[UploadFile, File(json_schema_extra={"format": "binary"})],
     # ``current_user`` is unused but pulling it through the router keeps the
     # 401/403 behavior consistent and makes the dependency intent obvious in
     # OpenAPI output.

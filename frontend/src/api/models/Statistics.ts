@@ -29,68 +29,46 @@ import {
 export interface Statistics {
     /**
      *
-     * @type {number}
-     * @memberof Statistics
      */
     totalMangas: number;
     /**
      *
-     * @type {number}
-     * @memberof Statistics
      */
     totalVolumes: number;
     /**
      *
-     * @type {number}
-     * @memberof Statistics
      */
     totalAuthors: number;
     /**
      *
-     * @type {number}
-     * @memberof Statistics
      */
     totalGenres: number;
     /**
      *
-     * @type {number}
-     * @memberof Statistics
      */
     totalLists: number;
     /**
      *
-     * @type {Array<StatisticCount>}
-     * @memberof Statistics
      */
     readingStatusDistribution: Array<StatisticCount>;
     /**
      *
-     * @type {Array<StatisticCount>}
-     * @memberof Statistics
      */
     overallStatusDistribution: Array<StatisticCount>;
     /**
      *
-     * @type {Array<StatisticCount>}
-     * @memberof Statistics
      */
     categoryDistribution: Array<StatisticCount>;
     /**
      *
-     * @type {Array<StatisticCount>}
-     * @memberof Statistics
      */
     ratingDistribution: Array<StatisticCount>;
     /**
      *
-     * @type {Array<StatisticCount>}
-     * @memberof Statistics
      */
     topGenres: Array<StatisticCount>;
     /**
      *
-     * @type {Array<StatisticCount>}
-     * @memberof Statistics
      */
     topAuthors: Array<StatisticCount>;
 }
@@ -99,17 +77,17 @@ export interface Statistics {
  * Check if a given object implements the Statistics interface.
  */
 export function instanceOfStatistics(value: object): value is Statistics {
-    if (!('totalMangas' in value) || value['totalMangas'] === undefined) return false;
-    if (!('totalVolumes' in value) || value['totalVolumes'] === undefined) return false;
-    if (!('totalAuthors' in value) || value['totalAuthors'] === undefined) return false;
-    if (!('totalGenres' in value) || value['totalGenres'] === undefined) return false;
-    if (!('totalLists' in value) || value['totalLists'] === undefined) return false;
-    if (!('readingStatusDistribution' in value) || value['readingStatusDistribution'] === undefined) return false;
-    if (!('overallStatusDistribution' in value) || value['overallStatusDistribution'] === undefined) return false;
-    if (!('categoryDistribution' in value) || value['categoryDistribution'] === undefined) return false;
-    if (!('ratingDistribution' in value) || value['ratingDistribution'] === undefined) return false;
-    if (!('topGenres' in value) || value['topGenres'] === undefined) return false;
-    if (!('topAuthors' in value) || value['topAuthors'] === undefined) return false;
+    if ((!('totalMangas' in (value as Record<string, any>)) && !('total_mangas' in (value as Record<string, any>))) || ((value as Record<string, any>)['totalMangas'] === undefined && (value as Record<string, any>)['total_mangas'] === undefined)) return false;
+    if ((!('totalVolumes' in (value as Record<string, any>)) && !('total_volumes' in (value as Record<string, any>))) || ((value as Record<string, any>)['totalVolumes'] === undefined && (value as Record<string, any>)['total_volumes'] === undefined)) return false;
+    if ((!('totalAuthors' in (value as Record<string, any>)) && !('total_authors' in (value as Record<string, any>))) || ((value as Record<string, any>)['totalAuthors'] === undefined && (value as Record<string, any>)['total_authors'] === undefined)) return false;
+    if ((!('totalGenres' in (value as Record<string, any>)) && !('total_genres' in (value as Record<string, any>))) || ((value as Record<string, any>)['totalGenres'] === undefined && (value as Record<string, any>)['total_genres'] === undefined)) return false;
+    if ((!('totalLists' in (value as Record<string, any>)) && !('total_lists' in (value as Record<string, any>))) || ((value as Record<string, any>)['totalLists'] === undefined && (value as Record<string, any>)['total_lists'] === undefined)) return false;
+    if ((!('readingStatusDistribution' in (value as Record<string, any>)) && !('reading_status_distribution' in (value as Record<string, any>))) || ((value as Record<string, any>)['readingStatusDistribution'] === undefined && (value as Record<string, any>)['reading_status_distribution'] === undefined)) return false;
+    if ((!('overallStatusDistribution' in (value as Record<string, any>)) && !('overall_status_distribution' in (value as Record<string, any>))) || ((value as Record<string, any>)['overallStatusDistribution'] === undefined && (value as Record<string, any>)['overall_status_distribution'] === undefined)) return false;
+    if ((!('categoryDistribution' in (value as Record<string, any>)) && !('category_distribution' in (value as Record<string, any>))) || ((value as Record<string, any>)['categoryDistribution'] === undefined && (value as Record<string, any>)['category_distribution'] === undefined)) return false;
+    if ((!('ratingDistribution' in (value as Record<string, any>)) && !('rating_distribution' in (value as Record<string, any>))) || ((value as Record<string, any>)['ratingDistribution'] === undefined && (value as Record<string, any>)['rating_distribution'] === undefined)) return false;
+    if ((!('topGenres' in (value as Record<string, any>)) && !('top_genres' in (value as Record<string, any>))) || ((value as Record<string, any>)['topGenres'] === undefined && (value as Record<string, any>)['top_genres'] === undefined)) return false;
+    if ((!('topAuthors' in (value as Record<string, any>)) && !('top_authors' in (value as Record<string, any>))) || ((value as Record<string, any>)['topAuthors'] === undefined && (value as Record<string, any>)['top_authors'] === undefined)) return false;
     return true;
 }
 

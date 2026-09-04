@@ -1,6 +1,7 @@
 import os
 import re
 from pathlib import Path
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
@@ -72,7 +73,7 @@ def _safe_join(base: str, *parts: str) -> str:
     dependencies=[Depends(deps.get_current_active_superuser)],
 )
 async def save_manga_cover(
-    file: UploadFile = File(...),
+    file: Annotated[UploadFile, File(json_schema_extra={"format": "binary"})],
     filename: str = Form(...),
     _current_user: User = Depends(deps.get_current_active_superuser),
 ):

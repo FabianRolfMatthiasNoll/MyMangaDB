@@ -22,7 +22,7 @@ export const ReadingStatus = {
     InProgress: 'in_progress',
     Completed: 'completed',
     OnHold: 'on_hold',
-    Dropped: 'dropped'
+    Dropped: 'dropped',
 } as const;
 export type ReadingStatus = typeof ReadingStatus[keyof typeof ReadingStatus];
 

@@ -12,36 +12,52 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  HTTPValidationError,
-  ListCreate,
-  ListModel,
-} from '../models/index';
 import {
+    type HTTPValidationError,
     HTTPValidationErrorFromJSON,
     HTTPValidationErrorToJSON,
+} from '../models/HTTPValidationError';
+import {
+    type ListCreate,
     ListCreateFromJSON,
     ListCreateToJSON,
+} from '../models/ListCreate';
+import {
+    type ListModel,
     ListModelFromJSON,
     ListModelToJSON,
-} from '../models/index';
+} from '../models/ListModel';
 
 export interface CreateListApiV1ListsCreatePostRequest {
+    /**
+     *
+     */
     listCreate: ListCreate;
 }
 
 export interface DeleteListApiV1ListsListIdDeleteRequest {
+    /**
+     *
+     */
     listId: number;
 }
 
 export interface GetListApiV1ListsListIdGetRequest {
+    /**
+     *
+     */
     listId: number;
 }
 
 export interface UpdateListApiV1ListsListIdPutRequest {
+    /**
+     *
+     */
     listId: number;
+    /**
+     *
+     */
     listCreate: ListCreate;
 }
 
@@ -51,9 +67,9 @@ export interface UpdateListApiV1ListsListIdPutRequest {
 export class ListsApi extends runtime.BaseAPI {
 
     /**
-     * Create List
+     * Creates request options for createListApiV1ListsCreatePost without sending the request
      */
-    async createListApiV1ListsCreatePostRaw(requestParameters: CreateListApiV1ListsCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListModel>> {
+    async createListApiV1ListsCreatePostRequestOpts(requestParameters: CreateListApiV1ListsCreatePostRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['listCreate'] == null) {
             throw new runtime.RequiredError(
                 'listCreate',
@@ -67,13 +83,24 @@ export class ListsApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        const response = await this.request({
-            path: `/api/v1/lists/create`,
+
+        let urlPath = `/api/v1/lists/create`;
+
+        return {
+            path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: ListCreateToJSON(requestParameters['listCreate']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Create List
+     */
+    async createListApiV1ListsCreatePostRaw(requestParameters: CreateListApiV1ListsCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListModel>> {
+        const requestOptions = await this.createListApiV1ListsCreatePostRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ListModelFromJSON(jsonValue));
     }
@@ -87,9 +114,9 @@ export class ListsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete List
+     * Creates request options for deleteListApiV1ListsListIdDelete without sending the request
      */
-    async deleteListApiV1ListsListIdDeleteRaw(requestParameters: DeleteListApiV1ListsListIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListModel>> {
+    async deleteListApiV1ListsListIdDeleteRequestOpts(requestParameters: DeleteListApiV1ListsListIdDeleteRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['listId'] == null) {
             throw new runtime.RequiredError(
                 'listId',
@@ -101,12 +128,24 @@ export class ListsApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/lists/{list_id}`.replace(`{${"list_id"}}`, encodeURIComponent(String(requestParameters['listId']))),
+
+        let urlPath = `/api/v1/lists/{list_id}`;
+        urlPath = urlPath.replace('{list_id}', encodeURIComponent(String(requestParameters['listId'])));
+
+        return {
+            path: urlPath,
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Delete List
+     */
+    async deleteListApiV1ListsListIdDeleteRaw(requestParameters: DeleteListApiV1ListsListIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListModel>> {
+        const requestOptions = await this.deleteListApiV1ListsListIdDeleteRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ListModelFromJSON(jsonValue));
     }
@@ -120,9 +159,9 @@ export class ListsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get List
+     * Creates request options for getListApiV1ListsListIdGet without sending the request
      */
-    async getListApiV1ListsListIdGetRaw(requestParameters: GetListApiV1ListsListIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListModel>> {
+    async getListApiV1ListsListIdGetRequestOpts(requestParameters: GetListApiV1ListsListIdGetRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['listId'] == null) {
             throw new runtime.RequiredError(
                 'listId',
@@ -134,12 +173,24 @@ export class ListsApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/lists/{list_id}`.replace(`{${"list_id"}}`, encodeURIComponent(String(requestParameters['listId']))),
+
+        let urlPath = `/api/v1/lists/{list_id}`;
+        urlPath = urlPath.replace('{list_id}', encodeURIComponent(String(requestParameters['listId'])));
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get List
+     */
+    async getListApiV1ListsListIdGetRaw(requestParameters: GetListApiV1ListsListIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListModel>> {
+        const requestOptions = await this.getListApiV1ListsListIdGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ListModelFromJSON(jsonValue));
     }
@@ -153,19 +204,30 @@ export class ListsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get Lists
+     * Creates request options for getListsApiV1ListsGetAllGet without sending the request
      */
-    async getListsApiV1ListsGetAllGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ListModel>>> {
+    async getListsApiV1ListsGetAllGetRequestOpts(): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/lists/getAll`,
+
+        let urlPath = `/api/v1/lists/getAll`;
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get Lists
+     */
+    async getListsApiV1ListsGetAllGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ListModel>>> {
+        const requestOptions = await this.getListsApiV1ListsGetAllGetRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ListModelFromJSON));
     }
@@ -179,19 +241,30 @@ export class ListsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get Lists With Count
+     * Creates request options for getListsWithCountApiV1ListsGetAllWithCountGet without sending the request
      */
-    async getListsWithCountApiV1ListsGetAllWithCountGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<{ [key: string]: any; }>>> {
+    async getListsWithCountApiV1ListsGetAllWithCountGetRequestOpts(): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/lists/getAll/withCount`,
+
+        let urlPath = `/api/v1/lists/getAll/withCount`;
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get Lists With Count
+     */
+    async getListsWithCountApiV1ListsGetAllWithCountGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<{ [key: string]: any | null; }>>> {
+        const requestOptions = await this.getListsWithCountApiV1ListsGetAllWithCountGetRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse<any>(response);
     }
@@ -199,15 +272,15 @@ export class ListsApi extends runtime.BaseAPI {
     /**
      * Get Lists With Count
      */
-    async getListsWithCountApiV1ListsGetAllWithCountGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<{ [key: string]: any; }>> {
+    async getListsWithCountApiV1ListsGetAllWithCountGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<{ [key: string]: any | null; }>> {
         const response = await this.getListsWithCountApiV1ListsGetAllWithCountGetRaw(initOverrides);
         return await response.value();
     }
 
     /**
-     * Update List
+     * Creates request options for updateListApiV1ListsListIdPut without sending the request
      */
-    async updateListApiV1ListsListIdPutRaw(requestParameters: UpdateListApiV1ListsListIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListModel>> {
+    async updateListApiV1ListsListIdPutRequestOpts(requestParameters: UpdateListApiV1ListsListIdPutRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['listId'] == null) {
             throw new runtime.RequiredError(
                 'listId',
@@ -228,13 +301,25 @@ export class ListsApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        const response = await this.request({
-            path: `/api/v1/lists/{list_id}`.replace(`{${"list_id"}}`, encodeURIComponent(String(requestParameters['listId']))),
+
+        let urlPath = `/api/v1/lists/{list_id}`;
+        urlPath = urlPath.replace('{list_id}', encodeURIComponent(String(requestParameters['listId'])));
+
+        return {
+            path: urlPath,
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
             body: ListCreateToJSON(requestParameters['listCreate']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Update List
+     */
+    async updateListApiV1ListsListIdPutRaw(requestParameters: UpdateListApiV1ListsListIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListModel>> {
+        const requestOptions = await this.updateListApiV1ListsListIdPutRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ListModelFromJSON(jsonValue));
     }

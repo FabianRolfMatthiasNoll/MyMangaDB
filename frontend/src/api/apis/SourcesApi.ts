@@ -12,31 +12,43 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  HTTPValidationError,
-  MangaCreate,
-  Source,
-  SourceCreate,
-} from '../models/index';
 import {
+    type HTTPValidationError,
     HTTPValidationErrorFromJSON,
     HTTPValidationErrorToJSON,
+} from '../models/HTTPValidationError';
+import {
+    type MangaCreate,
     MangaCreateFromJSON,
     MangaCreateToJSON,
+} from '../models/MangaCreate';
+import {
+    type Source,
     SourceFromJSON,
     SourceToJSON,
+} from '../models/Source';
+import {
+    type SourceCreate,
     SourceCreateFromJSON,
     SourceCreateToJSON,
-} from '../models/index';
+} from '../models/SourceCreate';
 
 export interface CreateSourceApiV1SourcesCreatePostRequest {
+    /**
+     *
+     */
     sourceCreate: SourceCreate;
 }
 
 export interface SearchMangaApiV1SourcesSearchPostRequest {
+    /**
+     *
+     */
     title: string;
+    /**
+     *
+     */
     sourceName: string;
 }
 
@@ -46,9 +58,9 @@ export interface SearchMangaApiV1SourcesSearchPostRequest {
 export class SourcesApi extends runtime.BaseAPI {
 
     /**
-     * Create Source
+     * Creates request options for createSourceApiV1SourcesCreatePost without sending the request
      */
-    async createSourceApiV1SourcesCreatePostRaw(requestParameters: CreateSourceApiV1SourcesCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Source>> {
+    async createSourceApiV1SourcesCreatePostRequestOpts(requestParameters: CreateSourceApiV1SourcesCreatePostRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['sourceCreate'] == null) {
             throw new runtime.RequiredError(
                 'sourceCreate',
@@ -62,13 +74,24 @@ export class SourcesApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        const response = await this.request({
-            path: `/api/v1/sources/create`,
+
+        let urlPath = `/api/v1/sources/create`;
+
+        return {
+            path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: SourceCreateToJSON(requestParameters['sourceCreate']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Create Source
+     */
+    async createSourceApiV1SourcesCreatePostRaw(requestParameters: CreateSourceApiV1SourcesCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Source>> {
+        const requestOptions = await this.createSourceApiV1SourcesCreatePostRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SourceFromJSON(jsonValue));
     }
@@ -82,19 +105,30 @@ export class SourcesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get Sources
+     * Creates request options for getSourcesApiV1SourcesGetAllGet without sending the request
      */
-    async getSourcesApiV1SourcesGetAllGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Source>>> {
+    async getSourcesApiV1SourcesGetAllGetRequestOpts(): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/sources/getAll`,
+
+        let urlPath = `/api/v1/sources/getAll`;
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get Sources
+     */
+    async getSourcesApiV1SourcesGetAllGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Source>>> {
+        const requestOptions = await this.getSourcesApiV1SourcesGetAllGetRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(SourceFromJSON));
     }
@@ -108,9 +142,9 @@ export class SourcesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search Manga
+     * Creates request options for searchMangaApiV1SourcesSearchPost without sending the request
      */
-    async searchMangaApiV1SourcesSearchPostRaw(requestParameters: SearchMangaApiV1SourcesSearchPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<MangaCreate>>> {
+    async searchMangaApiV1SourcesSearchPostRequestOpts(requestParameters: SearchMangaApiV1SourcesSearchPostRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['title'] == null) {
             throw new runtime.RequiredError(
                 'title',
@@ -137,12 +171,23 @@ export class SourcesApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/sources/search`,
+
+        let urlPath = `/api/v1/sources/search`;
+
+        return {
+            path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Search Manga
+     */
+    async searchMangaApiV1SourcesSearchPostRaw(requestParameters: SearchMangaApiV1SourcesSearchPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<MangaCreate>>> {
+        const requestOptions = await this.searchMangaApiV1SourcesSearchPostRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(MangaCreateFromJSON));
     }

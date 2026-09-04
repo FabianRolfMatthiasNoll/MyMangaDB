@@ -12,26 +12,35 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  HTTPValidationError,
-} from '../models/index';
 import {
+    type HTTPValidationError,
     HTTPValidationErrorFromJSON,
     HTTPValidationErrorToJSON,
-} from '../models/index';
+} from '../models/HTTPValidationError';
 
 export interface GetMangaCoverImageApiV1ImagesMangaFilenameGetRequest {
+    /**
+     *
+     */
     filename: string;
 }
 
 export interface GetVolumeCoverImageApiV1ImagesVolumeFilenameGetRequest {
+    /**
+     *
+     */
     filename: string;
 }
 
 export interface SaveMangaCoverApiV1ImagesMangaSavePostRequest {
-    file: string;
+    /**
+     *
+     */
+    file: Blob;
+    /**
+     *
+     */
     filename: string;
 }
 
@@ -41,10 +50,9 @@ export interface SaveMangaCoverApiV1ImagesMangaSavePostRequest {
 export class ImagesApi extends runtime.BaseAPI {
 
     /**
-     * Return a manga cover image. The path parameter is untrusted, so it is sanitized via :func:`_sanitize_filename` and confined to :data:`IMAGE_SAVE_PATH` via :func:`_safe_join` to defend against path traversal.  Note: this endpoint is intentionally unauthenticated. Cover art is already visible to anyone who can read manga metadata via the auth-gated ``/api/v1/mangas/...`` endpoints, and the frontend renders these images via raw ``<img src>`` tags which cannot attach bearer tokens. Filename sanitization is the real defense here.
-     * Get Manga Cover Image
+     * Creates request options for getMangaCoverImageApiV1ImagesMangaFilenameGet without sending the request
      */
-    async getMangaCoverImageApiV1ImagesMangaFilenameGetRaw(requestParameters: GetMangaCoverImageApiV1ImagesMangaFilenameGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+    async getMangaCoverImageApiV1ImagesMangaFilenameGetRequestOpts(requestParameters: GetMangaCoverImageApiV1ImagesMangaFilenameGetRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['filename'] == null) {
             throw new runtime.RequiredError(
                 'filename',
@@ -56,12 +64,25 @@ export class ImagesApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/images/manga/{filename}`.replace(`{${"filename"}}`, encodeURIComponent(String(requestParameters['filename']))),
+
+        let urlPath = `/api/v1/images/manga/{filename}`;
+        urlPath = urlPath.replace('{filename}', encodeURIComponent(String(requestParameters['filename'])));
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Return a manga cover image. The path parameter is untrusted, so it is sanitized via :func:`_sanitize_filename` and confined to :data:`IMAGE_SAVE_PATH` via :func:`_safe_join` to defend against path traversal.  Note: this endpoint is intentionally unauthenticated. Cover art is already visible to anyone who can read manga metadata via the auth-gated ``/api/v1/mangas/...`` endpoints, and the frontend renders these images via raw ``<img src>`` tags which cannot attach bearer tokens. Filename sanitization is the real defense here.
+     * Get Manga Cover Image
+     */
+    async getMangaCoverImageApiV1ImagesMangaFilenameGetRaw(requestParameters: GetMangaCoverImageApiV1ImagesMangaFilenameGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+        const requestOptions = await this.getMangaCoverImageApiV1ImagesMangaFilenameGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         if (this.isJsonMime(response.headers.get('content-type'))) {
             return new runtime.JSONApiResponse<any>(response);
@@ -80,10 +101,9 @@ export class ImagesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Return a volume cover image. See :func:`get_manga_cover_image` for the rationale on authentication and path-traversal protection.
-     * Get Volume Cover Image
+     * Creates request options for getVolumeCoverImageApiV1ImagesVolumeFilenameGet without sending the request
      */
-    async getVolumeCoverImageApiV1ImagesVolumeFilenameGetRaw(requestParameters: GetVolumeCoverImageApiV1ImagesVolumeFilenameGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+    async getVolumeCoverImageApiV1ImagesVolumeFilenameGetRequestOpts(requestParameters: GetVolumeCoverImageApiV1ImagesVolumeFilenameGetRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['filename'] == null) {
             throw new runtime.RequiredError(
                 'filename',
@@ -95,12 +115,25 @@ export class ImagesApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/images/volume/{filename}`.replace(`{${"filename"}}`, encodeURIComponent(String(requestParameters['filename']))),
+
+        let urlPath = `/api/v1/images/volume/{filename}`;
+        urlPath = urlPath.replace('{filename}', encodeURIComponent(String(requestParameters['filename'])));
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Return a volume cover image. See :func:`get_manga_cover_image` for the rationale on authentication and path-traversal protection.
+     * Get Volume Cover Image
+     */
+    async getVolumeCoverImageApiV1ImagesVolumeFilenameGetRaw(requestParameters: GetVolumeCoverImageApiV1ImagesVolumeFilenameGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+        const requestOptions = await this.getVolumeCoverImageApiV1ImagesVolumeFilenameGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         if (this.isJsonMime(response.headers.get('content-type'))) {
             return new runtime.JSONApiResponse<any>(response);
@@ -119,10 +152,9 @@ export class ImagesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Save a cover image. Requires an authenticated admin user. Matches the write-vs-read auth split used in :mod:`backend.app.api.v1.endpoints.manga` where mutating endpoints are gated by :func:`deps.get_current_active_superuser`.
-     * Save Manga Cover
+     * Creates request options for saveMangaCoverApiV1ImagesMangaSavePost without sending the request
      */
-    async saveMangaCoverApiV1ImagesMangaSavePostRaw(requestParameters: SaveMangaCoverApiV1ImagesMangaSavePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+    async saveMangaCoverApiV1ImagesMangaSavePostRequestOpts(requestParameters: SaveMangaCoverApiV1ImagesMangaSavePostRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['file'] == null) {
             throw new runtime.RequiredError(
                 'file',
@@ -154,6 +186,8 @@ export class ImagesApi extends runtime.BaseAPI {
 
         let formParams: { append(param: string, value: any): any };
         let useForm = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        useForm = canConsumeForm;
         if (useForm) {
             formParams = new FormData();
         } else {
@@ -168,13 +202,25 @@ export class ImagesApi extends runtime.BaseAPI {
             formParams.append('filename', requestParameters['filename'] as any);
         }
 
-        const response = await this.request({
-            path: `/api/v1/images/manga/save`,
+
+        let urlPath = `/api/v1/images/manga/save`;
+
+        return {
+            path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: formParams,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Save a cover image. Requires an authenticated admin user. Matches the write-vs-read auth split used in :mod:`backend.app.api.v1.endpoints.manga` where mutating endpoints are gated by :func:`deps.get_current_active_superuser`.
+     * Save Manga Cover
+     */
+    async saveMangaCoverApiV1ImagesMangaSavePostRaw(requestParameters: SaveMangaCoverApiV1ImagesMangaSavePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+        const requestOptions = await this.saveMangaCoverApiV1ImagesMangaSavePostRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         if (this.isJsonMime(response.headers.get('content-type'))) {
             return new runtime.JSONApiResponse<any>(response);

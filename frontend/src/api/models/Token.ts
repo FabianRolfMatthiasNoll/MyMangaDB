@@ -21,14 +21,10 @@ import { mapValues } from '../runtime';
 export interface Token {
     /**
      *
-     * @type {string}
-     * @memberof Token
      */
     accessToken: string;
     /**
      *
-     * @type {string}
-     * @memberof Token
      */
     tokenType: string;
 }
@@ -37,8 +33,8 @@ export interface Token {
  * Check if a given object implements the Token interface.
  */
 export function instanceOfToken(value: object): value is Token {
-    if (!('accessToken' in value) || value['accessToken'] === undefined) return false;
-    if (!('tokenType' in value) || value['tokenType'] === undefined) return false;
+    if ((!('accessToken' in (value as Record<string, any>)) && !('access_token' in (value as Record<string, any>))) || ((value as Record<string, any>)['accessToken'] === undefined && (value as Record<string, any>)['access_token'] === undefined)) return false;
+    if ((!('tokenType' in (value as Record<string, any>)) && !('token_type' in (value as Record<string, any>))) || ((value as Record<string, any>)['tokenType'] === undefined && (value as Record<string, any>)['token_type'] === undefined)) return false;
     return true;
 }
 

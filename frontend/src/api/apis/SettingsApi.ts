@@ -12,23 +12,32 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  HTTPValidationError,
-} from '../models/index';
 import {
+    type HTTPValidationError,
     HTTPValidationErrorFromJSON,
     HTTPValidationErrorToJSON,
-} from '../models/index';
+} from '../models/HTTPValidationError';
 
 export interface CreateOrUpdateSettingApiV1SettingsKeyPostRequest {
+    /**
+     *
+     */
     key: string;
+    /**
+     *
+     */
     value: string;
+    /**
+     *
+     */
     migrate?: boolean;
 }
 
 export interface GetSettingApiV1SettingsKeyGetRequest {
+    /**
+     *
+     */
     key: string;
 }
 
@@ -38,9 +47,9 @@ export interface GetSettingApiV1SettingsKeyGetRequest {
 export class SettingsApi extends runtime.BaseAPI {
 
     /**
-     * Create Or Update Setting
+     * Creates request options for createOrUpdateSettingApiV1SettingsKeyPost without sending the request
      */
-    async createOrUpdateSettingApiV1SettingsKeyPostRaw(requestParameters: CreateOrUpdateSettingApiV1SettingsKeyPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+    async createOrUpdateSettingApiV1SettingsKeyPostRequestOpts(requestParameters: CreateOrUpdateSettingApiV1SettingsKeyPostRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['key'] == null) {
             throw new runtime.RequiredError(
                 'key',
@@ -67,12 +76,24 @@ export class SettingsApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/settings/{key}`.replace(`{${"key"}}`, encodeURIComponent(String(requestParameters['key']))),
+
+        let urlPath = `/api/v1/settings/{key}`;
+        urlPath = urlPath.replace('{key}', encodeURIComponent(String(requestParameters['key'])));
+
+        return {
+            path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Create Or Update Setting
+     */
+    async createOrUpdateSettingApiV1SettingsKeyPostRaw(requestParameters: CreateOrUpdateSettingApiV1SettingsKeyPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+        const requestOptions = await this.createOrUpdateSettingApiV1SettingsKeyPostRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         if (this.isJsonMime(response.headers.get('content-type'))) {
             return new runtime.JSONApiResponse<any>(response);
@@ -90,19 +111,30 @@ export class SettingsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get All Settings
+     * Creates request options for getAllSettingsApiV1SettingsGetAllGet without sending the request
      */
-    async getAllSettingsApiV1SettingsGetAllGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+    async getAllSettingsApiV1SettingsGetAllGetRequestOpts(): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/settings/getAll`,
+
+        let urlPath = `/api/v1/settings/getAll`;
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get All Settings
+     */
+    async getAllSettingsApiV1SettingsGetAllGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+        const requestOptions = await this.getAllSettingsApiV1SettingsGetAllGetRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
 
         if (this.isJsonMime(response.headers.get('content-type'))) {
             return new runtime.JSONApiResponse<any>(response);
@@ -120,9 +152,9 @@ export class SettingsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get Setting
+     * Creates request options for getSettingApiV1SettingsKeyGet without sending the request
      */
-    async getSettingApiV1SettingsKeyGetRaw(requestParameters: GetSettingApiV1SettingsKeyGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+    async getSettingApiV1SettingsKeyGetRequestOpts(requestParameters: GetSettingApiV1SettingsKeyGetRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['key'] == null) {
             throw new runtime.RequiredError(
                 'key',
@@ -134,12 +166,24 @@ export class SettingsApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/settings/{key}`.replace(`{${"key"}}`, encodeURIComponent(String(requestParameters['key']))),
+
+        let urlPath = `/api/v1/settings/{key}`;
+        urlPath = urlPath.replace('{key}', encodeURIComponent(String(requestParameters['key'])));
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get Setting
+     */
+    async getSettingApiV1SettingsKeyGetRaw(requestParameters: GetSettingApiV1SettingsKeyGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+        const requestOptions = await this.getSettingApiV1SettingsKeyGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         if (this.isJsonMime(response.headers.get('content-type'))) {
             return new runtime.JSONApiResponse<any>(response);

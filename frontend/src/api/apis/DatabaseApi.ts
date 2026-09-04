@@ -12,18 +12,18 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  HTTPValidationError,
-} from '../models/index';
 import {
+    type HTTPValidationError,
     HTTPValidationErrorFromJSON,
     HTTPValidationErrorToJSON,
-} from '../models/index';
+} from '../models/HTTPValidationError';
 
 export interface ImportDatabaseApiV1DatabaseImportPostRequest {
-    file: string;
+    /**
+     *
+     */
+    file: Blob;
 }
 
 /**
@@ -32,10 +32,9 @@ export interface ImportDatabaseApiV1DatabaseImportPostRequest {
 export class DatabaseApi extends runtime.BaseAPI {
 
     /**
-     * Export the database and images as a ZIP file.  Requires an authenticated admin user. Both reading the live database file (which contains user password hashes) and downloading every stored image are inherently privileged operations.  Returns:     Response: A ZIP file containing the database and images.     The response will have the following headers:     - Content-Type: application/zip     - Content-Disposition: attachment; filename=\"mangadb_export.zip\"
-     * Export Database
+     * Creates request options for exportDatabaseApiV1DatabaseExportGet without sending the request
      */
-    async exportDatabaseApiV1DatabaseExportGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async exportDatabaseApiV1DatabaseExportGetRequestOpts(): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -45,12 +44,24 @@ export class DatabaseApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
         }
 
-        const response = await this.request({
-            path: `/api/v1/database/export`,
+
+        let urlPath = `/api/v1/database/export`;
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Export the database and images as a ZIP file.  Requires an authenticated admin user. Both reading the live database file (which contains user password hashes) and downloading every stored image are inherently privileged operations.  Returns:     Response: A ZIP file containing the database and images.     The response will have the following headers:     - Content-Type: application/zip     - Content-Disposition: attachment; filename=\"mangadb_export.zip\"
+     * Export Database
+     */
+    async exportDatabaseApiV1DatabaseExportGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const requestOptions = await this.exportDatabaseApiV1DatabaseExportGetRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.VoidApiResponse(response);
     }
@@ -64,10 +75,9 @@ export class DatabaseApi extends runtime.BaseAPI {
     }
 
     /**
-     * Import a database and images from a ZIP file. Requires an authenticated admin user. The handler rejects uploads that are not valid ZIP archives, exceed :data:`MAX_IMPORT_BYTES`, or contain entries whose resolved paths fall outside the extraction directory (zip-slip protection).
-     * Import Database
+     * Creates request options for importDatabaseApiV1DatabaseImportPost without sending the request
      */
-    async importDatabaseApiV1DatabaseImportPostRaw(requestParameters: ImportDatabaseApiV1DatabaseImportPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+    async importDatabaseApiV1DatabaseImportPostRequestOpts(requestParameters: ImportDatabaseApiV1DatabaseImportPostRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['file'] == null) {
             throw new runtime.RequiredError(
                 'file',
@@ -92,6 +102,8 @@ export class DatabaseApi extends runtime.BaseAPI {
 
         let formParams: { append(param: string, value: any): any };
         let useForm = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        useForm = canConsumeForm;
         if (useForm) {
             formParams = new FormData();
         } else {
@@ -102,13 +114,25 @@ export class DatabaseApi extends runtime.BaseAPI {
             formParams.append('file', requestParameters['file'] as any);
         }
 
-        const response = await this.request({
-            path: `/api/v1/database/import`,
+
+        let urlPath = `/api/v1/database/import`;
+
+        return {
+            path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: formParams,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Import a database and images from a ZIP file. Requires an authenticated admin user. The handler rejects uploads that are not valid ZIP archives, exceed :data:`MAX_IMPORT_BYTES`, or contain entries whose resolved paths fall outside the extraction directory (zip-slip protection).
+     * Import Database
+     */
+    async importDatabaseApiV1DatabaseImportPostRaw(requestParameters: ImportDatabaseApiV1DatabaseImportPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+        const requestOptions = await this.importDatabaseApiV1DatabaseImportPostRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         if (this.isJsonMime(response.headers.get('content-type'))) {
             return new runtime.JSONApiResponse<any>(response);

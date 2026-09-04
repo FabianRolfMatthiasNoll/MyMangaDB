@@ -12,20 +12,22 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  HTTPValidationError,
-  UserUpdatePassword,
-} from '../models/index';
 import {
+    type HTTPValidationError,
     HTTPValidationErrorFromJSON,
     HTTPValidationErrorToJSON,
+} from '../models/HTTPValidationError';
+import {
+    type UserUpdatePassword,
     UserUpdatePasswordFromJSON,
     UserUpdatePasswordToJSON,
-} from '../models/index';
+} from '../models/UserUpdatePassword';
 
 export interface ChangePasswordApiV1UsersChangePasswordPostRequest {
+    /**
+     *
+     */
     userUpdatePassword: UserUpdatePassword;
 }
 
@@ -35,10 +37,9 @@ export interface ChangePasswordApiV1UsersChangePasswordPostRequest {
 export class UsersApi extends runtime.BaseAPI {
 
     /**
-     * Change password for a user. Only accessible by admin.
-     * Change Password
+     * Creates request options for changePasswordApiV1UsersChangePasswordPost without sending the request
      */
-    async changePasswordApiV1UsersChangePasswordPostRaw(requestParameters: ChangePasswordApiV1UsersChangePasswordPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+    async changePasswordApiV1UsersChangePasswordPostRequestOpts(requestParameters: ChangePasswordApiV1UsersChangePasswordPostRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['userUpdatePassword'] == null) {
             throw new runtime.RequiredError(
                 'userUpdatePassword',
@@ -57,13 +58,25 @@ export class UsersApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
         }
 
-        const response = await this.request({
-            path: `/api/v1/users/change-password`,
+
+        let urlPath = `/api/v1/users/change-password`;
+
+        return {
+            path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: UserUpdatePasswordToJSON(requestParameters['userUpdatePassword']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Change password for a user. Only accessible by admin.
+     * Change Password
+     */
+    async changePasswordApiV1UsersChangePasswordPostRaw(requestParameters: ChangePasswordApiV1UsersChangePasswordPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+        const requestOptions = await this.changePasswordApiV1UsersChangePasswordPostRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         if (this.isJsonMime(response.headers.get('content-type'))) {
             return new runtime.JSONApiResponse<any>(response);

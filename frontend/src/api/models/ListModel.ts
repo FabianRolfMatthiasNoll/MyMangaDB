@@ -21,14 +21,10 @@ import { mapValues } from '../runtime';
 export interface ListModel {
     /**
      *
-     * @type {string}
-     * @memberof ListModel
      */
     name: string;
     /**
      *
-     * @type {number}
-     * @memberof ListModel
      */
     id: number;
 }

@@ -21,8 +21,6 @@ import { mapValues } from '../runtime';
 export interface GenreCreate {
     /**
      *
-     * @type {string}
-     * @memberof GenreCreate
      */
     name: string;
 }

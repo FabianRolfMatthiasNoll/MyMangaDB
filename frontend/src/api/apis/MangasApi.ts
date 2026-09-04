@@ -12,67 +12,122 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  HTTPValidationError,
-  Manga,
-  MangaCreate,
-} from '../models/index';
 import {
+    type HTTPValidationError,
     HTTPValidationErrorFromJSON,
     HTTPValidationErrorToJSON,
+} from '../models/HTTPValidationError';
+import {
+    type Manga,
     MangaFromJSON,
     MangaToJSON,
+} from '../models/Manga';
+import {
+    type MangaCreate,
     MangaCreateFromJSON,
     MangaCreateToJSON,
-} from '../models/index';
+} from '../models/MangaCreate';
 
 export interface CreateMangaApiV1MangasCreatePostRequest {
+    /**
+     *
+     */
     mangaCreate: MangaCreate;
 }
 
 export interface CreateMangaListApiV1MangasCreateListPostRequest {
+    /**
+     *
+     */
     mangaCreate: Array<MangaCreate>;
 }
 
 export interface DeleteMangaApiV1MangasMangaIdDeleteRequest {
+    /**
+     *
+     */
     mangaId: number;
 }
 
 export interface GetMangaByIdApiV1MangasMangaIdGetRequest {
+    /**
+     *
+     */
     mangaId: number;
 }
 
 export interface GetMangasApiV1MangasGetAllGetRequest {
+    /**
+     *
+     */
     skip?: number;
+    /**
+     *
+     */
     limit?: number;
+    /**
+     * Search term for title
+     */
     search?: string | null;
+    /**
+     * Sort by title
+     */
     sort?: string | null;
+    /**
+     * Filter by categories
+     */
     categories?: Array<string> | null;
+    /**
+     * Filter by reading statuses
+     */
     readingStatuses?: Array<string> | null;
+    /**
+     * Filter by overall statuses
+     */
     overallStatuses?: Array<string> | null;
+    /**
+     * Minimum rating
+     */
     ratingMin?: number | null;
+    /**
+     * Maximum rating
+     */
     ratingMax?: number | null;
 }
 
 export interface GetMangasByAuthorApiV1MangasByAuthorAuthorIdGetRequest {
+    /**
+     *
+     */
     authorId: number;
 }
 
 export interface GetMangasByGenreApiV1MangasByGenreGenreIdGetRequest {
+    /**
+     *
+     */
     genreId: number;
 }
 
 export interface GetMangasByListApiV1MangasByListListIdGetRequest {
+    /**
+     *
+     */
     listId: number;
 }
 
 export interface GetMangasByStarRatingApiV1MangasByRatingRatingGetRequest {
+    /**
+     *
+     */
     rating: number;
 }
 
 export interface UpdateMangaApiV1MangasUpdatePutRequest {
+    /**
+     *
+     */
     manga: Manga;
 }
 
@@ -82,9 +137,9 @@ export interface UpdateMangaApiV1MangasUpdatePutRequest {
 export class MangasApi extends runtime.BaseAPI {
 
     /**
-     * Create Manga
+     * Creates request options for createMangaApiV1MangasCreatePost without sending the request
      */
-    async createMangaApiV1MangasCreatePostRaw(requestParameters: CreateMangaApiV1MangasCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Manga>> {
+    async createMangaApiV1MangasCreatePostRequestOpts(requestParameters: CreateMangaApiV1MangasCreatePostRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['mangaCreate'] == null) {
             throw new runtime.RequiredError(
                 'mangaCreate',
@@ -103,13 +158,24 @@ export class MangasApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
         }
 
-        const response = await this.request({
-            path: `/api/v1/mangas/create`,
+
+        let urlPath = `/api/v1/mangas/create`;
+
+        return {
+            path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: MangaCreateToJSON(requestParameters['mangaCreate']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Create Manga
+     */
+    async createMangaApiV1MangasCreatePostRaw(requestParameters: CreateMangaApiV1MangasCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Manga>> {
+        const requestOptions = await this.createMangaApiV1MangasCreatePostRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => MangaFromJSON(jsonValue));
     }
@@ -123,9 +189,9 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create Manga List
+     * Creates request options for createMangaListApiV1MangasCreateListPost without sending the request
      */
-    async createMangaListApiV1MangasCreateListPostRaw(requestParameters: CreateMangaListApiV1MangasCreateListPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
+    async createMangaListApiV1MangasCreateListPostRequestOpts(requestParameters: CreateMangaListApiV1MangasCreateListPostRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['mangaCreate'] == null) {
             throw new runtime.RequiredError(
                 'mangaCreate',
@@ -144,13 +210,24 @@ export class MangasApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
         }
 
-        const response = await this.request({
-            path: `/api/v1/mangas/create-list`,
+
+        let urlPath = `/api/v1/mangas/create-list`;
+
+        return {
+            path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: requestParameters['mangaCreate']!.map(MangaCreateToJSON),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Create Manga List
+     */
+    async createMangaListApiV1MangasCreateListPostRaw(requestParameters: CreateMangaListApiV1MangasCreateListPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
+        const requestOptions = await this.createMangaListApiV1MangasCreateListPostRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(MangaFromJSON));
     }
@@ -164,9 +241,9 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete Manga
+     * Creates request options for deleteMangaApiV1MangasMangaIdDelete without sending the request
      */
-    async deleteMangaApiV1MangasMangaIdDeleteRaw(requestParameters: DeleteMangaApiV1MangasMangaIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Manga>> {
+    async deleteMangaApiV1MangasMangaIdDeleteRequestOpts(requestParameters: DeleteMangaApiV1MangasMangaIdDeleteRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['mangaId'] == null) {
             throw new runtime.RequiredError(
                 'mangaId',
@@ -183,12 +260,24 @@ export class MangasApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
         }
 
-        const response = await this.request({
-            path: `/api/v1/mangas/{manga_id}`.replace(`{${"manga_id"}}`, encodeURIComponent(String(requestParameters['mangaId']))),
+
+        let urlPath = `/api/v1/mangas/{manga_id}`;
+        urlPath = urlPath.replace('{manga_id}', encodeURIComponent(String(requestParameters['mangaId'])));
+
+        return {
+            path: urlPath,
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Delete Manga
+     */
+    async deleteMangaApiV1MangasMangaIdDeleteRaw(requestParameters: DeleteMangaApiV1MangasMangaIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Manga>> {
+        const requestOptions = await this.deleteMangaApiV1MangasMangaIdDeleteRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => MangaFromJSON(jsonValue));
     }
@@ -202,9 +291,9 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get Manga By Id
+     * Creates request options for getMangaByIdApiV1MangasMangaIdGet without sending the request
      */
-    async getMangaByIdApiV1MangasMangaIdGetRaw(requestParameters: GetMangaByIdApiV1MangasMangaIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Manga>> {
+    async getMangaByIdApiV1MangasMangaIdGetRequestOpts(requestParameters: GetMangaByIdApiV1MangasMangaIdGetRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['mangaId'] == null) {
             throw new runtime.RequiredError(
                 'mangaId',
@@ -221,12 +310,24 @@ export class MangasApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
         }
 
-        const response = await this.request({
-            path: `/api/v1/mangas/{manga_id}`.replace(`{${"manga_id"}}`, encodeURIComponent(String(requestParameters['mangaId']))),
+
+        let urlPath = `/api/v1/mangas/{manga_id}`;
+        urlPath = urlPath.replace('{manga_id}', encodeURIComponent(String(requestParameters['mangaId'])));
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get Manga By Id
+     */
+    async getMangaByIdApiV1MangasMangaIdGetRaw(requestParameters: GetMangaByIdApiV1MangasMangaIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Manga>> {
+        const requestOptions = await this.getMangaByIdApiV1MangasMangaIdGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => MangaFromJSON(jsonValue));
     }
@@ -240,10 +341,9 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Liefert eine paginierte Liste von Mangas zurück. Optional können Suchbegriff (title LIKE), Filter (Kategorie, Status, Rating) und Sortierreihenfolge angegeben werden.
-     * Get mangas with server-side paging, search and sort
+     * Creates request options for getMangasApiV1MangasGetAllGet without sending the request
      */
-    async getMangasApiV1MangasGetAllGetRaw(requestParameters: GetMangasApiV1MangasGetAllGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
+    async getMangasApiV1MangasGetAllGetRequestOpts(requestParameters: GetMangasApiV1MangasGetAllGetRequest): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         if (requestParameters['skip'] != null) {
@@ -289,18 +389,30 @@ export class MangasApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
         }
 
-        const response = await this.request({
-            path: `/api/v1/mangas/getAll`,
+
+        let urlPath = `/api/v1/mangas/getAll`;
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Delivers a paginated list of mangas. Optional search (title LIKE), filters (category, status, rating), and sort order can be specified.
+     * Get mangas with server-side paging, search and sort
+     */
+    async getMangasApiV1MangasGetAllGetRaw(requestParameters: GetMangasApiV1MangasGetAllGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
+        const requestOptions = await this.getMangasApiV1MangasGetAllGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(MangaFromJSON));
     }
 
     /**
-     * Liefert eine paginierte Liste von Mangas zurück. Optional können Suchbegriff (title LIKE), Filter (Kategorie, Status, Rating) und Sortierreihenfolge angegeben werden.
+     * Delivers a paginated list of mangas. Optional search (title LIKE), filters (category, status, rating), and sort order can be specified.
      * Get mangas with server-side paging, search and sort
      */
     async getMangasApiV1MangasGetAllGet(requestParameters: GetMangasApiV1MangasGetAllGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Manga>> {
@@ -309,9 +421,9 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get Mangas By Author
+     * Creates request options for getMangasByAuthorApiV1MangasByAuthorAuthorIdGet without sending the request
      */
-    async getMangasByAuthorApiV1MangasByAuthorAuthorIdGetRaw(requestParameters: GetMangasByAuthorApiV1MangasByAuthorAuthorIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
+    async getMangasByAuthorApiV1MangasByAuthorAuthorIdGetRequestOpts(requestParameters: GetMangasByAuthorApiV1MangasByAuthorAuthorIdGetRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['authorId'] == null) {
             throw new runtime.RequiredError(
                 'authorId',
@@ -328,12 +440,24 @@ export class MangasApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
         }
 
-        const response = await this.request({
-            path: `/api/v1/mangas/by-author/{author_id}`.replace(`{${"author_id"}}`, encodeURIComponent(String(requestParameters['authorId']))),
+
+        let urlPath = `/api/v1/mangas/by-author/{author_id}`;
+        urlPath = urlPath.replace('{author_id}', encodeURIComponent(String(requestParameters['authorId'])));
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get Mangas By Author
+     */
+    async getMangasByAuthorApiV1MangasByAuthorAuthorIdGetRaw(requestParameters: GetMangasByAuthorApiV1MangasByAuthorAuthorIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
+        const requestOptions = await this.getMangasByAuthorApiV1MangasByAuthorAuthorIdGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(MangaFromJSON));
     }
@@ -347,9 +471,9 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get Mangas By Genre
+     * Creates request options for getMangasByGenreApiV1MangasByGenreGenreIdGet without sending the request
      */
-    async getMangasByGenreApiV1MangasByGenreGenreIdGetRaw(requestParameters: GetMangasByGenreApiV1MangasByGenreGenreIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
+    async getMangasByGenreApiV1MangasByGenreGenreIdGetRequestOpts(requestParameters: GetMangasByGenreApiV1MangasByGenreGenreIdGetRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['genreId'] == null) {
             throw new runtime.RequiredError(
                 'genreId',
@@ -366,12 +490,24 @@ export class MangasApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
         }
 
-        const response = await this.request({
-            path: `/api/v1/mangas/by-genre/{genre_id}`.replace(`{${"genre_id"}}`, encodeURIComponent(String(requestParameters['genreId']))),
+
+        let urlPath = `/api/v1/mangas/by-genre/{genre_id}`;
+        urlPath = urlPath.replace('{genre_id}', encodeURIComponent(String(requestParameters['genreId'])));
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get Mangas By Genre
+     */
+    async getMangasByGenreApiV1MangasByGenreGenreIdGetRaw(requestParameters: GetMangasByGenreApiV1MangasByGenreGenreIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
+        const requestOptions = await this.getMangasByGenreApiV1MangasByGenreGenreIdGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(MangaFromJSON));
     }
@@ -385,9 +521,9 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get Mangas By List
+     * Creates request options for getMangasByListApiV1MangasByListListIdGet without sending the request
      */
-    async getMangasByListApiV1MangasByListListIdGetRaw(requestParameters: GetMangasByListApiV1MangasByListListIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
+    async getMangasByListApiV1MangasByListListIdGetRequestOpts(requestParameters: GetMangasByListApiV1MangasByListListIdGetRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['listId'] == null) {
             throw new runtime.RequiredError(
                 'listId',
@@ -404,12 +540,24 @@ export class MangasApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
         }
 
-        const response = await this.request({
-            path: `/api/v1/mangas/by-list/{list_id}`.replace(`{${"list_id"}}`, encodeURIComponent(String(requestParameters['listId']))),
+
+        let urlPath = `/api/v1/mangas/by-list/{list_id}`;
+        urlPath = urlPath.replace('{list_id}', encodeURIComponent(String(requestParameters['listId'])));
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get Mangas By List
+     */
+    async getMangasByListApiV1MangasByListListIdGetRaw(requestParameters: GetMangasByListApiV1MangasByListListIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
+        const requestOptions = await this.getMangasByListApiV1MangasByListListIdGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(MangaFromJSON));
     }
@@ -423,9 +571,9 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get Mangas By Star Rating
+     * Creates request options for getMangasByStarRatingApiV1MangasByRatingRatingGet without sending the request
      */
-    async getMangasByStarRatingApiV1MangasByRatingRatingGetRaw(requestParameters: GetMangasByStarRatingApiV1MangasByRatingRatingGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
+    async getMangasByStarRatingApiV1MangasByRatingRatingGetRequestOpts(requestParameters: GetMangasByStarRatingApiV1MangasByRatingRatingGetRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['rating'] == null) {
             throw new runtime.RequiredError(
                 'rating',
@@ -442,12 +590,24 @@ export class MangasApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
         }
 
-        const response = await this.request({
-            path: `/api/v1/mangas/by-rating/{rating}`.replace(`{${"rating"}}`, encodeURIComponent(String(requestParameters['rating']))),
+
+        let urlPath = `/api/v1/mangas/by-rating/{rating}`;
+        urlPath = urlPath.replace('{rating}', encodeURIComponent(String(requestParameters['rating'])));
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get Mangas By Star Rating
+     */
+    async getMangasByStarRatingApiV1MangasByRatingRatingGetRaw(requestParameters: GetMangasByStarRatingApiV1MangasByRatingRatingGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
+        const requestOptions = await this.getMangasByStarRatingApiV1MangasByRatingRatingGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(MangaFromJSON));
     }
@@ -461,9 +621,9 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Update Manga
+     * Creates request options for updateMangaApiV1MangasUpdatePut without sending the request
      */
-    async updateMangaApiV1MangasUpdatePutRaw(requestParameters: UpdateMangaApiV1MangasUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Manga>> {
+    async updateMangaApiV1MangasUpdatePutRequestOpts(requestParameters: UpdateMangaApiV1MangasUpdatePutRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['manga'] == null) {
             throw new runtime.RequiredError(
                 'manga',
@@ -482,13 +642,24 @@ export class MangasApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("OAuth2PasswordBearer", []);
         }
 
-        const response = await this.request({
-            path: `/api/v1/mangas/update`,
+
+        let urlPath = `/api/v1/mangas/update`;
+
+        return {
+            path: urlPath,
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
             body: MangaToJSON(requestParameters['manga']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Update Manga
+     */
+    async updateMangaApiV1MangasUpdatePutRaw(requestParameters: UpdateMangaApiV1MangasUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Manga>> {
+        const requestOptions = await this.updateMangaApiV1MangasUpdatePutRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => MangaFromJSON(jsonValue));
     }

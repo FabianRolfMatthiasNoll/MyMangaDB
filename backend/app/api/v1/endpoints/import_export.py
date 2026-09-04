@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, File, UploadFile
 from sqlalchemy.orm import Session
 
@@ -10,7 +12,7 @@ router = APIRouter()
 
 @router.post("/mal", response_model=ImportResponse)
 async def import_mal_list(
-    file: UploadFile = File(...),
+    file: Annotated[UploadFile, File(json_schema_extra={"format": "binary"})],
     db: Session = Depends(deps.get_db),
     current_user=Depends(deps.get_current_user),
 ):

@@ -12,32 +12,45 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  Author,
-  AuthorCreate,
-  HTTPValidationError,
-} from '../models/index';
 import {
+    type Author,
     AuthorFromJSON,
     AuthorToJSON,
+} from '../models/Author';
+import {
+    type AuthorCreate,
     AuthorCreateFromJSON,
     AuthorCreateToJSON,
+} from '../models/AuthorCreate';
+import {
+    type HTTPValidationError,
     HTTPValidationErrorFromJSON,
     HTTPValidationErrorToJSON,
-} from '../models/index';
+} from '../models/HTTPValidationError';
 
 export interface CreateAuthorApiV1AuthorsCreatePostRequest {
+    /**
+     *
+     */
     authorCreate: AuthorCreate;
 }
 
 export interface GetAllAuthorsApiV1AuthorsGetAllGetRequest {
+    /**
+     *
+     */
     skip?: number;
+    /**
+     *
+     */
     limit?: number;
 }
 
 export interface GetAuthorApiV1AuthorsAuthorIdGetRequest {
+    /**
+     *
+     */
     authorId: number;
 }
 
@@ -47,9 +60,9 @@ export interface GetAuthorApiV1AuthorsAuthorIdGetRequest {
 export class AuthorsApi extends runtime.BaseAPI {
 
     /**
-     * Create Author
+     * Creates request options for createAuthorApiV1AuthorsCreatePost without sending the request
      */
-    async createAuthorApiV1AuthorsCreatePostRaw(requestParameters: CreateAuthorApiV1AuthorsCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Author>> {
+    async createAuthorApiV1AuthorsCreatePostRequestOpts(requestParameters: CreateAuthorApiV1AuthorsCreatePostRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['authorCreate'] == null) {
             throw new runtime.RequiredError(
                 'authorCreate',
@@ -63,13 +76,24 @@ export class AuthorsApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        const response = await this.request({
-            path: `/api/v1/authors/create`,
+
+        let urlPath = `/api/v1/authors/create`;
+
+        return {
+            path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: AuthorCreateToJSON(requestParameters['authorCreate']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Create Author
+     */
+    async createAuthorApiV1AuthorsCreatePostRaw(requestParameters: CreateAuthorApiV1AuthorsCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Author>> {
+        const requestOptions = await this.createAuthorApiV1AuthorsCreatePostRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => AuthorFromJSON(jsonValue));
     }
@@ -83,9 +107,9 @@ export class AuthorsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get All Authors
+     * Creates request options for getAllAuthorsApiV1AuthorsGetAllGet without sending the request
      */
-    async getAllAuthorsApiV1AuthorsGetAllGetRaw(requestParameters: GetAllAuthorsApiV1AuthorsGetAllGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Author>>> {
+    async getAllAuthorsApiV1AuthorsGetAllGetRequestOpts(requestParameters: GetAllAuthorsApiV1AuthorsGetAllGetRequest): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         if (requestParameters['skip'] != null) {
@@ -98,12 +122,23 @@ export class AuthorsApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/authors/getAll`,
+
+        let urlPath = `/api/v1/authors/getAll`;
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get All Authors
+     */
+    async getAllAuthorsApiV1AuthorsGetAllGetRaw(requestParameters: GetAllAuthorsApiV1AuthorsGetAllGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Author>>> {
+        const requestOptions = await this.getAllAuthorsApiV1AuthorsGetAllGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(AuthorFromJSON));
     }
@@ -117,9 +152,9 @@ export class AuthorsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get Author
+     * Creates request options for getAuthorApiV1AuthorsAuthorIdGet without sending the request
      */
-    async getAuthorApiV1AuthorsAuthorIdGetRaw(requestParameters: GetAuthorApiV1AuthorsAuthorIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Author>> {
+    async getAuthorApiV1AuthorsAuthorIdGetRequestOpts(requestParameters: GetAuthorApiV1AuthorsAuthorIdGetRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['authorId'] == null) {
             throw new runtime.RequiredError(
                 'authorId',
@@ -131,12 +166,24 @@ export class AuthorsApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/authors/{author_id}`.replace(`{${"author_id"}}`, encodeURIComponent(String(requestParameters['authorId']))),
+
+        let urlPath = `/api/v1/authors/{author_id}`;
+        urlPath = urlPath.replace('{author_id}', encodeURIComponent(String(requestParameters['authorId'])));
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get Author
+     */
+    async getAuthorApiV1AuthorsAuthorIdGetRaw(requestParameters: GetAuthorApiV1AuthorsAuthorIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Author>> {
+        const requestOptions = await this.getAuthorApiV1AuthorsAuthorIdGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => AuthorFromJSON(jsonValue));
     }

@@ -21,14 +21,10 @@ import { mapValues } from '../runtime';
 export interface UserUpdatePassword {
     /**
      *
-     * @type {string}
-     * @memberof UserUpdatePassword
      */
     username: string;
     /**
      *
-     * @type {string}
-     * @memberof UserUpdatePassword
      */
     password: string;
 }

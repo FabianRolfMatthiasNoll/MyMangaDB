@@ -21,20 +21,14 @@ import { mapValues } from '../runtime';
 export interface Genre {
     /**
      *
-     * @type {string}
-     * @memberof Genre
      */
     name: string;
     /**
      *
-     * @type {number}
-     * @memberof Genre
      */
     id: number;
     /**
      *
-     * @type {number}
-     * @memberof Genre
      */
     mangaCount?: number;
 }

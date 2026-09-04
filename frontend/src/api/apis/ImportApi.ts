@@ -12,21 +12,23 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  HTTPValidationError,
-  ImportResponse,
-} from '../models/index';
 import {
+    type HTTPValidationError,
     HTTPValidationErrorFromJSON,
     HTTPValidationErrorToJSON,
+} from '../models/HTTPValidationError';
+import {
+    type ImportResponse,
     ImportResponseFromJSON,
     ImportResponseToJSON,
-} from '../models/index';
+} from '../models/ImportResponse';
 
 export interface ImportMalListApiV1ImportMalPostRequest {
-    file: string;
+    /**
+     *
+     */
+    file: Blob;
 }
 
 /**
@@ -35,9 +37,9 @@ export interface ImportMalListApiV1ImportMalPostRequest {
 export class ImportApi extends runtime.BaseAPI {
 
     /**
-     * Import Mal List
+     * Creates request options for importMalListApiV1ImportMalPost without sending the request
      */
-    async importMalListApiV1ImportMalPostRaw(requestParameters: ImportMalListApiV1ImportMalPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ImportResponse>> {
+    async importMalListApiV1ImportMalPostRequestOpts(requestParameters: ImportMalListApiV1ImportMalPostRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['file'] == null) {
             throw new runtime.RequiredError(
                 'file',
@@ -62,6 +64,8 @@ export class ImportApi extends runtime.BaseAPI {
 
         let formParams: { append(param: string, value: any): any };
         let useForm = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        useForm = canConsumeForm;
         if (useForm) {
             formParams = new FormData();
         } else {
@@ -72,13 +76,24 @@ export class ImportApi extends runtime.BaseAPI {
             formParams.append('file', requestParameters['file'] as any);
         }
 
-        const response = await this.request({
-            path: `/api/v1/import/mal`,
+
+        let urlPath = `/api/v1/import/mal`;
+
+        return {
+            path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: formParams,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Import Mal List
+     */
+    async importMalListApiV1ImportMalPostRaw(requestParameters: ImportMalListApiV1ImportMalPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ImportResponse>> {
+        const requestOptions = await this.importMalListApiV1ImportMalPostRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ImportResponseFromJSON(jsonValue));
     }

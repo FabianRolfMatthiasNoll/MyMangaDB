@@ -21,14 +21,10 @@ import { mapValues } from '../runtime';
 export interface SourceCreate {
     /**
      *
-     * @type {string}
-     * @memberof SourceCreate
      */
     name: string;
     /**
      *
-     * @type {string}
-     * @memberof SourceCreate
      */
     language: string;
 }

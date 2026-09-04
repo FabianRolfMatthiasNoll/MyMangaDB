@@ -12,15 +12,12 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  Statistics,
-} from '../models/index';
 import {
+    type Statistics,
     StatisticsFromJSON,
     StatisticsToJSON,
-} from '../models/index';
+} from '../models/Statistics';
 
 /**
  *
@@ -28,19 +25,30 @@ import {
 export class StatisticsApi extends runtime.BaseAPI {
 
     /**
-     * Get Statistics
+     * Creates request options for getStatisticsApiV1StatisticsGet without sending the request
      */
-    async getStatisticsApiV1StatisticsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Statistics>> {
+    async getStatisticsApiV1StatisticsGetRequestOpts(): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/statistics/`,
+
+        let urlPath = `/api/v1/statistics/`;
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get Statistics
+     */
+    async getStatisticsApiV1StatisticsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Statistics>> {
+        const requestOptions = await this.getStatisticsApiV1StatisticsGetRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => StatisticsFromJSON(jsonValue));
     }
