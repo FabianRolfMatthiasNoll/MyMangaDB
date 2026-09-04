@@ -1,3 +1,10 @@
+## [2.8.1](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.8.0...v2.8.1) (2026-09-04)
+
+
+### Bug Fixes
+
+* **pipeline:** fix release pipeline ([4136611](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/41366117ff66620da9e07e4f760f01abfb0054cd))
+
 # [2.8.0](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.7.3...v2.8.0) (2026-09-04)
 
 
