@@ -1,3 +1,10 @@
+## [2.7.3](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.7.2...v2.7.3) (2026-09-04)
+
+
+### Bug Fixes
+
+* **sorting:** implement the filter in backend api for better fetching ([55d1806](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/55d18061d0242bb15ba0e0dbe4bc8a44c61ad961))
+
 ## [2.7.2](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.7.1...v2.7.2) (2026-07-10)
 
 
