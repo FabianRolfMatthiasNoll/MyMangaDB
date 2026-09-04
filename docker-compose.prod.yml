@@ -1,0 +1,43 @@
+# Server deployment: pulls prebuilt images, no repository checkout required.
+# Configure via a .env file next to this one:
+#   MYMANGADB_VERSION=1.2.3
+#   FRONTEND_DOMAIN=manga.example.com
+#   API_TOKEN=<generated secret>
+
+volumes:
+  database:
+
+networks:
+  traefik_proxy:
+    external: true
+  internal:
+
+services:
+  frontend:
+    image: ghcr.io/fabianrolfmatthiasnoll/mymangadb/frontend:${MYMANGADB_VERSION:-latest}
+    restart: unless-stopped
+    environment:
+      BACKEND_URL: http://backend:8000
+    depends_on:
+      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mymangadb.rule=Host(`${FRONTEND_DOMAIN}`)"
+      - "traefik.http.routers.mymangadb.entrypoints=websecure"
+      - "traefik.http.routers.mymangadb.tls.certresolver=myresolver"
+      - "traefik.http.services.mymangadb.loadbalancer.server.port=80"
+    networks:
+      - traefik_proxy
+      - internal
+
+  backend:
+    image: ghcr.io/fabianrolfmatthiasnoll/mymangadb/backend:${MYMANGADB_VERSION:-latest}
+    restart: unless-stopped
+    environment:
+      # Signs JWTs; the backend falls back to a public default if unset.
+      API_TOKEN: ${API_TOKEN:?set API_TOKEN in .env}
+      FRONTEND_URL: https://${FRONTEND_DOMAIN}
+    volumes:
+      - database:/app/data
+    networks:
+      - internal

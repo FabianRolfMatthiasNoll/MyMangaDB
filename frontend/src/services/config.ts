@@ -1,11 +1,8 @@
 import { Configuration } from "../api";
 
-// Debug logging
-console.log("API URL:", import.meta.env.VITE_API_URL);
-console.log("API Key exists:", !!import.meta.env.VITE_API_KEY);
-
-export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-export const API_KEY = import.meta.env.VITE_API_KEY || "";
+// Empty base path keeps requests same-origin so a prebuilt image works on any
+// domain; the reverse proxy forwards /api to the backend.
+export const API_URL = import.meta.env.VITE_API_URL || "";
 
 export const configuration = new Configuration({
   basePath: API_URL,

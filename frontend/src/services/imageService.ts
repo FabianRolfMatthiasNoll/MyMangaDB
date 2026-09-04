@@ -1,4 +1,4 @@
-import { configuration, API_KEY, API_URL } from "./config";
+import { configuration, API_URL } from "./config";
 import { ImagesApi } from "../api/apis";
 
 const imagesApi = new ImagesApi(configuration);
@@ -19,9 +19,6 @@ export const fetchMangaCoverImageAsBlobUrl = async (
     // bearer token to keep unauthenticated clients from being rejected.
     const token = localStorage.getItem("token") || "";
     const headers: Record<string, string> = {};
-    if (API_KEY) {
-      headers["X-API-Key"] = API_KEY;
-    }
     if (token) {
       headers["Authorization"] = `Bearer ${token.replace(/^Bearer\s+/i, "")}`;
     }
