@@ -1,3 +1,15 @@
+# [2.8.0](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.7.3...v2.8.0) (2026-09-04)
+
+
+### Bug Fixes
+
+* **api:** update api tools to correctly build interface ([2074305](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/20743059bf51372e6f8c7b6d39086b7a17135f93))
+
+
+### Features
+
+* **deployment:** properly build and deploy containers to easier set it up ([3f1cd2b](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/3f1cd2b7daabb61268176cb0c22ed906e1f40483))
+
 ## [2.7.3](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.7.2...v2.7.3) (2026-09-04)
 
 
