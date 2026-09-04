@@ -9,7 +9,7 @@ export const getMangaCoverImageUrl = (filepath: string): string => {
 };
 
 export const fetchMangaCoverImageAsBlobUrl = async (
-  filepath: string
+  filepath: string,
 ): Promise<string> => {
   if (!filepath) return "";
   const imageUrl = getMangaCoverImageUrl(filepath);
@@ -57,7 +57,7 @@ export const uploadMangaCover = async (file: File): Promise<string> => {
 
 export const saveMangaCover = async (
   file: File,
-  customFilename?: string
+  customFilename?: string,
 ): Promise<string> => {
   try {
     const filename = customFilename || `${Date.now()}_${file.name}`;

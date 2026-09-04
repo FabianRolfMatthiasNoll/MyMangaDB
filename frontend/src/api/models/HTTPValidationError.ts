@@ -29,8 +29,6 @@ import {
 export interface HTTPValidationError {
     /**
      *
-     * @type {Array<ValidationError>}
-     * @memberof HTTPValidationError
      */
     detail?: Array<ValidationError>;
 }

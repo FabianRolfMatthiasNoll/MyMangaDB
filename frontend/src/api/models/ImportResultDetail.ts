@@ -21,20 +21,14 @@ import { mapValues } from '../runtime';
 export interface ImportResultDetail {
     /**
      *
-     * @type {string}
-     * @memberof ImportResultDetail
      */
     title: string;
     /**
      *
-     * @type {string}
-     * @memberof ImportResultDetail
      */
     status: string;
     /**
      *
-     * @type {string}
-     * @memberof ImportResultDetail
      */
     infoCode: string;
 }
@@ -45,7 +39,7 @@ export interface ImportResultDetail {
 export function instanceOfImportResultDetail(value: object): value is ImportResultDetail {
     if (!('title' in value) || value['title'] === undefined) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
-    if (!('infoCode' in value) || value['infoCode'] === undefined) return false;
+    if ((!('infoCode' in (value as Record<string, any>)) && !('info_code' in (value as Record<string, any>))) || ((value as Record<string, any>)['infoCode'] === undefined && (value as Record<string, any>)['info_code'] === undefined)) return false;
     return true;
 }
 

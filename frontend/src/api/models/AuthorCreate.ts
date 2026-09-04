@@ -21,8 +21,6 @@ import { mapValues } from '../runtime';
 export interface AuthorCreate {
     /**
      *
-     * @type {string}
-     * @memberof AuthorCreate
      */
     name: string;
 }

@@ -21,20 +21,14 @@ import { mapValues } from '../runtime';
 export interface Source {
     /**
      *
-     * @type {string}
-     * @memberof Source
      */
     name: string;
     /**
      *
-     * @type {string}
-     * @memberof Source
      */
     language: string;
     /**
      *
-     * @type {number}
-     * @memberof Source
      */
     id: number;
 }

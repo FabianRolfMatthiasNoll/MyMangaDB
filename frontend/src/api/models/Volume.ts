@@ -21,26 +21,18 @@ import { mapValues } from '../runtime';
 export interface Volume {
     /**
      *
-     * @type {string}
-     * @memberof Volume
      */
     volumeNumber: string;
     /**
      *
-     * @type {string}
-     * @memberof Volume
      */
     coverImage?: string | null;
     /**
      *
-     * @type {number}
-     * @memberof Volume
      */
     id: number;
     /**
      *
-     * @type {number}
-     * @memberof Volume
      */
     mangaId: number;
 }
@@ -49,9 +41,9 @@ export interface Volume {
  * Check if a given object implements the Volume interface.
  */
 export function instanceOfVolume(value: object): value is Volume {
-    if (!('volumeNumber' in value) || value['volumeNumber'] === undefined) return false;
+    if ((!('volumeNumber' in (value as Record<string, any>)) && !('volume_number' in (value as Record<string, any>))) || ((value as Record<string, any>)['volumeNumber'] === undefined && (value as Record<string, any>)['volume_number'] === undefined)) return false;
     if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('mangaId' in value) || value['mangaId'] === undefined) return false;
+    if ((!('mangaId' in (value as Record<string, any>)) && !('manga_id' in (value as Record<string, any>))) || ((value as Record<string, any>)['mangaId'] === undefined && (value as Record<string, any>)['manga_id'] === undefined)) return false;
     return true;
 }
 
@@ -66,7 +58,7 @@ export function VolumeFromJSONTyped(json: any, ignoreDiscriminator: boolean): Vo
     return {
 
         'volumeNumber': json['volume_number'],
-        'coverImage': json['cover_image'] == null ? undefined : json['cover_image'],
+        'coverImage': json['cover_image'] === undefined ? undefined : json['cover_image'] === null ? null : json['cover_image'],
         'id': json['id'],
         'mangaId': json['manga_id'],
     };

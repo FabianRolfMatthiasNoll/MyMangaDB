@@ -21,20 +21,14 @@ import { mapValues } from '../runtime';
 export interface Author {
     /**
      *
-     * @type {string}
-     * @memberof Author
      */
     name: string;
     /**
      *
-     * @type {number}
-     * @memberof Author
      */
     id: number;
     /**
      *
-     * @type {number}
-     * @memberof Author
      */
     mangaCount?: number;
 }

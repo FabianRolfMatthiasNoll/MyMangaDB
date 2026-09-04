@@ -29,32 +29,22 @@ import {
 export interface ImportResponse {
     /**
      *
-     * @type {number}
-     * @memberof ImportResponse
      */
     total: number;
     /**
      *
-     * @type {number}
-     * @memberof ImportResponse
      */
     imported: number;
     /**
      *
-     * @type {number}
-     * @memberof ImportResponse
      */
     skipped: number;
     /**
      *
-     * @type {number}
-     * @memberof ImportResponse
      */
     failed: number;
     /**
      *
-     * @type {Array<ImportResultDetail>}
-     * @memberof ImportResponse
      */
     logs: Array<ImportResultDetail>;
 }

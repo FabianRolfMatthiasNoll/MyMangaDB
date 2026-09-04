@@ -29,20 +29,14 @@ import {
 export interface User {
     /**
      *
-     * @type {string}
-     * @memberof User
      */
     username: string;
     /**
      *
-     * @type {number}
-     * @memberof User
      */
     id: number;
     /**
      *
-     * @type {Role}
-     * @memberof User
      */
     role: Role;
 }

@@ -12,32 +12,45 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  Genre,
-  GenreCreate,
-  HTTPValidationError,
-} from '../models/index';
 import {
+    type Genre,
     GenreFromJSON,
     GenreToJSON,
+} from '../models/Genre';
+import {
+    type GenreCreate,
     GenreCreateFromJSON,
     GenreCreateToJSON,
+} from '../models/GenreCreate';
+import {
+    type HTTPValidationError,
     HTTPValidationErrorFromJSON,
     HTTPValidationErrorToJSON,
-} from '../models/index';
+} from '../models/HTTPValidationError';
 
 export interface CreateGenreApiV1GenresCreatePostRequest {
+    /**
+     *
+     */
     genreCreate: GenreCreate;
 }
 
 export interface GetAllGenresApiV1GenresGetAllGetRequest {
+    /**
+     *
+     */
     skip?: number;
+    /**
+     *
+     */
     limit?: number;
 }
 
 export interface GetGenreApiV1GenresGenreIdGetRequest {
+    /**
+     *
+     */
     genreId: number;
 }
 
@@ -47,9 +60,9 @@ export interface GetGenreApiV1GenresGenreIdGetRequest {
 export class GenresApi extends runtime.BaseAPI {
 
     /**
-     * Create Genre
+     * Creates request options for createGenreApiV1GenresCreatePost without sending the request
      */
-    async createGenreApiV1GenresCreatePostRaw(requestParameters: CreateGenreApiV1GenresCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Genre>> {
+    async createGenreApiV1GenresCreatePostRequestOpts(requestParameters: CreateGenreApiV1GenresCreatePostRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['genreCreate'] == null) {
             throw new runtime.RequiredError(
                 'genreCreate',
@@ -63,13 +76,24 @@ export class GenresApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        const response = await this.request({
-            path: `/api/v1/genres/create`,
+
+        let urlPath = `/api/v1/genres/create`;
+
+        return {
+            path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: GenreCreateToJSON(requestParameters['genreCreate']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Create Genre
+     */
+    async createGenreApiV1GenresCreatePostRaw(requestParameters: CreateGenreApiV1GenresCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Genre>> {
+        const requestOptions = await this.createGenreApiV1GenresCreatePostRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => GenreFromJSON(jsonValue));
     }
@@ -83,9 +107,9 @@ export class GenresApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get All Genres
+     * Creates request options for getAllGenresApiV1GenresGetAllGet without sending the request
      */
-    async getAllGenresApiV1GenresGetAllGetRaw(requestParameters: GetAllGenresApiV1GenresGetAllGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Genre>>> {
+    async getAllGenresApiV1GenresGetAllGetRequestOpts(requestParameters: GetAllGenresApiV1GenresGetAllGetRequest): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         if (requestParameters['skip'] != null) {
@@ -98,12 +122,23 @@ export class GenresApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/genres/getAll`,
+
+        let urlPath = `/api/v1/genres/getAll`;
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get All Genres
+     */
+    async getAllGenresApiV1GenresGetAllGetRaw(requestParameters: GetAllGenresApiV1GenresGetAllGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Genre>>> {
+        const requestOptions = await this.getAllGenresApiV1GenresGetAllGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(GenreFromJSON));
     }
@@ -117,9 +152,9 @@ export class GenresApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get Genre
+     * Creates request options for getGenreApiV1GenresGenreIdGet without sending the request
      */
-    async getGenreApiV1GenresGenreIdGetRaw(requestParameters: GetGenreApiV1GenresGenreIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Genre>> {
+    async getGenreApiV1GenresGenreIdGetRequestOpts(requestParameters: GetGenreApiV1GenresGenreIdGetRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['genreId'] == null) {
             throw new runtime.RequiredError(
                 'genreId',
@@ -131,12 +166,24 @@ export class GenresApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/api/v1/genres/{genre_id}`.replace(`{${"genre_id"}}`, encodeURIComponent(String(requestParameters['genreId']))),
+
+        let urlPath = `/api/v1/genres/{genre_id}`;
+        urlPath = urlPath.replace('{genre_id}', encodeURIComponent(String(requestParameters['genreId'])));
+
+        return {
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get Genre
+     */
+    async getGenreApiV1GenresGenreIdGetRaw(requestParameters: GetGenreApiV1GenresGenreIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Genre>> {
+        const requestOptions = await this.getGenreApiV1GenresGenreIdGetRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => GenreFromJSON(jsonValue));
     }

@@ -71,86 +71,58 @@ import {
 export interface Manga {
     /**
      *
-     * @type {string}
-     * @memberof Manga
      */
     title: string;
     /**
      *
-     * @type {string}
-     * @memberof Manga
      */
     japaneseTitle?: string | null;
     /**
      *
-     * @type {ReadingStatus}
-     * @memberof Manga
      */
     readingStatus?: ReadingStatus | null;
     /**
      *
-     * @type {OverallStatus}
-     * @memberof Manga
      */
     overallStatus?: OverallStatus | null;
     /**
      *
-     * @type {number}
-     * @memberof Manga
      */
     starRating?: number | null;
     /**
      *
-     * @type {string}
-     * @memberof Manga
      */
     language?: string | null;
     /**
      *
-     * @type {Category}
-     * @memberof Manga
      */
     category: Category;
     /**
      *
-     * @type {string}
-     * @memberof Manga
      */
     summary?: string | null;
     /**
      *
-     * @type {string}
-     * @memberof Manga
      */
     coverImage?: string | null;
     /**
      *
-     * @type {number}
-     * @memberof Manga
      */
     id: number;
     /**
      *
-     * @type {Array<Author>}
-     * @memberof Manga
      */
     authors: Array<Author>;
     /**
      *
-     * @type {Array<Genre>}
-     * @memberof Manga
      */
     genres: Array<Genre>;
     /**
      *
-     * @type {Array<ListModel>}
-     * @memberof Manga
      */
     lists: Array<ListModel>;
     /**
      *
-     * @type {Array<Volume>}
-     * @memberof Manga
      */
     volumes: Array<Volume>;
 }
@@ -182,14 +154,14 @@ export function MangaFromJSONTyped(json: any, ignoreDiscriminator: boolean): Man
     return {
 
         'title': json['title'],
-        'japaneseTitle': json['japanese_title'] == null ? undefined : json['japanese_title'],
-        'readingStatus': json['reading_status'] == null ? undefined : ReadingStatusFromJSON(json['reading_status']),
-        'overallStatus': json['overall_status'] == null ? undefined : OverallStatusFromJSON(json['overall_status']),
-        'starRating': json['star_rating'] == null ? undefined : json['star_rating'],
-        'language': json['language'] == null ? undefined : json['language'],
+        'japaneseTitle': json['japanese_title'] === undefined ? undefined : json['japanese_title'] === null ? null : json['japanese_title'],
+        'readingStatus': json['reading_status'] === undefined ? undefined : json['reading_status'] === null ? null : ReadingStatusFromJSON(json['reading_status']),
+        'overallStatus': json['overall_status'] === undefined ? undefined : json['overall_status'] === null ? null : OverallStatusFromJSON(json['overall_status']),
+        'starRating': json['star_rating'] === undefined ? undefined : json['star_rating'] === null ? null : json['star_rating'],
+        'language': json['language'] === undefined ? undefined : json['language'] === null ? null : json['language'],
         'category': CategoryFromJSON(json['category']),
-        'summary': json['summary'] == null ? undefined : json['summary'],
-        'coverImage': json['cover_image'] == null ? undefined : json['cover_image'],
+        'summary': json['summary'] === undefined ? undefined : json['summary'] === null ? null : json['summary'],
+        'coverImage': json['cover_image'] === undefined ? undefined : json['cover_image'] === null ? null : json['cover_image'],
         'id': json['id'],
         'authors': ((json['authors'] as Array<any>).map(AuthorFromJSON)),
         'genres': ((json['genres'] as Array<any>).map(GenreFromJSON)),

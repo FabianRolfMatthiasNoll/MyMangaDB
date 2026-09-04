@@ -21,14 +21,10 @@ import { mapValues } from '../runtime';
 export interface VolumeCreate {
     /**
      *
-     * @type {string}
-     * @memberof VolumeCreate
      */
     volumeNumber: string;
     /**
      *
-     * @type {string}
-     * @memberof VolumeCreate
      */
     coverImage?: string | null;
 }
@@ -37,7 +33,7 @@ export interface VolumeCreate {
  * Check if a given object implements the VolumeCreate interface.
  */
 export function instanceOfVolumeCreate(value: object): value is VolumeCreate {
-    if (!('volumeNumber' in value) || value['volumeNumber'] === undefined) return false;
+    if ((!('volumeNumber' in (value as Record<string, any>)) && !('volume_number' in (value as Record<string, any>))) || ((value as Record<string, any>)['volumeNumber'] === undefined && (value as Record<string, any>)['volume_number'] === undefined)) return false;
     return true;
 }
 
@@ -52,7 +48,7 @@ export function VolumeCreateFromJSONTyped(json: any, ignoreDiscriminator: boolea
     return {
 
         'volumeNumber': json['volume_number'],
-        'coverImage': json['cover_image'] == null ? undefined : json['cover_image'],
+        'coverImage': json['cover_image'] === undefined ? undefined : json['cover_image'] === null ? null : json['cover_image'],
     };
 }
 

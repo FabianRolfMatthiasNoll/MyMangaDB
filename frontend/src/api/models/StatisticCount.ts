@@ -21,14 +21,10 @@ import { mapValues } from '../runtime';
 export interface StatisticCount {
     /**
      *
-     * @type {string}
-     * @memberof StatisticCount
      */
     label: string;
     /**
      *
-     * @type {number}
-     * @memberof StatisticCount
      */
     count: number;
 }

@@ -20,7 +20,7 @@
 export const Category = {
     Manga: 'manga',
     Novel: 'novel',
-    Doujinshi: 'doujinshi'
+    Doujinshi: 'doujinshi',
 } as const;
 export type Category = typeof Category[keyof typeof Category];
 

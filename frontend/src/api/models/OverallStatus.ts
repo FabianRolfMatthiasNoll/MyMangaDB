@@ -21,7 +21,7 @@ export const OverallStatus = {
     Ongoing: 'ongoing',
     Completed: 'completed',
     Hiatus: 'hiatus',
-    Cancelled: 'cancelled'
+    Cancelled: 'cancelled',
 } as const;
 export type OverallStatus = typeof OverallStatus[keyof typeof OverallStatus];
 

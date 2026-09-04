@@ -8,8 +8,8 @@ export const importMalList = async (file: File) => {
   return apiCallWrapper(
     () =>
       importApi.importMalListApiV1ImportMalPost({
-        file: file,
+        file,
       }),
-    null
+    null,
   );
 };
