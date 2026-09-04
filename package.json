@@ -2,7 +2,7 @@
   "name": "mymangadb-root",
   "private": true,
   "devDependencies": {
-    "semantic-release": "^23.0.0",
+    "semantic-release": "^25.0.9",
     "@semantic-release/changelog": "^6.0.0",
     "@semantic-release/git": "^10.0.0",
     "@semantic-release/github": "^10.0.0",
