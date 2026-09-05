@@ -1,3 +1,10 @@
+## [2.8.3](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.8.2...v2.8.3) (2026-09-05)
+
+
+### Bug Fixes
+
+* **filter:** fix broken unrated manga filtering ([bba25ae](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/bba25ae990b193d5708e1904012ae87bd7bb75be))
+
 ## [2.8.2](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.8.1...v2.8.2) (2026-09-05)
 
 
