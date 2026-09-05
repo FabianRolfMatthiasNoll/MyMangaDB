@@ -43,6 +43,14 @@ def get_config_path():
 
 
 def load_config():
+    if os.getenv("DOCKER_MODE", "").lower() == "true":
+        # In Docker the image bakes the layout: a mounted volume at /app/data
+        # holds the SQLite file and images directory. The JSON config file is
+        # only used by non-Docker installs, so skip it entirely here.
+        return {
+            "database_path": "/app/data/MyMangaDB.db",
+            "image_path": "/app/data/images",
+        }
     config_path = get_config_path()
     if os.path.exists(config_path):
         try:

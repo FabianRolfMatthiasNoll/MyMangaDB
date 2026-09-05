@@ -41,6 +41,22 @@ def create_or_update_setting(
     migrate: bool = False,
     background_tasks: BackgroundTasks = None,
 ):
+    # In Docker the database and image paths are baked into the image and
+    # backed by a named volume. Accepting a new value here would silently
+    # no-op (the JSON config is ignored in DOCKER_MODE), which is the kind of
+    # thing that wasted an afternoon last time. Reject it explicitly.
+    if os.getenv("DOCKER_MODE", "").lower() == "true" and key in {
+        "database_path",
+        "image_path",
+    }:
+        raise HTTPException(
+            status_code=403,
+            detail=(
+                "database_path and image_path are fixed by the container "
+                "layout in Docker and cannot be changed at runtime"
+            ),
+        )
+
     config = load_config()
     old_value = config.get(key)
 

@@ -71,6 +71,8 @@ async def export_database() -> Response:
         temp_zip_path = temp_zip.name
         temp_zip.close()
 
+        db_added = False
+
         # Create the ZIP file with compression level 1 for faster compression
         with zipfile.ZipFile(
             temp_zip_path, "w", zipfile.ZIP_DEFLATED, compresslevel=1
@@ -88,6 +90,7 @@ async def export_database() -> Response:
                     shutil.copy2(DATABASE_PATH, temp_db_path)
                     # Add the temporary copy to the ZIP
                     zipf.write(temp_db_path, os.path.basename(DATABASE_PATH))
+                    db_added = True
                 finally:
                     # Clean up the temporary database file
                     if os.path.exists(temp_db_path):
@@ -117,6 +120,18 @@ async def export_database() -> Response:
 
         if file_size == 0:
             raise HTTPException(status_code=500, detail="Generated ZIP file is empty")
+
+        # A non-empty ZIP that contains no database file means the export
+        # path is pointing somewhere that has no SQLite file (typically a
+        # misconfigured DOCKER_MODE). Surface it as a warning rather than a
+        # silent success so the operator sees something went wrong.
+        if not db_added:
+            logging.warning(
+                "Export ZIP does not contain a database file; "
+                "DATABASE_PATH=%s IMAGE_PATH=%s",
+                DATABASE_PATH,
+                IMAGE_PATH,
+            )
 
         # Return the file with streaming enabled
         return FileResponse(

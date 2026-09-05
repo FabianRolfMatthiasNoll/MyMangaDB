@@ -33,19 +33,30 @@ logger.debug(f"FRONTEND_URL loaded: {os.getenv('FRONTEND_URL')}")
 
 
 def initialize_application():
-    # Only create default config if none exists
-    if not os.path.exists(get_config_path()):
-        config = get_default_paths()
-        save_config(config)
+    if os.getenv("DOCKER_MODE", "").lower() == "true":
+        # In Docker, the volume mount at /app/data is what persists state.
+        # Ensure the directories exist (the volume itself is mounted by
+        # compose; this just guards against an empty initial mount).
+        os.makedirs("/app/data", exist_ok=True)
+        os.makedirs("/app/data/images", exist_ok=True)
+        config = {
+            "database_path": "/app/data/MyMangaDB.db",
+            "image_path": "/app/data/images",
+        }
     else:
-        config = get_default_paths()  # Still need this for directory creation
+        # Only create default config if none exists
+        if not os.path.exists(get_config_path()):
+            config = get_default_paths()
+            save_config(config)
+        else:
+            config = get_default_paths()  # Still need this for directory creation
 
-    # Create database directory if it doesn't exist
-    db_dir = os.path.dirname(config["database_path"])
-    os.makedirs(db_dir, exist_ok=True)
+        # Create database directory if it doesn't exist
+        db_dir = os.path.dirname(config["database_path"])
+        os.makedirs(db_dir, exist_ok=True)
 
-    # Create images directory if it doesn't exist
-    os.makedirs(config["image_path"], exist_ok=True)
+        # Create images directory if it doesn't exist
+        os.makedirs(config["image_path"], exist_ok=True)
 
     # Create database tables
     models.Base.metadata.create_all(bind=engine)
