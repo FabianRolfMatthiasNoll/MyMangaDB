@@ -5,7 +5,7 @@ from typing import List as TypedList
 from typing import Optional
 
 import requests
-from sqlalchemy import asc, desc
+from sqlalchemy import asc, desc, or_
 from sqlalchemy.orm import Session
 
 from backend.app import settings
@@ -80,11 +80,25 @@ class MangaRepository(BaseRepository):
         if overall_statuses:
             query = query.filter(MangaModel.overall_status.in_(overall_statuses))
 
-        # Filter by rating range
+        # Filter by rating range. NULL ratings are treated as "any rating
+        # is acceptable" so that unrated manga stay visible under the default
+        # rating range of [0, 5]. Without this, every imported manga with
+        # star_rating IS NULL would be silently hidden by SQL's three-valued
+        # logic (NULL >= 0 evaluates to NULL, which fails a WHERE clause).
         if rating_min is not None:
-            query = query.filter(MangaModel.star_rating >= rating_min)
+            query = query.filter(
+                or_(
+                    MangaModel.star_rating.is_(None),
+                    MangaModel.star_rating >= rating_min,
+                )
+            )
         if rating_max is not None:
-            query = query.filter(MangaModel.star_rating <= rating_max)
+            query = query.filter(
+                or_(
+                    MangaModel.star_rating.is_(None),
+                    MangaModel.star_rating <= rating_max,
+                )
+            )
 
         # Sortierung nach Titel
         if sort == "asc":
