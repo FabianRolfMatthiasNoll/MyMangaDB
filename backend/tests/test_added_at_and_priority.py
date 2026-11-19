@@ -95,3 +95,35 @@ async def test_the_api_exposes_the_new_fields(client: AsyncClient, db_session):
     payload = response.json()[0]
     assert payload["priority"] is True
     assert payload["added_at"]
+
+
+def test_the_total_number_of_volumes_is_stored(db_session: Session):
+    MangaRepository.create(
+        db_session,
+        MangaCreate(
+            title="Long Series",
+            language="EN",
+            category=Category.manga,
+            reading_status=ReadingStatus.not_started,
+            overall_status=OverallStatus.ongoing,
+            star_rating=None,
+            ownership_status=OwnershipStatus.wishlist,
+            total_volumes=27,
+            authors=[],
+            genres=[],
+            lists=[],
+            volumes=[],
+        ),
+    )
+
+    manga = MangaRepository.get_by_title(db_session, "Long Series", "EN")
+
+    assert manga.total_volumes == 27
+
+
+def test_the_total_number_of_volumes_is_optional(db_session: Session):
+    create_manga(db_session, "Unknown Length")
+
+    manga = MangaRepository.get_by_title(db_session, "Unknown Length", "EN")
+
+    assert manga.total_volumes is None

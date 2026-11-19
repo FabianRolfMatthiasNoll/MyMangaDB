@@ -159,6 +159,9 @@ class Manga(Base):
         default=False,
         server_default=false(),
     )
+    # How many volumes the series has in total, when that is known. It turns
+    # "I am missing volumes 3 and 4" into "I am missing 24 of 27 volumes".
+    total_volumes = Column(Integer, nullable=True)
     summary = Column(Text)
     cover_image = Column(String)
 

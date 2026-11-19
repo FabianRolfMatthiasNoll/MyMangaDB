@@ -116,6 +116,7 @@ class MangaBase(BaseModel):
     ownership_status: OwnershipStatus = OwnershipStatus.owned
     added_at: Optional[datetime] = None
     priority: bool = False
+    total_volumes: Optional[int] = Field(None, ge=0)
     summary: Optional[str] = None
     cover_image: Optional[str] = None
 

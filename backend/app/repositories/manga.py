@@ -175,6 +175,7 @@ class MangaRepository(BaseRepository):
             category=manga_create.category,
             ownership_status=manga_create.ownership_status,
             priority=manga_create.priority,
+            total_volumes=manga_create.total_volumes,
             summary=manga_create.summary,
             cover_image=cover_image_filename,
             authors=authors,
@@ -218,6 +219,7 @@ class MangaRepository(BaseRepository):
             "category",
             "ownership_status",
             "priority",
+            "total_volumes",
             "summary",
             "cover_image",
         ]:
