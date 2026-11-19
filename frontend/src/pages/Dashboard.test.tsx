@@ -88,16 +88,53 @@ describe("Dashboard advanced filters", () => {
     fireEvent.click(screen.getByRole("button", { name: "Advanced filters" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Category" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], undefined, undefined, 0, 5, undefined, undefined));
+    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith({
+          page: 1,
+          limit: 20,
+          search: "",
+          sort: "asc",
+          categories: ["manga"],
+          ratingMin: 0,
+          ratingMax: 5,
+        }));
 
     fireEvent.click(screen.getByRole("button", { name: "Reading status" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], ["in_progress"], undefined, 0, 5, undefined, undefined));
+    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith({
+          page: 1,
+          limit: 20,
+          search: "",
+          sort: "asc",
+          categories: ["manga"],
+          readingStatuses: ["in_progress"],
+          ratingMin: 0,
+          ratingMax: 5,
+        }));
 
     fireEvent.click(screen.getByRole("button", { name: "Overall status" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], ["in_progress"], ["ongoing"], 0, 5, undefined, undefined));
+    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith({
+          page: 1,
+          limit: 20,
+          search: "",
+          sort: "asc",
+          categories: ["manga"],
+          readingStatuses: ["in_progress"],
+          overallStatuses: ["ongoing"],
+          ratingMin: 0,
+          ratingMax: 5,
+        }));
 
     fireEvent.click(screen.getByRole("button", { name: "Rating" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], ["in_progress"], ["ongoing"], 4, 5, undefined, undefined));
+    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith({
+          page: 1,
+          limit: 20,
+          search: "",
+          sort: "asc",
+          categories: ["manga"],
+          readingStatuses: ["in_progress"],
+          overallStatuses: ["ongoing"],
+          ratingMin: 4,
+          ratingMax: 5,
+        }));
   });
 
   it("filters by list id instead of smuggling the list into the search", async () => {
@@ -109,19 +146,15 @@ describe("Dashboard advanced filters", () => {
     fireEvent.click(screen.getByRole("button", { name: "List" }));
 
     await waitFor(() =>
-      expect(getMangas).toHaveBeenLastCalledWith(
-        1,
-        20,
-        "",
-        "asc",
-        undefined,
-        undefined,
-        undefined,
-        0,
-        5,
-        7,
-        undefined
-      )
+      expect(getMangas).toHaveBeenLastCalledWith({
+        page: 1,
+        limit: 20,
+        search: "",
+        sort: "asc",
+        ratingMin: 0,
+        ratingMax: 5,
+        listId: 7,
+      })
     );
   });
 
@@ -134,19 +167,15 @@ describe("Dashboard advanced filters", () => {
     fireEvent.click(screen.getByRole("button", { name: "Ownership" }));
 
     await waitFor(() =>
-      expect(getMangas).toHaveBeenLastCalledWith(
-        1,
-        20,
-        "",
-        "asc",
-        undefined,
-        undefined,
-        undefined,
-        0,
-        5,
-        undefined,
-        ["wishlist"]
-      )
+      expect(getMangas).toHaveBeenLastCalledWith({
+        page: 1,
+        limit: 20,
+        search: "",
+        sort: "asc",
+        ratingMin: 0,
+        ratingMax: 5,
+        ownershipStatuses: ["wishlist"],
+      })
     );
   });
 });

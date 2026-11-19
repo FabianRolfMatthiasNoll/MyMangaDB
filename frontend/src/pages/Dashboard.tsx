@@ -67,19 +67,22 @@ const Dashboard: React.FC = () => {
       ratingRange,
     ],
     queryFn: ({ pageParam = 1 }) =>
-      getMangas(
-        pageParam,
+      getMangas({
+        page: pageParam,
         limit,
-        searchQuery,
-        sortOrder,
-        filterCategory.length > 0 ? filterCategory : undefined,
-        filterReadingStatus.length > 0 ? filterReadingStatus : undefined,
-        filterOverallStatus.length > 0 ? filterOverallStatus : undefined,
-        ratingRange[0],
-        ratingRange[1],
-        filterList?.id,
-        filterOwnershipStatus.length > 0 ? filterOwnershipStatus : undefined
-      ),
+        search: searchQuery,
+        sort: sortOrder,
+        categories: filterCategory.length > 0 ? filterCategory : undefined,
+        readingStatuses:
+          filterReadingStatus.length > 0 ? filterReadingStatus : undefined,
+        overallStatuses:
+          filterOverallStatus.length > 0 ? filterOverallStatus : undefined,
+        ratingMin: ratingRange[0],
+        ratingMax: ratingRange[1],
+        listId: filterList?.id,
+        ownershipStatuses:
+          filterOwnershipStatus.length > 0 ? filterOwnershipStatus : undefined,
+      }),
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length === limit ? allPages.length + 1 : undefined;
     },

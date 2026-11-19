@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime } from '../runtime';
 import type { Category } from './Category';
 import {
     CategoryFromJSON,
@@ -111,6 +111,14 @@ export interface MangaCreate {
     /**
      *
      */
+    addedAt?: Date | null;
+    /**
+     *
+     */
+    priority?: boolean;
+    /**
+     *
+     */
     summary?: string | null;
     /**
      *
@@ -167,6 +175,8 @@ export function MangaCreateFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'language': json['language'] === undefined ? undefined : json['language'] === null ? null : json['language'],
         'category': CategoryFromJSON(json['category']),
         'ownershipStatus': json['ownership_status'] == null ? undefined : OwnershipStatusFromJSON(json['ownership_status']),
+        'addedAt': json['added_at'] === undefined ? undefined : json['added_at'] === null ? null : (parseDateTime(json['added_at'])),
+        'priority': json['priority'] == null ? undefined : json['priority'],
         'summary': json['summary'] === undefined ? undefined : json['summary'] === null ? null : json['summary'],
         'coverImage': json['cover_image'] === undefined ? undefined : json['cover_image'] === null ? null : json['cover_image'],
         'authors': ((json['authors'] as Array<any>).map(AuthorCreateFromJSON)),
@@ -195,6 +205,8 @@ export function MangaCreateToJSONTyped(value?: MangaCreate | null, ignoreDiscrim
         'language': value['language'],
         'category': CategoryToJSON(value['category']),
         'ownership_status': OwnershipStatusToJSON(value['ownershipStatus']),
+        'added_at': value['addedAt'] == null ? value['addedAt'] : serializeDateTime(value['addedAt']),
+        'priority': value['priority'],
         'summary': value['summary'],
         'cover_image': value['coverImage'],
         'authors': ((value['authors'] as Array<any>).map(AuthorCreateToJSON)),

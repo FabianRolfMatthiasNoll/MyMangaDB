@@ -6,19 +6,34 @@ import { saveMangaCover } from "./imageService";
 
 const mangasApi = new MangasApi(configuration);
 
-export const getMangas = async (
-  page: number,
-  limit: number,
-  search?: string,
-  sort?: string,
-  categories?: string[],
-  readingStatuses?: string[],
-  overallStatuses?: string[],
-  ratingMin?: number,
-  ratingMax?: number,
-  listId?: number,
-  ownershipStatuses?: string[],
-) =>
+/** The filters and paging the manga collection can be queried with. */
+export interface MangaQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sort?: string;
+  categories?: string[];
+  readingStatuses?: string[];
+  overallStatuses?: string[];
+  ratingMin?: number;
+  ratingMax?: number;
+  listId?: number;
+  ownershipStatuses?: string[];
+}
+
+export const getMangas = async ({
+  page = 1,
+  limit = 20,
+  search,
+  sort,
+  categories,
+  readingStatuses,
+  overallStatuses,
+  ratingMin,
+  ratingMax,
+  listId,
+  ownershipStatuses,
+}: MangaQuery = {}) =>
   apiCallWrapperOrThrow(() =>
     mangasApi.getMangasApiV1MangasGetAllGet({
       skip: (page - 1) * limit,
