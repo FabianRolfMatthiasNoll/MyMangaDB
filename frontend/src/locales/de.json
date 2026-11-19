@@ -87,7 +87,8 @@
     "pleaseSelectSource": "Bitte wählen Sie eine Quelle aus.",
     "addedSuccess": "{{title}} erfolgreich hinzugefügt",
     "addError": "Beim Hinzufügen des Mangas ist ein Fehler aufgetreten.",
-    "addToDatabase": "Zur Datenbank hinzufügen",
+    "addToDatabase": "Zur Sammlung",
+    "addToWishlist": "Zur Merkliste",
     "enterVolumesYouOwn": "Geben Sie die Bände ein, die Sie besitzen für {{title}}",
     "e.gVolumes": "z.B. 1-10; 12; 15-20"
   },

@@ -87,7 +87,8 @@
     "pleaseSelectSource": "Please select a source to search from.",
     "addedSuccess": "Successfully added {{title}}",
     "addError": "An error occurred while adding the manga.",
-    "addToDatabase": "Add to Database",
+    "addToDatabase": "Add to collection",
+    "addToWishlist": "To wishlist",
     "enterVolumesYouOwn": "Enter the volumes you own for {{title}}",
     "e.gVolumes": "e.g. 1-10; 12; 15-20"
   },
