@@ -34,7 +34,8 @@ services:
     image: ghcr.io/fabianrolfmatthiasnoll/mymangadb/backend:${MYMANGADB_VERSION:-latest}
     restart: unless-stopped
     environment:
-      # Signs JWTs; the backend falls back to a public default if unset.
+      # Signs the session tokens; required. The backend refuses to start
+      # with a missing or publicly known key.
       API_TOKEN: ${API_TOKEN:?set API_TOKEN in .env}
       FRONTEND_URL: https://${FRONTEND_DOMAIN}
     volumes:

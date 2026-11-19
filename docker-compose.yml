@@ -51,7 +51,10 @@ services:
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=myresolver"
     environment:
-      API_TOKEN: ${API_TOKEN}
+      # Signs the session tokens. This is required - the backend refuses to
+      # start with a missing or publicly known key. Generate one with:
+      #   openssl rand -hex 32
+      API_TOKEN: ${API_TOKEN:?set API_TOKEN in .env or the environment (openssl rand -hex 32)}
       FRONTEND_URL: https://<FrontendDomain>
     volumes:
       - database:/app/data
