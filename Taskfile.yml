@@ -28,7 +28,9 @@ tasks:
         key = secrets.token_urlsafe(32)
 
         backend_content = f'''# API Security
-        SECRET_KEY={key}
+        # Signs the session tokens (JWT). Keep this secret and never expose
+        # it to the frontend.
+        API_TOKEN={key}
 
         # Frontend URL (for CORS)
         FRONTEND_URL=http://localhost:5173
@@ -47,6 +49,7 @@ tasks:
 
         with open('backend/.env', 'w') as f:
             f.write(backend_content)
+        os.chmod('backend/.env', 0o600)
 
         with open('frontend/.env', 'w') as f:
             f.write(frontend_content)

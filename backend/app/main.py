@@ -11,6 +11,7 @@ from backend.config import get_config_path, get_default_paths, save_config
 
 from . import models
 from .api.v1 import api_router
+from .core import security
 from .database import SessionLocal, engine
 from .models import Role
 from .repositories import UserRepository
@@ -25,7 +26,9 @@ logger = logging.getLogger(__name__)
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 ENV_PATH = BACKEND_DIR / ".env"
 
-# Load environment variables from .env file
+# Load environment variables from .env file. The file is already loaded by
+# the ``backend`` package itself (before any module reads a setting), this
+# call only makes the outcome visible in the logs.
 logger.debug(f"Looking for .env file at: {ENV_PATH}")
 load_dotenv(dotenv_path=ENV_PATH, verbose=True)
 logger.debug(f"API_TOKEN loaded: {os.getenv('API_TOKEN') is not None}")
@@ -33,6 +36,15 @@ logger.debug(f"FRONTEND_URL loaded: {os.getenv('FRONTEND_URL')}")
 
 
 def initialize_application():
+    # Fail closed: refuse to start when no usable signing key is available.
+    # A missing or publicly known key would allow anybody to forge an admin
+    # session token (GHSA-2223-v44q-q2hc).
+    try:
+        security.get_secret_key()
+    except RuntimeError as exc:
+        raise RuntimeError(f"MyMangaDB cannot start: {exc}") from exc
+    logger.info(f"JWT signing key source: {security.get_secret_key_source()}")
+
     if os.getenv("DOCKER_MODE", "").lower() == "true":
         # In Docker, the volume mount at /app/data is what persists state.
         # Ensure the directories exist (the volume itself is mounted by
@@ -88,6 +100,19 @@ def initialize_application():
                 db,
                 UserCreate(username="guest", password="guest", role=Role.guest),
             )
+
+        # Warn as long as the well known default credentials are in place.
+        for username, default_password in (("admin", "admin"), ("guest", "guest")):
+            user = UserRepository.get_by_username(db, username)
+            if user and security.verify_password(
+                default_password, user.hashed_password
+            ):
+                logger.warning(
+                    "The '%s' account still uses the default password - change it "
+                    "immediately, otherwise the account can be taken over with a "
+                    "simple guess.",
+                    username,
+                )
     finally:
         db.close()
 

@@ -64,13 +64,22 @@ The easiest way to deploy MyMangaDB is using Docker. We provide a `docker-compos
     ```
 
 2.  **Configure Environment**
+
+    Create a `.env` file next to `docker-compose.yml` and generate a secret
+    signing key:
+
+    ```bash
+    echo "API_TOKEN=$(openssl rand -hex 32)" > .env
+    ```
+
+    `API_TOKEN` signs the authentication tokens (JWT). It is **required** for
+    Docker deployments - the backend refuses to start without a valid key - so
+    treat it as a server-side secret and never expose it to the frontend.
+
     Open `docker-compose.yml` and update the following:
 
     - **Traefik Labels**: Replace `<FrontendDomain>` and `<BackendDomain>` with your actual domains.
     - **Email**: Update `<MyEmail>` for Let's Encrypt SSL notifications.
-    - **Environment Variables**:
-      - `API_TOKEN`: Set this to a secure, random string. It signs authentication
-        tokens, so treat it as a server-side secret and never expose it to the frontend.
 
 3.  **Run the Application**
 
@@ -80,9 +89,27 @@ The easiest way to deploy MyMangaDB is using Docker. We provide a `docker-compos
 
     Your application should now be accessible at your configured domains with HTTPS enabled.
 
+### Configuration
+
+| Variable       | Required    | Description                                  |
+| -------------- | ----------- | -------------------------------------------- |
+| `API_TOKEN`    | Docker: yes | Secret that signs the session tokens (JWT).  |
+| `FRONTEND_URL` | no          | Origin allowed by CORS.                      |
+| `DOCKER_MODE`  | image sets  | `true` in Docker; data lives in `/app/data`. |
+
+When `API_TOKEN` is not set, the backend generates a random signing key on
+first start and stores it next to the database
+(`<database dir>/.secret_key`, `/app/data/.secret_key` in Docker). This keeps
+local installations secure out of the box. Set `API_TOKEN` explicitly if you
+run several instances or want the sessions to survive a reinstall.
+
 ### Local Home use
 
 Just download the binaries from the latest release and use them. Available for linux and windows.
+
+The binaries work without any configuration - if no `API_TOKEN` is set, a
+random signing key is generated and stored next to the database, exactly like
+the Docker fallback described above.
 
 ### Manual Installation (Development)
 
@@ -116,6 +143,14 @@ MyMangaDB comes with pre-configured users. **Please change these passwords immed
 | --------- | -------- | -------- | ---------------------------------- |
 | **Admin** | `admin`  | `admin`  | Full access (Create, Edit, Delete) |
 | **Guest** | `guest`  | `guest`  | Read-only access                   |
+
+The backend logs a warning on every start while one of these accounts still
+uses its default password.
+
+Session tokens are signed with the `API_TOKEN` secret (see
+[Configuration](#configuration)). There is no built-in default key: the
+backend refuses to start when the configured key is a publicly known value,
+so nobody can forge an admin session without knowing the secret.
 
 ## 🤝 Contributing
 
