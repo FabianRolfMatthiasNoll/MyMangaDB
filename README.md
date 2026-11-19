@@ -6,6 +6,7 @@
 
 - **Automatic Metadata Fetching**: Simply enter a title, and MyMangaDB fetches all the details.
 - **Collection Management**: Track what you own, what you've read, and what you plan to buy.
+- **Wishlist**: Keep the titles you want apart from the ones you own, with a dedicated tab that shows which volumes of a series you are still missing.
 - **Statistics**: Visualize your collection with detailed charts and breakdowns of volumes, authors, genres, and more.
 - **Import from MyAnimeList**: Easily migrate your existing collection by importing your MyAnimeList export file.
 - **Role-Based Access Control (RBAC)**: Secure your database with Admin and Guest roles.
@@ -134,6 +135,28 @@ For contributors or those who prefer running without Docker.
     task dev
     ```
     This starts both the FastAPI backend (port 8000) and Vite frontend (port 5173).
+
+### Database Migrations
+
+The database schema is managed with [Alembic](https://alembic.sqlalchemy.org/). The
+migrations run automatically when the backend starts, so an existing installation
+upgrades itself in place - no data is lost and the database never has to be reset.
+
+To work on the schema directly:
+
+```bash
+cd backend
+
+# Apply every pending migration
+alembic upgrade head
+
+# Create a migration for a model change
+alembic revision --autogenerate -m "describe the change"
+```
+
+A database that was created before Alembic was introduced has no version table. It is
+detected on startup, marked as the baseline and then upgraded with the migrations that
+came after it.
 
 ## 🔐 Authentication
 
