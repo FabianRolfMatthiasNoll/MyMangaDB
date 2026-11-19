@@ -114,6 +114,7 @@
     "readingStatus": "Reading Status",
     "overallStatus": "Overall Status",
     "ownershipStatus": "Ownership",
+    "showWishlist": "Show wishlist items",
     "ratingRange": "Rating Range",
     "filterByList": "Filter by List",
     "resetFilters": "Reset Filters"

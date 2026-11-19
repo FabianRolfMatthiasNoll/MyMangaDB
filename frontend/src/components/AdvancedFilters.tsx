@@ -3,12 +3,14 @@ import { useTranslation } from "react-i18next";
 import {
   Box,
   FormControl,
+  FormControlLabel,
   InputLabel,
   Select,
   MenuItem,
   Button,
   Slider,
   Autocomplete,
+  Switch,
   TextField,
 } from "@mui/material";
 import {
@@ -34,6 +36,8 @@ interface AdvancedFiltersProps {
   setRatingRange: (range: number[]) => void;
   filterOwnershipStatus: string[];
   setFilterOwnershipStatus: (status: string[]) => void;
+  showWishlist: boolean;
+  onToggleWishlist: () => void;
   availableLists: ListModel[];
   filterList: ListModel | null;
   setFilterList: (list: ListModel | null) => void;
@@ -51,6 +55,8 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
   setRatingRange,
   filterOwnershipStatus,
   setFilterOwnershipStatus,
+  showWishlist,
+  onToggleWishlist,
   availableLists,
   filterList,
   setFilterList,
@@ -159,6 +165,18 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           )}
         />
       </FormControl>
+      <Box sx={{ mb: 2 }}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={showWishlist}
+              onChange={onToggleWishlist}
+              inputProps={{ "aria-label": t("filters.showWishlist") }}
+            />
+          }
+          label={t("filters.showWishlist")}
+        />
+      </Box>
       <Box sx={{ mb: 2 }}>
         <InputLabel>{t("filters.ratingRange")}</InputLabel>
         <Slider

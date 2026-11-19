@@ -14,7 +14,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import { getMangas } from "../services/mangaService";
 import { getAllLists } from "../services/listService";
-import { ListModel } from "../api/models";
+import { ListModel, OwnershipStatus } from "../api/models";
+import { useShowWishlistInDashboard } from "../hooks/useShowWishlistInDashboard";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useTheme } from "@mui/material/styles";
 import SearchBar from "../components/SearchBar";
@@ -39,6 +40,7 @@ const Dashboard: React.FC = () => {
   );
   const [ratingRange, setRatingRange] = useState<number[]>([0, 5]);
   const [filterList, setFilterList] = useState<ListModel | null>(null);
+  const { showWishlist, toggle: toggleWishlist } = useShowWishlistInDashboard();
 
   const { data: availableLists = [] } = useQuery({
     queryKey: ["lists"],
@@ -65,6 +67,7 @@ const Dashboard: React.FC = () => {
       filterOverallStatus,
       filterOwnershipStatus,
       ratingRange,
+      showWishlist,
     ],
     queryFn: ({ pageParam = 1 }) =>
       getMangas({
@@ -80,8 +83,15 @@ const Dashboard: React.FC = () => {
         ratingMin: ratingRange[0],
         ratingMax: ratingRange[1],
         listId: filterList?.id,
+        // The dashboard shows the collection. Titles that are only wanted
+        // stay out unless the user asks for them - an explicit ownership
+        // filter always wins.
         ownershipStatuses:
-          filterOwnershipStatus.length > 0 ? filterOwnershipStatus : undefined,
+          filterOwnershipStatus.length > 0
+            ? filterOwnershipStatus
+            : showWishlist
+            ? undefined
+            : [OwnershipStatus.Owned, OwnershipStatus.Ordered],
       }),
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length === limit ? allPages.length + 1 : undefined;
@@ -149,6 +159,8 @@ const Dashboard: React.FC = () => {
             setRatingRange={setRatingRange}
             filterOwnershipStatus={filterOwnershipStatus}
             setFilterOwnershipStatus={setFilterOwnershipStatus}
+            showWishlist={showWishlist}
+            onToggleWishlist={toggleWishlist}
             availableLists={availableLists}
             filterList={filterList}
             setFilterList={setFilterList}

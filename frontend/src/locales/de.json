@@ -114,6 +114,7 @@
     "readingStatus": "Lesestatus",
     "overallStatus": "Gesamtstatus",
     "ownershipStatus": "Besitz",
+    "showWishlist": "Merklisten-Titel anzeigen",
     "ratingRange": "Bewertungsbereich",
     "filterByList": "Nach Liste filtern",
     "resetFilters": "Filter zurücksetzen"

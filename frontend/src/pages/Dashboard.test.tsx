@@ -31,6 +31,7 @@ vi.mock("../components/AdvancedFilters", () => ({
     setRatingRange,
     setFilterList,
     setFilterOwnershipStatus,
+    onToggleWishlist,
   }: {
     setFilterCategory: (value: string[]) => void;
     setFilterReadingStatus: (value: string[]) => void;
@@ -38,6 +39,7 @@ vi.mock("../components/AdvancedFilters", () => ({
     setRatingRange: (value: number[]) => void;
     setFilterList: (value: { id: number; name: string } | null) => void;
     setFilterOwnershipStatus: (value: string[]) => void;
+    onToggleWishlist: () => void;
   }) => (
     <>
       <button onClick={() => setFilterCategory(["manga"])}>Category</button>
@@ -54,6 +56,7 @@ vi.mock("../components/AdvancedFilters", () => ({
       <button onClick={() => setFilterOwnershipStatus(["wishlist"])}>
         Ownership
       </button>
+      <button onClick={onToggleWishlist}>Toggle wishlist</button>
     </>
   ),
 }));
@@ -96,6 +99,7 @@ describe("Dashboard advanced filters", () => {
           categories: ["manga"],
           ratingMin: 0,
           ratingMax: 5,
+          ownershipStatuses: ["owned", "ordered"],
         }));
 
     fireEvent.click(screen.getByRole("button", { name: "Reading status" }));
@@ -108,6 +112,7 @@ describe("Dashboard advanced filters", () => {
           readingStatuses: ["in_progress"],
           ratingMin: 0,
           ratingMax: 5,
+          ownershipStatuses: ["owned", "ordered"],
         }));
 
     fireEvent.click(screen.getByRole("button", { name: "Overall status" }));
@@ -121,6 +126,7 @@ describe("Dashboard advanced filters", () => {
           overallStatuses: ["ongoing"],
           ratingMin: 0,
           ratingMax: 5,
+          ownershipStatuses: ["owned", "ordered"],
         }));
 
     fireEvent.click(screen.getByRole("button", { name: "Rating" }));
@@ -134,6 +140,7 @@ describe("Dashboard advanced filters", () => {
           overallStatuses: ["ongoing"],
           ratingMin: 4,
           ratingMax: 5,
+          ownershipStatuses: ["owned", "ordered"],
         }));
   });
 
@@ -154,6 +161,7 @@ describe("Dashboard advanced filters", () => {
         ratingMin: 0,
         ratingMax: 5,
         listId: 7,
+        ownershipStatuses: ["owned", "ordered"],
       })
     );
   });
@@ -176,6 +184,32 @@ describe("Dashboard advanced filters", () => {
         ratingMax: 5,
         ownershipStatuses: ["wishlist"],
       })
+    );
+  });
+
+  it("keeps the wishlist out of the collection by default", async () => {
+    renderDashboard();
+
+    await waitFor(() => expect(getMangas).toHaveBeenCalled());
+
+    expect(getMangas).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        ownershipStatuses: ["owned", "ordered"],
+      })
+    );
+  });
+
+  it("shows the wishlist in the collection when it is switched on", async () => {
+    renderDashboard();
+
+    await waitFor(() => expect(getMangas).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole("button", { name: "Advanced filters" }));
+    fireEvent.click(screen.getByRole("button", { name: "Toggle wishlist" }));
+
+    await waitFor(() =>
+      expect(getMangas).toHaveBeenLastCalledWith(
+        expect.objectContaining({ ownershipStatuses: undefined })
+      )
     );
   });
 });

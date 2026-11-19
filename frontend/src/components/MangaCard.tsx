@@ -9,10 +9,11 @@ import {
   useTheme,
   alpha,
 } from "@mui/material";
-import { Manga } from "../api/models";
+import { Manga, OwnershipStatus } from "../api/models";
 import { Link } from "react-router-dom";
 import { getMangaCoverImageUrl } from "../services/imageService";
 import { useStatusMeta } from "../hooks/useStatusMeta";
+import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
 
 interface MangaCardProps {
   manga: Manga;
@@ -22,15 +23,23 @@ interface MangaCardProps {
 const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
   const theme = useTheme();
   const { getStatusLabel, getStatusColor } = useStatusMeta();
+  const { getOwnershipLabel, getOwnershipColor } = useOwnershipStatus();
   const imageUrl = manga.coverImage
     ? getMangaCoverImageUrl(manga.coverImage)
     : "";
+
+  // A title that is only wanted is drawn differently, so it is never
+  // mistaken for one that is already on the shelf.
+  const isWishlist = manga.ownershipStatus === OwnershipStatus.Wishlist;
 
   const cardStyles = {
     maxWidth: 350,
     position: "relative",
     borderRadius: 2,
     overflow: "hidden",
+    border: isWishlist
+      ? `2px dashed ${theme.palette.secondary.main}`
+      : "2px solid transparent",
     transition: "transform 0.3s ease, box-shadow 0.3s ease",
     "&:hover": {
       transform: "translateY(-4px)",
@@ -128,6 +137,18 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
                 {manga.authors.map((author) => author.name).join(", ")}
               </Typography>
               <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
+                {manga.ownershipStatus === OwnershipStatus.Wishlist && (
+                  <Chip
+                    label={getOwnershipLabel(manga.ownershipStatus)}
+                    size="small"
+                    sx={{
+                      bgcolor: getOwnershipColor(manga.ownershipStatus),
+                      color: "white",
+                      fontSize: "0.75rem",
+                      height: 20,
+                    }}
+                  />
+                )}
                 {manga.readingStatus && (
                   <Chip
                     label={getStatusLabel(manga.readingStatus)}
