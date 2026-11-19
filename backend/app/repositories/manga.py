@@ -49,24 +49,23 @@ class MangaRepository(BaseRepository):
         overall_statuses: Optional[TypedList[str]] = None,
         rating_min: Optional[float] = None,
         rating_max: Optional[float] = None,
+        list_id: Optional[int] = None,
     ) -> TypedList[Manga]:
         """
         Holt Mangas mit Paging.
         Optional: Filter nach Titel (ILIKE '%search%'),
-        Kategorie, Reading Status, Overall Status, Rating, Sortierung.
+        Kategorie, Reading Status, Overall Status, Rating, Sortierung, Liste.
         """
         query = db.query(MangaModel)
 
         # Volltextsuche (case-insensitive) im Titel
         if search:
-            if search.lower().startswith("list:"):
-                list_name = search[5:].strip()
-                query = query.filter(
-                    MangaModel.lists.any(ListModel.name.ilike(f"%{list_name}%"))
-                )
-            else:
-                ilike_term = f"%{search}%"
-                query = query.filter(MangaModel.title.ilike(ilike_term))
+            ilike_term = f"%{search}%"
+            query = query.filter(MangaModel.title.ilike(ilike_term))
+
+        # Filter nach Liste
+        if list_id is not None:
+            query = query.filter(MangaModel.lists.any(ListModel.id == list_id))
 
         # Filter by category
         if categories:

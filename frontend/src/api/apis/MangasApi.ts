@@ -94,6 +94,10 @@ export interface GetMangasApiV1MangasGetAllGetRequest {
      * Maximum rating
      */
     ratingMax?: number | null;
+    /**
+     * Filter by the id of a list
+     */
+    listId?: number | null;
 }
 
 export interface GetMangasByAuthorApiV1MangasByAuthorAuthorIdGetRequest {
@@ -382,6 +386,10 @@ export class MangasApi extends runtime.BaseAPI {
             queryParameters['rating_max'] = requestParameters['ratingMax'];
         }
 
+        if (requestParameters['listId'] != null) {
+            queryParameters['list_id'] = requestParameters['listId'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         if (this.configuration && this.configuration.accessToken) {
@@ -401,7 +409,7 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delivers a paginated list of mangas. Optional search (title LIKE), filters (category, status, rating), and sort order can be specified.
+     * Delivers a paginated list of mangas. Optional search (title LIKE), filters (category, status, rating, list), and sort order can be specified.
      * Get mangas with server-side paging, search and sort
      */
     async getMangasApiV1MangasGetAllGetRaw(requestParameters: GetMangasApiV1MangasGetAllGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
@@ -412,7 +420,7 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delivers a paginated list of mangas. Optional search (title LIKE), filters (category, status, rating), and sort order can be specified.
+     * Delivers a paginated list of mangas. Optional search (title LIKE), filters (category, status, rating, list), and sort order can be specified.
      * Get mangas with server-side paging, search and sort
      */
     async getMangasApiV1MangasGetAllGet(requestParameters: GetMangasApiV1MangasGetAllGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Manga>> {

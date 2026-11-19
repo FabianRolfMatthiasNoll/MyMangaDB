@@ -62,23 +62,19 @@ const Dashboard: React.FC = () => {
       filterOverallStatus,
       ratingRange,
     ],
-    queryFn: ({ pageParam = 1 }) => {
-      let effectiveSearch = searchQuery;
-      if (filterList) {
-        effectiveSearch = `list:${filterList.name}`;
-      }
-      return getMangas(
+    queryFn: ({ pageParam = 1 }) =>
+      getMangas(
         pageParam,
         limit,
-        effectiveSearch,
+        searchQuery,
         sortOrder,
         filterCategory.length > 0 ? filterCategory : undefined,
         filterReadingStatus.length > 0 ? filterReadingStatus : undefined,
         filterOverallStatus.length > 0 ? filterOverallStatus : undefined,
         ratingRange[0],
         ratingRange[1],
-      );
-    },
+        filterList?.id,
+      ),
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length === limit ? allPages.length + 1 : undefined;
     },

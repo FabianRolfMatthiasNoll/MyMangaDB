@@ -283,11 +283,11 @@ example().catch(console.error);
 
 ## getMangasApiV1MangasGetAllGet
 
-> Array&lt;Manga&gt; getMangasApiV1MangasGetAllGet(skip, limit, search, sort, categories, readingStatuses, overallStatuses, ratingMin, ratingMax)
+> Array&lt;Manga&gt; getMangasApiV1MangasGetAllGet(skip, limit, search, sort, categories, readingStatuses, overallStatuses, ratingMin, ratingMax, listId)
 
 Get mangas with server-side paging, search and sort
 
-Delivers a paginated list of mangas. Optional search (title LIKE), filters (category, status, rating), and sort order can be specified.
+Delivers a paginated list of mangas. Optional search (title LIKE), filters (category, status, rating, list), and sort order can be specified.
 
 ### Example
 
@@ -352,6 +352,7 @@ example().catch(console.error);
 | **overallStatuses** | `Array<string>` | Filter by overall statuses | [Optional]                           |
 | **ratingMin**       | `number`        | Minimum rating             | [Optional] [Defaults to `undefined`] |
 | **ratingMax**       | `number`        | Maximum rating             | [Optional] [Defaults to `undefined`] |
+| **listId**          | `number`        | Filter by the id of a list | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
