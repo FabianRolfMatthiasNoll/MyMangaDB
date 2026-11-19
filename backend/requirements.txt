@@ -18,7 +18,9 @@ pytest
 httpx
 pytest-asyncio
 pre-commit
-black
+# Pinned to the version the pre-commit hooks use, so that `task lint` and
+# the hooks do not disagree about the formatting.
+black==24.2.0
 flake8
 isort
 passlib

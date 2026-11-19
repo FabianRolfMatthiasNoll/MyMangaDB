@@ -64,11 +64,15 @@ def get_mangas(
     rating_min: Optional[float] = Query(None, ge=0, le=5, description="Minimum rating"),
     rating_max: Optional[float] = Query(None, ge=0, le=5, description="Maximum rating"),
     list_id: Optional[int] = Query(None, description="Filter by the id of a list"),
+    ownership_statuses: Optional[List[str]] = Query(
+        None, description="Filter by ownership states (owned, wishlist, ordered)"
+    ),
     db: Session = Depends(get_db),
 ):
     """
     Delivers a paginated list of mangas. Optional search (title LIKE),
-    filters (category, status, rating, list), and sort order can be specified.
+    filters (category, status, rating, list, ownership), and sort order can be
+    specified.
     """
     try:
         return MangaRepository.get_all(
@@ -83,6 +87,7 @@ def get_mangas(
             rating_min=rating_min,
             rating_max=rating_max,
             list_id=list_id,
+            ownership_statuses=ownership_statuses,
         )  # Implementierung in Repository
     except HTTPException:
         raise

@@ -26,6 +26,14 @@ class Category(str, Enum):
     doujinshi = "doujinshi"
 
 
+class OwnershipStatus(str, Enum):
+    """Whether a title is part of the collection or only wanted."""
+
+    owned = "owned"
+    wishlist = "wishlist"
+    ordered = "ordered"
+
+
 class Role(str, Enum):
     admin = "admin"
     guest = "guest"
@@ -104,6 +112,7 @@ class MangaBase(BaseModel):
     star_rating: Optional[float] = Field(None, ge=1, le=5)
     language: Optional[str] = None
     category: Category
+    ownership_status: OwnershipStatus = OwnershipStatus.owned
     summary: Optional[str] = None
     cover_image: Optional[str] = None
 

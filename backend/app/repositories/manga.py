@@ -50,11 +50,13 @@ class MangaRepository(BaseRepository):
         rating_min: Optional[float] = None,
         rating_max: Optional[float] = None,
         list_id: Optional[int] = None,
+        ownership_statuses: Optional[TypedList[str]] = None,
     ) -> TypedList[Manga]:
         """
         Holt Mangas mit Paging.
         Optional: Filter nach Titel (ILIKE '%search%'),
-        Kategorie, Reading Status, Overall Status, Rating, Sortierung, Liste.
+        Kategorie, Reading Status, Overall Status, Rating, Sortierung, Liste,
+        Besitzstatus.
         """
         query = db.query(MangaModel)
 
@@ -66,6 +68,10 @@ class MangaRepository(BaseRepository):
         # Filter nach Liste
         if list_id is not None:
             query = query.filter(MangaModel.lists.any(ListModel.id == list_id))
+
+        # Filter by ownership status (owned / wishlist / ordered)
+        if ownership_statuses:
+            query = query.filter(MangaModel.ownership_status.in_(ownership_statuses))
 
         # Filter by category
         if categories:
@@ -167,6 +173,7 @@ class MangaRepository(BaseRepository):
             star_rating=manga_create.star_rating,
             language=manga_create.language,
             category=manga_create.category,
+            ownership_status=manga_create.ownership_status,
             summary=manga_create.summary,
             cover_image=cover_image_filename,
             authors=authors,
@@ -208,6 +215,7 @@ class MangaRepository(BaseRepository):
             "star_rating",
             "language",
             "category",
+            "ownership_status",
             "summary",
             "cover_image",
         ]:

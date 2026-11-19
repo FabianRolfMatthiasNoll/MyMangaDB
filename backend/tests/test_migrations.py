@@ -213,3 +213,21 @@ def test_the_schema_matches_the_models(engine_for):
         assert migrated_columns == model_columns, f"{table_name} differs"
 
     engine.dispose()
+
+
+def test_the_ownership_status_is_added_to_an_existing_database(
+    legacy_database, engine_for
+):
+    """Existing manga become ``owned`` - nobody's shelf shrinks."""
+    engine = engine_for("legacy.db")
+
+    run_migrations(engine)
+
+    with engine.connect() as connection:
+        rows = list(
+            connection.execute(text("SELECT title, ownership_status FROM mangas"))
+        )
+
+    assert rows == [("Existing Manga", "owned")]
+
+    engine.dispose()
