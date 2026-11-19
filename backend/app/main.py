@@ -18,8 +18,10 @@ from .repositories import UserRepository
 from .repositories.source import SourceRepository
 from .schemas import SourceCreate, UserCreate
 
-# Configure logging
-logging.basicConfig(level=logging.DEBUG)
+# Configure logging. INFO keeps the startup messages without the DEBUG noise:
+# at DEBUG level SQLAlchemy logs every single statement and the library
+# prints the environment it was handed.
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Get the absolute path to the backend directory
@@ -29,10 +31,7 @@ ENV_PATH = BACKEND_DIR / ".env"
 # Load environment variables from .env file. The file is already loaded by
 # the ``backend`` package itself (before any module reads a setting), this
 # call only makes the outcome visible in the logs.
-logger.debug(f"Looking for .env file at: {ENV_PATH}")
-load_dotenv(dotenv_path=ENV_PATH, verbose=True)
-logger.debug(f"API_TOKEN loaded: {os.getenv('API_TOKEN') is not None}")
-logger.debug(f"FRONTEND_URL loaded: {os.getenv('FRONTEND_URL')}")
+load_dotenv(dotenv_path=ENV_PATH)
 
 
 def initialize_application():
