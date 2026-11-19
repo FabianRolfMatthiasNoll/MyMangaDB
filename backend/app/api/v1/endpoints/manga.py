@@ -97,6 +97,8 @@ def get_manga_by_id(manga_id: int, db: Session = Depends(get_db)):
         if db_manga is None:
             raise HTTPException(status_code=404, detail="Manga not found")
         return db_manga
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(status_code=500, detail="Failed to fetch manga by ID")
 
@@ -160,6 +162,8 @@ def update_manga(manga: Manga, db: Session = Depends(get_db)):
         if db_manga is None:
             raise HTTPException(status_code=404, detail="Manga not found")
         return MangaRepository.update(db, manga_data=manga)
+    except HTTPException:
+        raise
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception:
@@ -177,5 +181,7 @@ def delete_manga(manga_id: int, db: Session = Depends(get_db)):
         if db_manga is None:
             raise HTTPException(status_code=404, detail="Manga not found")
         return MangaRepository.delete(db, manga_id=manga_id)
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(status_code=500, detail="Failed to delete manga")
