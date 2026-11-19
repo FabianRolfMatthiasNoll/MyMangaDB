@@ -1,7 +1,9 @@
 import enum
 
 from sqlalchemy import (
+    Boolean,
     Column,
+    DateTime,
     Enum,
     Float,
     ForeignKey,
@@ -9,6 +11,7 @@ from sqlalchemy import (
     String,
     Table,
     Text,
+    false,
     func,
     select,
 )
@@ -140,6 +143,21 @@ class Manga(Base):
         nullable=False,
         default=OwnershipStatus.owned,
         server_default=OwnershipStatus.owned.value,
+    )
+    # When the title joined the collection. The database fills this in, so
+    # the value is the same no matter how the entry was created.
+    added_at = Column(
+        DateTime,
+        nullable=False,
+        server_default=func.now(),
+    )
+    # Whether the title is prioritised. Only meaningful for a wishlist
+    # entry, where it pulls a wanted title out of the noise.
+    priority = Column(
+        Boolean,
+        nullable=False,
+        default=False,
+        server_default=false(),
     )
     summary = Column(Text)
     cover_image = Column(String)

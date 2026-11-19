@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
@@ -113,6 +114,8 @@ class MangaBase(BaseModel):
     language: Optional[str] = None
     category: Category
     ownership_status: OwnershipStatus = OwnershipStatus.owned
+    added_at: Optional[datetime] = None
+    priority: bool = False
     summary: Optional[str] = None
     cover_image: Optional[str] = None
 

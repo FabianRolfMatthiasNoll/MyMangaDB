@@ -174,6 +174,7 @@ class MangaRepository(BaseRepository):
             language=manga_create.language,
             category=manga_create.category,
             ownership_status=manga_create.ownership_status,
+            priority=manga_create.priority,
             summary=manga_create.summary,
             cover_image=cover_image_filename,
             authors=authors,
@@ -216,6 +217,7 @@ class MangaRepository(BaseRepository):
             "language",
             "category",
             "ownership_status",
+            "priority",
             "summary",
             "cover_image",
         ]:

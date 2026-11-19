@@ -231,3 +231,25 @@ def test_the_ownership_status_is_added_to_an_existing_database(
     assert rows == [("Existing Manga", "owned")]
 
     engine.dispose()
+
+
+def test_existing_manga_get_an_added_at_date_and_are_not_prioritised(
+    legacy_database, engine_for
+):
+    """The new columns are filled in for rows that already existed."""
+    engine = engine_for("legacy.db")
+
+    run_migrations(engine)
+
+    with engine.connect() as connection:
+        rows = list(
+            connection.execute(text("SELECT title, added_at, priority FROM mangas"))
+        )
+
+    assert len(rows) == 1
+    title, added_at, priority = rows[0]
+    assert title == "Existing Manga"
+    assert added_at is not None
+    assert priority == 0
+
+    engine.dispose()
