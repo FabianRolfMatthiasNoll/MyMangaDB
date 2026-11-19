@@ -82,7 +82,11 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
 
   const handleSearch = async () => {
     if (searchQuery === "") {
-      alert(t("manga.pleaseEnterQuery"));
+      setSnackbar({
+        open: true,
+        message: t("manga.pleaseEnterQuery"),
+        severity: "error",
+      });
       return;
     }
 

@@ -2,6 +2,7 @@ import { HTTPValidationError, ValidationError } from "../api";
 import { ResponseError } from "../api/runtime";
 import { logout } from "./auth";
 import i18n from "../i18n";
+import { notify } from "./notificationService";
 
 let sessionExpiredShown = false;
 
@@ -12,7 +13,7 @@ export const handleApiError = async (error: unknown) => {
   if (responseError.response && (responseError.response.status === 401 || responseError.response.status === 403)) {
     if (!sessionExpiredShown) {
       sessionExpiredShown = true;
-      alert(i18n.t("errors.sessionExpired"));
+      notify(i18n.t("errors.sessionExpired"), "error");
       setTimeout(() => {
         sessionExpiredShown = false;
       }, 5000);
@@ -27,7 +28,7 @@ export const handleApiError = async (error: unknown) => {
     if (errorData && errorData.detail) {
       // If it's a simple string message
       if (typeof errorData.detail === "string") {
-        alert(errorData.detail);
+        notify(errorData.detail, "error");
         return;
       }
 
@@ -40,14 +41,14 @@ export const handleApiError = async (error: unknown) => {
           })
           .join("\n");
 
-        alert(`${i18n.t("errors.validationFailed")}\n${validationErrors}`);
+        notify(`${i18n.t("errors.validationFailed")}\n${validationErrors}`, "error");
         return;
       }
     }
   }
 
   // Fallback for unknown errors
-  alert(i18n.t("errors.unexpected"));
+  notify(i18n.t("errors.unexpected"), "error");
 };
 
 export const apiCallWrapper = async <T>(apiCall: () => Promise<T>, fallback: T) => {

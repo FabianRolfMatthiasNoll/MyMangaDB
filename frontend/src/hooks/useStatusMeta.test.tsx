@@ -1,5 +1,5 @@
 import { renderHook } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { useStatusMeta } from "./useStatusMeta";
 import { OverallStatus, ReadingStatus } from "../api/models";
 
