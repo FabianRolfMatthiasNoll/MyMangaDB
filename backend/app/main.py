@@ -9,10 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.config import get_config_path, get_default_paths, save_config
 
-from . import models
 from .api.v1 import api_router
 from .core import security
 from .database import SessionLocal, engine
+from .migrations import run_migrations
 from .models import Role
 from .repositories import UserRepository
 from .repositories.source import SourceRepository
@@ -69,8 +69,10 @@ def initialize_application():
         # Create images directory if it doesn't exist
         os.makedirs(config["image_path"], exist_ok=True)
 
-    # Create database tables
-    models.Base.metadata.create_all(bind=engine)
+    # Bring the schema up to date. This replaces the old
+    # ``create_all`` call: the schema is owned by the Alembic migrations now,
+    # so an existing database is upgraded instead of being left behind.
+    run_migrations(engine)
 
     # Initialize default sources and users
     db = SessionLocal()
