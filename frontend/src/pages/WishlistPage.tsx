@@ -32,10 +32,6 @@ type SortOrder = "title" | "recent" | "missing";
 
 const SORT_ORDERS: SortOrder[] = ["title", "recent", "missing"];
 
-interface WishlistPageProps {
-  onCompleteSeries?: (manga: Manga) => void;
-}
-
 /**
  * The wishlist.
  *
@@ -43,7 +39,7 @@ interface WishlistPageProps {
  * questions: what do I want next, what is nearly finished and what have I
  * been putting off? So it has its own layout with three sections.
  */
-const WishlistPage: React.FC<WishlistPageProps> = ({ onCompleteSeries }) => {
+const WishlistPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -136,7 +132,7 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ onCompleteSeries }) => {
       <Grid container spacing={2}>
         {mangas.map((manga) => (
           <Grid key={manga.id} size={{ xs: 12, sm: 6, lg: 4 }}>
-            <WishlistCard manga={manga} onCompleteSeries={onCompleteSeries} />
+            <WishlistCard manga={manga} />
           </Grid>
         ))}
       </Grid>

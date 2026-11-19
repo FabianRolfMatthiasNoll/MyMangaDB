@@ -1,19 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Box,
   Button,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Menu,
+  MenuItem,
   Paper,
   Stack,
   Typography,
   alpha,
   useTheme,
 } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import StarIcon from "@mui/icons-material/Star";
-import { Manga } from "../api/models";
+import { Manga, OwnershipStatus } from "../api/models";
 import { getMangaCoverImageUrl } from "../services/imageService";
+import {
+  completeSeries as completeSeriesRequest,
+  removeFromWishlist,
+  setOwnershipStatus,
+  setPriority,
+} from "../services/wishlistService";
+import { notify } from "../services/notificationService";
+import { useUser } from "../context/UserContext";
 import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
 import {
   formatVolumeRange,
@@ -24,7 +41,6 @@ import VolumeStrip from "./VolumeStrip";
 
 interface WishlistCardProps {
   manga: Manga;
-  onCompleteSeries?: (manga: Manga) => void;
 }
 
 /**
@@ -34,16 +50,47 @@ interface WishlistCardProps {
  * border and the accent colour of the wishlist, so a wanted title is never
  * mistaken for one that is already on the shelf.
  */
-const WishlistCard: React.FC<WishlistCardProps> = ({
-  manga,
-  onCompleteSeries,
-}) => {
+const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const queryClient = useQueryClient();
+  const { isAdmin } = useUser();
   const { getOwnershipLabel, getOwnershipColor } = useOwnershipStatus();
+
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
+  const [removeOpen, setRemoveOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   const missing = missingVolumesOf(manga);
   const volumes = seriesVolumesOf(manga);
+
+  const refresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["wishlist"] });
+    await queryClient.invalidateQueries({ queryKey: ["mangas"] });
+  };
+
+  const runAction = async (action: () => Promise<unknown>) => {
+    setBusy(true);
+    try {
+      await action();
+      await refresh();
+    } catch (error) {
+      console.error("Wishlist action failed", error);
+      notify(t("wishlist.actionFailed"), "error");
+    } finally {
+      setBusy(false);
+      setMenuAnchor(null);
+    }
+  };
+
+  const handleCompleteSeries = () =>
+    runAction(() => completeSeriesRequest(manga));
+
+  const handleRemove = () =>
+    runAction(async () => {
+      await removeFromWishlist(manga);
+      notify(t("wishlist.removed", { title: manga.title }), "success");
+    });
 
   return (
     <Paper
@@ -101,20 +148,32 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
         </Box>
 
         <Box sx={{ minWidth: 0, flex: 1 }}>
-          <Typography
-            variant="h6"
-            component={Link}
-            to={`/manga/${manga.id}`}
-            sx={{
-              color: "inherit",
-              textDecoration: "none",
-              display: "block",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {manga.title}
-          </Typography>
+          <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+            <Typography
+              variant="h6"
+              component={Link}
+              to={`/manga/${manga.id}`}
+              sx={{
+                color: "inherit",
+                textDecoration: "none",
+                display: "block",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {manga.title}
+            </Typography>
+            {isAdmin && (
+              <IconButton
+                size="small"
+                aria-label={t("wishlist.actions")}
+                disabled={busy}
+                onClick={(event) => setMenuAnchor(event.currentTarget)}
+              >
+                <MoreVertIcon fontSize="small" />
+              </IconButton>
+            )}
+          </Stack>
           {manga.authors.length > 0 && (
             <Typography
               variant="body2"
@@ -173,16 +232,72 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
         </Box>
       )}
 
-      {onCompleteSeries && missing.length > 0 && (
+      {isAdmin && missing.length > 0 && (
         <Button
           variant="outlined"
           size="small"
-          onClick={() => onCompleteSeries(manga)}
+          disabled={busy}
+          onClick={handleCompleteSeries}
           sx={{ alignSelf: "flex-start" }}
         >
           {t("wishlist.completeSeries")}
         </Button>
       )}
+
+      <Menu
+        anchorEl={menuAnchor}
+        open={Boolean(menuAnchor)}
+        onClose={() => setMenuAnchor(null)}
+      >
+        <MenuItem
+          onClick={() =>
+            runAction(() =>
+              setOwnershipStatus(manga, OwnershipStatus.Owned)
+            )
+          }
+        >
+          {t("wishlist.markAsOwned")}
+        </MenuItem>
+        <MenuItem
+          onClick={() =>
+            runAction(() =>
+              setOwnershipStatus(manga, OwnershipStatus.Ordered)
+            )
+          }
+        >
+          {t("wishlist.markAsOrdered")}
+        </MenuItem>
+        <MenuItem
+          onClick={() => runAction(() => setPriority(manga, !manga.priority))}
+        >
+          {manga.priority ? t("wishlist.clearPriority") : t("wishlist.priority")}
+        </MenuItem>
+        <MenuItem onClick={() => setRemoveOpen(true)}>
+          {t("wishlist.remove")}
+        </MenuItem>
+      </Menu>
+
+      <Dialog open={removeOpen} onClose={() => setRemoveOpen(false)}>
+        <DialogTitle>{t("wishlist.removeTitle")}</DialogTitle>
+        <DialogContent>
+          <Typography>
+            {t("wishlist.removeConfirm", { title: manga.title })}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRemoveOpen(false)}>
+            {t("common.cancel")}
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            disabled={busy}
+            onClick={handleRemove}
+          >
+            {t("common.delete")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 };

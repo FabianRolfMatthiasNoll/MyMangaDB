@@ -14,6 +14,15 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: "en" } }),
 }));
 
+vi.mock("../context/UserContext", () => ({
+  useUser: () => ({
+    user: null,
+    loading: false,
+    isAdmin: true,
+    refreshUser: vi.fn(),
+  }),
+}));
+
 const volume = (volumeNumber: string): Volume => ({
   id: Number(volumeNumber),
   mangaId: 1,
