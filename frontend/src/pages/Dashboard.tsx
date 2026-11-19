@@ -6,6 +6,8 @@ import {
   Zoom,
   Box,
   Tooltip,
+  Alert,
+  Button,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -49,7 +51,7 @@ const Dashboard: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
 
-  const { data, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage, refetch, isError } = useInfiniteQuery({
     queryKey: [
       "mangas",
       searchQuery,
@@ -81,6 +83,9 @@ const Dashboard: React.FC = () => {
       return lastPage.length === limit ? allPages.length + 1 : undefined;
     },
     initialPageParam: 1,
+    // The error is surfaced in the UI, so retrying silently would only
+    // delay the message and repeat it for every attempt.
+    retry: false,
   });
 
   const mangas = data ? data.pages.flat() : [];
@@ -165,16 +170,29 @@ const Dashboard: React.FC = () => {
             },
           }}
         >
-          <InfiniteScroll
-            dataLength={mangas.length}
-            next={fetchNextPage}
-            hasMore={!!hasNextPage}
-            scrollThreshold={0.9}
-            loader={<></>}
-            scrollableTarget="scrollableDiv"
-          >
-            <MangaList mangas={mangas} isMobile={isMobile} />
-          </InfiniteScroll>
+          {isError ? (
+            <Alert
+              severity="error"
+              action={
+                <Button color="inherit" size="small" onClick={() => refetch()}>
+                  {t("common.retry")}
+                </Button>
+              }
+            >
+              {t("common.errorLoading")}
+            </Alert>
+          ) : (
+            <InfiniteScroll
+              dataLength={mangas.length}
+              next={fetchNextPage}
+              hasMore={!!hasNextPage}
+              scrollThreshold={0.9}
+              loader={<></>}
+              scrollableTarget="scrollableDiv"
+            >
+              <MangaList mangas={mangas} isMobile={isMobile} />
+            </InfiniteScroll>
+          )}
         </Box>
       </Container>
 

@@ -47,6 +47,7 @@ const MangaDetails: React.FC = () => {
   const { isAdmin } = useUser();
   const { getStatusLabel, getStatusColor } = useStatusMeta();
   const [manga, setManga] = useState<Manga | null>(null);
+  const [loadFailed, setLoadFailed] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>("");
   const [editMode, setEditMode] = useState<boolean>(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
@@ -62,9 +63,16 @@ const MangaDetails: React.FC = () => {
 
   useEffect(() => {
     const fetchManga = async () => {
-      if (id) {
+      if (!id) {
+        return;
+      }
+      try {
         const mangaData = await getMangaDetails(Number(id));
         setManga(mangaData);
+        setLoadFailed(false);
+      } catch {
+        // The request failed - show an error instead of an endless spinner.
+        setLoadFailed(true);
       }
     };
 
@@ -91,6 +99,19 @@ const MangaDetails: React.FC = () => {
       };
     }
   }, [manga?.coverImage]);
+
+  if (loadFailed) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {t("manga.loadFailed")}
+        </Alert>
+        <Button startIcon={<ArrowBackIcon />} onClick={() => navigate("/")}>
+          {t("common.backToDashboard")}
+        </Button>
+      </Container>
+    );
+  }
 
   if (!manga) {
     return (

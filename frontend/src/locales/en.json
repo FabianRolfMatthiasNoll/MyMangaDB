@@ -53,6 +53,7 @@
     "overallStatus": "Overall Status",
     "ratingRange": "Rating Range",
     "errorLoading": "Error loading",
+    "retry": "Retry",
     "noResults": "No results found.",
     "noMangaYet": "No manga yet"
   },
@@ -73,6 +74,7 @@
     "deleteTitle": "Delete Manga",
     "updatedSuccess": "Manga updated successfully",
     "updateFailed": "Failed to update manga",
+    "loadFailed": "Failed to load the manga. It may have been deleted or the server is unreachable.",
     "deleteFailed": "Failed to delete manga",
     "addNewManga": "Add New Manga",
     "searchManga": "Search Manga",

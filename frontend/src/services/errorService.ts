@@ -58,3 +58,22 @@ export const apiCallWrapper = async <T>(apiCall: () => Promise<T>, fallback: T) 
     return fallback;
   }
 };
+
+/**
+ * Like {@link apiCallWrapper}, but re-throws the error after handling it.
+ *
+ * Use this when the caller has to tell "the request failed" apart from "the
+ * request succeeded and there is nothing to show". The fallback value of
+ * `apiCallWrapper` makes a failed request indistinguishable from an empty
+ * one, which is how a failed load ended up rendering an endless spinner.
+ */
+export const apiCallWrapperOrThrow = async <T>(
+  apiCall: () => Promise<T>
+): Promise<T> => {
+  try {
+    return await apiCall();
+  } catch (error) {
+    await handleApiError(error);
+    throw error;
+  }
+};
