@@ -2,7 +2,6 @@ import { ListModel } from "../api";
 import { ListsApi } from "../api/apis";
 import { configuration } from "./config";
 import { apiCallWrapper } from "./errorService";
-import { getMangasByListId } from "./mangaService";
 
 const listsApi = new ListsApi(configuration);
 
@@ -13,23 +12,19 @@ export interface ListWithCount extends ListModel {
 export const getAllLists = async (): Promise<ListModel[]> =>
   apiCallWrapper(() => listsApi.getListsApiV1ListsGetAllGet(), []);
 
+/**
+ * All lists with the number of manga they hold.
+ *
+ * The counts come from the backend, which aggregates them in a single query.
+ * Fetching the manga of every list separately would mean one request per
+ * list and would transfer every manga in the collection just to count them.
+ */
 export const getListWithCount = async (): Promise<ListWithCount[]> => {
-  try {
-    const listsResponse = await listsApi.getListsApiV1ListsGetAllGet();
-    const listsWithCounts = await Promise.all(
-      listsResponse.map(async (list: ListModel) => {
-        const mangas = await getMangasByListId(list.id);
-        return {
-          ...list,
-          mangaCount: mangas.length,
-        };
-      })
-    );
-    return listsWithCounts;
-  } catch (error) {
-    console.error("Error getting lists with counts:", error);
-    return [];
-  }
+  const lists = await apiCallWrapper(
+    () => listsApi.getListsWithCountApiV1ListsGetAllWithCountGet(),
+    []
+  );
+  return lists as unknown as ListWithCount[];
 };
 
 export const getListById = async (listId: number): Promise<ListModel | null> =>
