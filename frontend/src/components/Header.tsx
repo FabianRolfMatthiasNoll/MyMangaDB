@@ -7,6 +7,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import LanguageIcon from "@mui/icons-material/Language";
 import {
   AppBar,
+  Badge,
   Box,
   IconButton,
   Menu,
@@ -17,7 +18,9 @@ import {
   useMediaQuery,
   Tooltip,
 } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import { logout } from "../services/auth";
+import { getWishlistMangas } from "../services/wishlistService";
 import { useUser } from "../context/UserContext";
 import { useTranslation } from "react-i18next";
 
@@ -34,8 +37,16 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
   const { isAdmin } = useUser();
   const { t, i18n } = useTranslation();
 
+  // The wishlist is shared with the wishlist page, so this is served from
+  // the cache once it has been loaded there.
+  const { data: wishlist = [] } = useQuery({
+    queryKey: ["wishlist"],
+    queryFn: getWishlistMangas,
+  });
+
   const menuItems = [
     { text: t("nav.dashboard"), path: "/" },
+    { text: t("nav.wishlist"), path: "/wishlist", badge: wishlist.length },
     { text: t("nav.lists"), path: "/lists" },
     { text: t("nav.authors"), path: "/authors" },
     { text: t("nav.genres"), path: "/genres" },
@@ -86,7 +97,13 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
           selected={location.pathname === item.path}
           onClick={handleMenuClose}
         >
-          {item.text}
+          <Badge
+            color="secondary"
+            badgeContent={item.badge}
+            invisible={!item.badge}
+          >
+            {item.text}
+          </Badge>
         </MenuItem>
       ))}
       <MenuItem onClick={handleLogout}>{t("nav.logout")}</MenuItem>
@@ -185,7 +202,13 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
                       },
                     }}
                   >
-                    <Typography textAlign="center">{item.text}</Typography>
+                    <Badge
+                      color="secondary"
+                      badgeContent={item.badge}
+                      invisible={!item.badge}
+                    >
+                      <Typography textAlign="center">{item.text}</Typography>
+                    </Badge>
                   </MenuItem>
                 ))}
               </>

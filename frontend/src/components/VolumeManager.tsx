@@ -4,16 +4,11 @@ import {
   Box,
   Typography,
   Button,
-  Grid,
-  Paper,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
-  useTheme,
-  alpha,
-  Tooltip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { Manga, Volume } from "../api/models";
@@ -22,6 +17,8 @@ import { updateMangaDetails } from "../services/mangaService";
 import { notify } from "../services/notificationService";
 
 import { parseVolumeString } from "../utils/volumeUtils";
+import { ownedVolumesOf } from "../utils/wishlist";
+import VolumeStrip from "./VolumeStrip";
 
 interface VolumeManagerProps {
   manga: Manga;
@@ -30,24 +27,20 @@ interface VolumeManagerProps {
 
 const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
   const { t } = useTranslation();
-  const theme = useTheme();
   const { isAdmin } = useUser();
   const [open, setOpen] = useState(false);
   const [inputString, setInputString] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Calculate owned volumes and max volume
-  const ownedVolumes = new Set(
-    manga.volumes
-      .map((v) => parseInt(v.volumeNumber, 10))
-      .filter((n) => !isNaN(n))
-  );
-  const maxVolume =
-    ownedVolumes.size > 0 ? Math.max(...Array.from(ownedVolumes)) : 0;
+  const ownedVolumes = new Set(ownedVolumesOf(manga));
 
   // Generate display array (1 to maxVolume)
   // If no volumes, show nothing or maybe a placeholder
-  const displayVolumes = Array.from({ length: maxVolume }, (_, i) => i + 1);
+  const displayVolumes = Array.from(
+    { length: ownedVolumes.size > 0 ? Math.max(...ownedVolumes) : 0 },
+    (_, i) => i + 1
+  );
 
   useEffect(() => {
     if (open) {
@@ -133,40 +126,12 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
           {t("volume.noVolumesTracked")}
         </Typography>
       ) : (
-        <Grid container spacing={1}>
-          {displayVolumes.map((volNum) => {
-            const isOwned = ownedVolumes.has(volNum);
-            return (
-              <Grid key={volNum}>
-                <Tooltip title={isOwned ? t("volume.owned") : t("volume.notOwned")}>
-                  <Paper
-                    elevation={isOwned ? 2 : 0}
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      borderRadius: 1,
-                      bgcolor: isOwned
-                        ? theme.palette.primary.main
-                        : alpha(theme.palette.action.disabledBackground, 0.3),
-                      color: isOwned
-                        ? theme.palette.primary.contrastText
-                        : theme.palette.text.disabled,
-                      fontWeight: "bold",
-                      border: isOwned
-                        ? "none"
-                        : `1px solid ${theme.palette.divider}`,
-                    }}
-                  >
-                    {volNum}
-                  </Paper>
-                </Tooltip>
-              </Grid>
-            );
-          })}
-        </Grid>
+        <VolumeStrip
+          volumes={displayVolumes}
+          filled={ownedVolumes}
+          filledLabel={t("volume.owned")}
+          emptyLabel={t("volume.notOwned")}
+        />
       )}
 
       <Dialog

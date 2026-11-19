@@ -28,6 +28,7 @@ import GenresPage from "./pages/GenresPage";
 import GenreDetailPage from "./pages/GenreDetailPage";
 import LoginPage from "./pages/LoginPage";
 import StatisticsPage from "./pages/StatisticsPage";
+import WishlistPage from "./pages/WishlistPage";
 import NotificationHost from "./components/NotificationHost";
 import { isAuthenticated } from "./services/auth";
 import { useUser } from "./context/UserContext";
@@ -81,6 +82,7 @@ function App() {
                   <Box display="flex">
                     <Routes>
                       <Route path="/" element={<Dashboard />} />
+                      <Route path="/wishlist" element={<WishlistPage />} />
                       <Route path="/manga/:id" element={<MangaDetails />} />
                       <Route path="/lists" element={<ListsPage />} />
                       <Route

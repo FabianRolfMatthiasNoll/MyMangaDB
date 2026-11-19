@@ -119,6 +119,10 @@ export interface Manga {
     /**
      *
      */
+    totalVolumes?: number | null;
+    /**
+     *
+     */
     summary?: string | null;
     /**
      *
@@ -182,6 +186,7 @@ export function MangaFromJSONTyped(json: any, ignoreDiscriminator: boolean): Man
         'ownershipStatus': json['ownership_status'] == null ? undefined : OwnershipStatusFromJSON(json['ownership_status']),
         'addedAt': json['added_at'] === undefined ? undefined : json['added_at'] === null ? null : (parseDateTime(json['added_at'])),
         'priority': json['priority'] == null ? undefined : json['priority'],
+        'totalVolumes': json['total_volumes'] === undefined ? undefined : json['total_volumes'] === null ? null : json['total_volumes'],
         'summary': json['summary'] === undefined ? undefined : json['summary'] === null ? null : json['summary'],
         'coverImage': json['cover_image'] === undefined ? undefined : json['cover_image'] === null ? null : json['cover_image'],
         'id': json['id'],
@@ -213,6 +218,7 @@ export function MangaToJSONTyped(value?: Manga | null, ignoreDiscriminator: bool
         'ownership_status': OwnershipStatusToJSON(value['ownershipStatus']),
         'added_at': value['addedAt'] == null ? value['addedAt'] : serializeDateTime(value['addedAt']),
         'priority': value['priority'],
+        'total_volumes': value['totalVolumes'],
         'summary': value['summary'],
         'cover_image': value['coverImage'],
         'id': value['id'],

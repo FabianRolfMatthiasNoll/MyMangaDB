@@ -4,6 +4,7 @@
   },
   "nav": {
     "dashboard": "Dashboard",
+    "wishlist": "Merkliste",
     "lists": "Listen",
     "authors": "Autoren",
     "genres": "Genres",
@@ -126,6 +127,29 @@
     "owned": "Im Besitz",
     "wishlist": "Merkliste",
     "ordered": "Bestellt"
+  },
+  "wishlist": {
+    "title": "Merkliste",
+    "count": "{{count}} Titel auf der Merkliste",
+    "empty": "Deine Merkliste ist leer. Füge einen Titel über die automatische Suche hinzu und wähle \"Zur Merkliste\" statt \"Zur Sammlung\".",
+    "continueSeries": "Serie fortsetzen",
+    "continueSeriesDescription": "Titel, von denen du bereits einige Bände besitzt.",
+    "newToBuy": "Neu zu kaufen",
+    "newToBuyDescription": "Titel, von denen du noch keinen Band besitzt.",
+    "recentlyAdded": "Zuletzt hinzugefügt",
+    "recentlyAddedDescription": "Die neuesten Wünsche.",
+    "nothingHere": "Hier ist noch nichts.",
+    "missingVolumes": "Fehlend: {{count}} Band/Bände ({{range}})",
+    "missing": "Fehlend",
+    "nothingMissing": "Alle bekannten Bände sind in der Sammlung.",
+    "completeSeries": "Serie vervollständigen",
+    "priority": "Priorität",
+    "sortBy": "Sortieren nach",
+    "sort": {
+      "title": "Titel",
+      "recent": "Zuletzt hinzugefügt",
+      "missing": "Fehlende Bände"
+    }
   },
   "status": {
     "notStarted": "Nicht begonnen",
