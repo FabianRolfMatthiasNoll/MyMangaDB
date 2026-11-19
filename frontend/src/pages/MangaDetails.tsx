@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   Container,
@@ -49,6 +49,7 @@ const MangaDetails: React.FC = () => {
   const [manga, setManga] = useState<Manga | null>(null);
   const [loadFailed, setLoadFailed] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>("");
+  const imageUrlRef = useRef<string>("");
   const [editMode, setEditMode] = useState<boolean>(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [notification, setNotification] = useState<{
@@ -80,24 +81,37 @@ const MangaDetails: React.FC = () => {
   }, [id]);
 
   useEffect(() => {
-    if (manga && manga.coverImage) {
-      let isMounted = true;
-      const fetchImage = async () => {
-        const url = await fetchMangaCoverImageAsBlobUrl(manga.coverImage!);
-        if (isMounted) {
-          setImageUrl(url);
-        }
-      };
-
-      fetchImage();
-
-      return () => {
-        isMounted = false;
-        if (imageUrl) {
-          URL.revokeObjectURL(imageUrl);
-        }
-      };
+    if (!manga?.coverImage) {
+      return;
     }
+
+    let isMounted = true;
+    const fetchImage = async () => {
+      const url = await fetchMangaCoverImageAsBlobUrl(manga.coverImage!);
+      if (!isMounted) {
+        // The effect was cleaned up while the request was in flight - release
+        // the blob URL we just created instead of leaking it.
+        if (url) {
+          URL.revokeObjectURL(url);
+        }
+        return;
+      }
+      imageUrlRef.current = url;
+      setImageUrl(url);
+    };
+
+    fetchImage();
+
+    return () => {
+      isMounted = false;
+      // Revoke the URL that was actually created. Reading it from the state
+      // here would use the value from the render the effect started in, which
+      // is stale and leaves the blob URL alive.
+      if (imageUrlRef.current) {
+        URL.revokeObjectURL(imageUrlRef.current);
+        imageUrlRef.current = "";
+      }
+    };
   }, [manga?.coverImage]);
 
   if (loadFailed) {

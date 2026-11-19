@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ListItem,
   Card,
@@ -23,24 +23,38 @@ const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId
   const theme = useTheme();
   const { getStatusLabel, getStatusColor } = useStatusMeta();
   const [imageUrl, setImageUrl] = useState("");
+  const imageUrlRef = useRef("");
 
   useEffect(() => {
+    if (!manga.coverImage) {
+      return;
+    }
+
     let isMounted = true;
     const fetchImage = async () => {
-      if (manga.coverImage) {
-        const url = await fetchMangaCoverImageAsBlobUrl(manga.coverImage);
-        if (isMounted) {
-          setImageUrl(url);
+      const url = await fetchMangaCoverImageAsBlobUrl(manga.coverImage!);
+      if (!isMounted) {
+        // The effect was cleaned up while the request was in flight - release
+        // the blob URL we just created instead of leaking it.
+        if (url) {
+          URL.revokeObjectURL(url);
         }
+        return;
       }
+      imageUrlRef.current = url;
+      setImageUrl(url);
     };
 
     fetchImage();
 
     return () => {
       isMounted = false;
-      if (imageUrl) {
-        URL.revokeObjectURL(imageUrl);
+      // Revoke the URL that was actually created. Reading it from the state
+      // here would use the value from the render the effect started in, which
+      // is stale and leaves the blob URL alive.
+      if (imageUrlRef.current) {
+        URL.revokeObjectURL(imageUrlRef.current);
+        imageUrlRef.current = "";
       }
     };
   }, [manga.coverImage]);
