@@ -1,8 +1,19 @@
 import enum
 
-from sqlalchemy import Column, Enum, Float, ForeignKey, Integer, String, Table, Text
+from sqlalchemy import (
+    Column,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Table,
+    Text,
+    func,
+    select,
+)
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import column_property, relationship
 
 Base = declarative_base()
 
@@ -62,14 +73,31 @@ class Author(Base):
     __tablename__ = "authors"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    manga_count = Column(Integer, default=0)
+
+    # Derived rather than stored. A denormalized counter has to be kept in
+    # sync by every code path that adds or removes a manga-author link, and
+    # a single missed path leaves it permanently wrong. Counting the join
+    # table is always correct.
+    manga_count = column_property(
+        select(func.count(manga_author.c.manga_id))
+        .where(manga_author.c.author_id == id)
+        .correlate_except(manga_author)
+        .scalar_subquery()
+    )
 
 
 class Genre(Base):
     __tablename__ = "genres"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    manga_count = Column(Integer, default=0)
+
+    # Derived rather than stored - see the note on ``Author.manga_count``.
+    manga_count = column_property(
+        select(func.count(manga_genre.c.manga_id))
+        .where(manga_genre.c.genre_id == id)
+        .correlate_except(manga_genre)
+        .scalar_subquery()
+    )
 
 
 class List(Base):

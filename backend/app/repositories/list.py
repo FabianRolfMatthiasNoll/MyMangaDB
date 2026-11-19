@@ -1,9 +1,11 @@
 from typing import List as TypedList
 from typing import Optional
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from backend.app.models import List as ListModel
+from backend.app.models import manga_list
 from backend.app.schemas import ListCreate
 from backend.app.schemas import ListModel as ListSchema
 
@@ -65,11 +67,33 @@ class ListRepository:
 
     @staticmethod
     def get_with_manga_count(db: Session) -> TypedList[dict]:
-        lists_ = db.query(ListModel).all()
-        result = []
-        for list_ in lists_:
-            manga_count = len(list_.mangas)
-            result.append(
-                {"id": list_.id, "name": list_.name, "mangaCount": manga_count}
+        """Return every list together with the number of manga it holds.
+
+        The counts are aggregated in a single query. Touching ``list_.mangas``
+        instead would emit one extra SELECT per list, which is an N+1 that
+        gets expensive as the number of lists grows.
+        """
+        counts = (
+            db.query(
+                manga_list.c.list_id,
+                func.count(manga_list.c.manga_id).label("manga_count"),
             )
-        return result
+            .group_by(manga_list.c.list_id)
+            .subquery()
+        )
+
+        rows = (
+            db.query(
+                ListModel.id,
+                ListModel.name,
+                func.coalesce(counts.c.manga_count, 0),
+            )
+            .outerjoin(counts, counts.c.list_id == ListModel.id)
+            .order_by(ListModel.id)
+            .all()
+        )
+
+        return [
+            {"id": list_id, "name": name, "mangaCount": manga_count}
+            for list_id, name, manga_count in rows
+        ]

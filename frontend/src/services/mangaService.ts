@@ -1,7 +1,7 @@
 import { Manga, MangaCreate } from "../api";
 import { MangasApi } from "../api/apis";
 import { configuration } from "./config";
-import { apiCallWrapper, handleApiError } from "./errorService";
+import { apiCallWrapper, apiCallWrapperOrThrow, handleApiError } from "./errorService";
 import { saveMangaCover } from "./imageService";
 
 const mangasApi = new MangasApi(configuration);
@@ -16,30 +16,28 @@ export const getMangas = async (
   overallStatuses?: string[],
   ratingMin?: number,
   ratingMax?: number,
+  listId?: number,
 ) =>
-  apiCallWrapper(
-    () =>
-      mangasApi.getMangasApiV1MangasGetAllGet({
-        skip: (page - 1) * limit,
-        limit,
-        search: search || undefined,
-        sort: sort || undefined,
-        categories: categories?.length ? categories : undefined,
-        readingStatuses: readingStatuses?.length ? readingStatuses : undefined,
-        overallStatuses: overallStatuses?.length ? overallStatuses : undefined,
-        ratingMin: ratingMin !== undefined ? ratingMin : undefined,
-        ratingMax: ratingMax !== undefined ? ratingMax : undefined,
-      }),
-    [],
+  apiCallWrapperOrThrow(() =>
+    mangasApi.getMangasApiV1MangasGetAllGet({
+      skip: (page - 1) * limit,
+      limit,
+      search: search || undefined,
+      sort: sort || undefined,
+      categories: categories?.length ? categories : undefined,
+      readingStatuses: readingStatuses?.length ? readingStatuses : undefined,
+      overallStatuses: overallStatuses?.length ? overallStatuses : undefined,
+      ratingMin: ratingMin !== undefined ? ratingMin : undefined,
+      ratingMax: ratingMax !== undefined ? ratingMax : undefined,
+      listId: listId !== undefined ? listId : undefined,
+    })
   );
 
 export const getMangaDetails = async (mangaId: number) =>
-  apiCallWrapper(
-    () =>
-      mangasApi.getMangaByIdApiV1MangasMangaIdGet({
-        mangaId,
-      }),
-    null,
+  apiCallWrapperOrThrow(() =>
+    mangasApi.getMangaByIdApiV1MangasMangaIdGet({
+      mangaId,
+    })
   );
 
 export const deleteManga = async (mangaId: number) =>

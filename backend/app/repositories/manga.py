@@ -4,11 +4,11 @@ import uuid
 from typing import List as TypedList
 from typing import Optional
 
-import requests
 from sqlalchemy import asc, desc, or_
 from sqlalchemy.orm import Session
 
 from backend.app import settings
+from backend.app.core.remote_images import download_public_image
 from backend.app.models import Author as AuthorModel
 from backend.app.models import Genre as GenreModel
 from backend.app.models import List as ListModel
@@ -49,24 +49,23 @@ class MangaRepository(BaseRepository):
         overall_statuses: Optional[TypedList[str]] = None,
         rating_min: Optional[float] = None,
         rating_max: Optional[float] = None,
+        list_id: Optional[int] = None,
     ) -> TypedList[Manga]:
         """
         Holt Mangas mit Paging.
         Optional: Filter nach Titel (ILIKE '%search%'),
-        Kategorie, Reading Status, Overall Status, Rating, Sortierung.
+        Kategorie, Reading Status, Overall Status, Rating, Sortierung, Liste.
         """
         query = db.query(MangaModel)
 
         # Volltextsuche (case-insensitive) im Titel
         if search:
-            if search.lower().startswith("list:"):
-                list_name = search[5:].strip()
-                query = query.filter(
-                    MangaModel.lists.any(ListModel.name.ilike(f"%{list_name}%"))
-                )
-            else:
-                ilike_term = f"%{search}%"
-                query = query.filter(MangaModel.title.ilike(ilike_term))
+            ilike_term = f"%{search}%"
+            query = query.filter(MangaModel.title.ilike(ilike_term))
+
+        # Filter nach Liste
+        if list_id is not None:
+            query = query.filter(MangaModel.lists.any(ListModel.id == list_id))
 
         # Filter by category
         if categories:
@@ -179,13 +178,6 @@ class MangaRepository(BaseRepository):
         BaseRepository.commit_session(db)
         db.refresh(db_manga)
 
-        # Update manga counts
-        for author in authors:
-            author.manga_count = len(author.mangas)
-        for genre in genres:
-            genre.manga_count = len(genre.mangas)
-        BaseRepository.commit_session(db)
-
         return Manga.model_validate(db_manga)
 
     @staticmethod
@@ -193,10 +185,6 @@ class MangaRepository(BaseRepository):
         db_manga = db.query(MangaModel).filter(MangaModel.id == manga_data.id).first()
         if not db_manga:
             raise RepositoryError("Manga not found")
-
-        # Store old authors and genres for count update
-        old_authors = set(db_manga.authors)
-        old_genres = set(db_manga.genres)
 
         # Handle cover image update
         if manga_data.cover_image != db_manga.cover_image:
@@ -255,16 +243,6 @@ class MangaRepository(BaseRepository):
         BaseRepository.commit_session(db)
         db.refresh(db_manga)
 
-        # Update manga counts for both old and new authors/genres
-        all_authors = set(db_manga.authors) | old_authors
-        all_genres = set(db_manga.genres) | old_genres
-
-        for author in all_authors:
-            author.manga_count = len(author.mangas)
-        for genre in all_genres:
-            genre.manga_count = len(genre.mangas)
-        BaseRepository.commit_session(db)
-
         return Manga.model_validate(db_manga)
 
     @staticmethod
@@ -291,12 +269,13 @@ class MangaRepository(BaseRepository):
         db.delete(db_manga)
         BaseRepository.commit_session(db)
 
-        # Update manga counts
+        # The counts are derived, so the values loaded before the delete are
+        # now stale. Expiring the affected rows makes the next access
+        # recompute them.
         for author in authors:
-            author.manga_count = len(author.mangas)
+            db.expire(author)
         for genre in genres:
-            genre.manga_count = len(genre.mangas)
-        BaseRepository.commit_session(db)
+            db.expire(genre)
 
         return Manga.model_validate(db_manga)
 
@@ -347,17 +326,12 @@ class MangaRepository(BaseRepository):
             save_path = os.path.join(settings.IMAGE_SAVE_PATH, filename)
             os.makedirs(settings.IMAGE_SAVE_PATH, exist_ok=True)
             try:
-                # Check for SSL verification disable
-                verify_ssl = os.getenv("DISABLE_SSL_VERIFY", "false").lower() != "true"
-                if not verify_ssl:
-                    import urllib3
-
-                    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-                response = requests.get(cover_image_url, verify=verify_ssl)
-                response.raise_for_status()
+                # The URL comes from the request body, so the download has to
+                # be restricted to public addresses - otherwise the backend
+                # could be pointed at internal services (SSRF).
+                content = download_public_image(cover_image_url)
                 with open(save_path, "wb") as f:
-                    f.write(response.content)
+                    f.write(content)
                 return filename
             except Exception as e:
                 logger.warning("Failed to download cover image: %s", e)

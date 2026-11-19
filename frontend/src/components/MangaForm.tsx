@@ -18,6 +18,8 @@ import { OverallStatus, ReadingStatus } from "../api/models";
 import { getAuthors } from "../services/authorService";
 import { getGenres } from "../services/genreService";
 import { getAllLists } from "../services/listService";
+import { useStatusMeta } from "../hooks/useStatusMeta";
+import { useCategoryLabel } from "../hooks/useCategoryLabel";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 
@@ -47,6 +49,8 @@ const MangaForm: React.FC<MangaFormProps> = ({
   initialLists = [],
 }) => {
   const { t } = useTranslation();
+  const { getStatusLabel } = useStatusMeta();
+  const getCategoryLabel = useCategoryLabel();
   const [editableManga, setEditableManga] = useState<Manga>(manga);
   const [availableAuthors, setAvailableAuthors] = useState<Author[]>([]);
   const [availableGenres, setAvailableGenres] = useState<Genre[]>([]);
@@ -86,7 +90,7 @@ const MangaForm: React.FC<MangaFormProps> = ({
     }
   }, [availableLists, initialLists]);
 
-  const handleChange = (field: keyof Manga, value: any) => {
+  const handleChange = (field: keyof Manga, value: Manga[keyof Manga]) => {
     setEditableManga({ ...editableManga, [field]: value });
   };
 
@@ -132,8 +136,8 @@ const MangaForm: React.FC<MangaFormProps> = ({
     onSave(mangaToSave, coverImage || undefined);
   };
 
-  const handleAuthorsChange = (_: any, newValue: any[]) => {
-    const authors = newValue.reduce((acc, option) => {
+  const handleAuthorsChange = (_: unknown, newValue: (Author | string)[]) => {
+    const authors = newValue.reduce((acc: Author[], option) => {
       if (typeof option === "string") {
         const existingAuthor = availableAuthors.find(
           (author) => author.name.toLowerCase() === option.toLowerCase()
@@ -151,8 +155,8 @@ const MangaForm: React.FC<MangaFormProps> = ({
     handleChange("authors", authors);
   };
 
-  const handleGenresChange = (_: any, newValue: any[]) => {
-    const genres = newValue.reduce((acc, option) => {
+  const handleGenresChange = (_: unknown, newValue: (Genre | string)[]) => {
+    const genres = newValue.reduce((acc: Genre[], option) => {
       if (typeof option === "string") {
         const existingGenre = availableGenres.find(
           (genre) => genre.name.toLowerCase() === option.toLowerCase()
@@ -290,9 +294,9 @@ const MangaForm: React.FC<MangaFormProps> = ({
           value={editableManga.category || ""}
           onChange={(e) => handleChange("category", e.target.value)}
         >
-          {Object.entries(Category).map(([key, value]) => (
-            <MenuItem key={key} value={value}>
-              {key}
+          {Object.values(Category).map((value) => (
+            <MenuItem key={value} value={value}>
+              {getCategoryLabel(value)}
             </MenuItem>
           ))}
         </Select>
@@ -304,9 +308,9 @@ const MangaForm: React.FC<MangaFormProps> = ({
           value={editableManga.readingStatus || ""}
           onChange={(e) => handleChange("readingStatus", e.target.value)}
         >
-          {Object.entries(ReadingStatus).map(([key, value]) => (
-            <MenuItem key={key} value={value}>
-              {key}
+          {Object.values(ReadingStatus).map((value) => (
+            <MenuItem key={value} value={value}>
+              {getStatusLabel(value)}
             </MenuItem>
           ))}
         </Select>
@@ -318,9 +322,9 @@ const MangaForm: React.FC<MangaFormProps> = ({
           value={editableManga.overallStatus || ""}
           onChange={(e) => handleChange("overallStatus", e.target.value)}
         >
-          {Object.entries(OverallStatus).map(([key, value]) => (
-            <MenuItem key={key} value={value}>
-              {key}
+          {Object.values(OverallStatus).map((value) => (
+            <MenuItem key={value} value={value}>
+              {getStatusLabel(value)}
             </MenuItem>
           ))}
         </Select>

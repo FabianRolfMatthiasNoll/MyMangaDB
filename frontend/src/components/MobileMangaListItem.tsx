@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ListItem,
   Card,
@@ -12,6 +12,7 @@ import {
 import { Manga } from "../api/models";
 import { Link } from "react-router-dom";
 import { fetchMangaCoverImageAsBlobUrl } from "../services/imageService";
+import { useStatusMeta } from "../hooks/useStatusMeta";
 
 interface MobileMangaListItemProps {
   manga: Manga;
@@ -20,43 +21,43 @@ interface MobileMangaListItemProps {
 
 const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId }) => {
   const theme = useTheme();
+  const { getStatusLabel, getStatusColor } = useStatusMeta();
   const [imageUrl, setImageUrl] = useState("");
+  const imageUrlRef = useRef("");
 
   useEffect(() => {
+    if (!manga.coverImage) {
+      return;
+    }
+
     let isMounted = true;
     const fetchImage = async () => {
-      if (manga.coverImage) {
-        const url = await fetchMangaCoverImageAsBlobUrl(manga.coverImage);
-        if (isMounted) {
-          setImageUrl(url);
+      const url = await fetchMangaCoverImageAsBlobUrl(manga.coverImage!);
+      if (!isMounted) {
+        // The effect was cleaned up while the request was in flight - release
+        // the blob URL we just created instead of leaking it.
+        if (url) {
+          URL.revokeObjectURL(url);
         }
+        return;
       }
+      imageUrlRef.current = url;
+      setImageUrl(url);
     };
 
     fetchImage();
 
     return () => {
       isMounted = false;
-      if (imageUrl) {
-        URL.revokeObjectURL(imageUrl);
+      // Revoke the URL that was actually created. Reading it from the state
+      // here would use the value from the render the effect started in, which
+      // is stale and leaves the blob URL alive.
+      if (imageUrlRef.current) {
+        URL.revokeObjectURL(imageUrlRef.current);
+        imageUrlRef.current = "";
       }
     };
   }, [manga.coverImage]);
-
-  const getStatusColor = (status: string) => {
-    const statusColors: { [key: string]: string } = {
-      "Not Started": theme.palette.error.main,
-      "Reading": theme.palette.info.main,
-      "Completed": theme.palette.success.main,
-      "On Hold": theme.palette.warning.main,
-      "Dropped": theme.palette.error.main,
-      "Plan to Read": theme.palette.secondary.main,
-      "Ongoing": theme.palette.info.main,
-      "Hiatus": theme.palette.warning.main,
-      "Discontinued": theme.palette.error.main,
-    };
-    return statusColors[status] || theme.palette.grey[500];
-  };
 
   return (
     <ListItem key={manga.id} sx={{ px: 0, py: 1 }}>
@@ -132,7 +133,7 @@ const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId
           <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
             {manga.readingStatus && (
               <Chip
-                label={manga.readingStatus}
+                label={getStatusLabel(manga.readingStatus)}
                 size="small"
                 sx={{
                   bgcolor: getStatusColor(manga.readingStatus),
@@ -144,7 +145,7 @@ const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId
             )}
             {manga.overallStatus && (
               <Chip
-                label={manga.overallStatus}
+                label={getStatusLabel(manga.overallStatus)}
                 size="small"
                 sx={{
                   bgcolor: getStatusColor(manga.overallStatus),

@@ -56,7 +56,7 @@ export class DatabaseApi extends runtime.BaseAPI {
     }
 
     /**
-     * Export the database and images as a ZIP file.  Requires an authenticated admin user. Both reading the live database file (which contains user password hashes) and downloading every stored image are inherently privileged operations.  Returns:     Response: A ZIP file containing the database and images.     The response will have the following headers:     - Content-Type: application/zip     - Content-Disposition: attachment; filename=\"mangadb_export.zip\"
+     * Export the database and images as a ZIP file.  Requires an authenticated admin user. Both reading the live database file (which contains user password hashes) and downloading every stored image are inherently privileged operations.  This endpoint is a plain ``def`` on purpose: zipping the database and every image is blocking work, and FastAPI runs sync endpoints in a threadpool. Declaring it ``async`` would block the event loop and stall every other request for the duration of the export.  Returns:     Response: A ZIP file containing the database and images.     The response will have the following headers:     - Content-Type: application/zip     - Content-Disposition: attachment; filename=\"mangadb_export.zip\"
      * Export Database
      */
     async exportDatabaseApiV1DatabaseExportGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -67,7 +67,7 @@ export class DatabaseApi extends runtime.BaseAPI {
     }
 
     /**
-     * Export the database and images as a ZIP file.  Requires an authenticated admin user. Both reading the live database file (which contains user password hashes) and downloading every stored image are inherently privileged operations.  Returns:     Response: A ZIP file containing the database and images.     The response will have the following headers:     - Content-Type: application/zip     - Content-Disposition: attachment; filename=\"mangadb_export.zip\"
+     * Export the database and images as a ZIP file.  Requires an authenticated admin user. Both reading the live database file (which contains user password hashes) and downloading every stored image are inherently privileged operations.  This endpoint is a plain ``def`` on purpose: zipping the database and every image is blocking work, and FastAPI runs sync endpoints in a threadpool. Declaring it ``async`` would block the event loop and stall every other request for the duration of the export.  Returns:     Response: A ZIP file containing the database and images.     The response will have the following headers:     - Content-Type: application/zip     - Content-Disposition: attachment; filename=\"mangadb_export.zip\"
      * Export Database
      */
     async exportDatabaseApiV1DatabaseExportGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -127,7 +127,7 @@ export class DatabaseApi extends runtime.BaseAPI {
     }
 
     /**
-     * Import a database and images from a ZIP file. Requires an authenticated admin user. The handler rejects uploads that are not valid ZIP archives, exceed :data:`MAX_IMPORT_BYTES`, or contain entries whose resolved paths fall outside the extraction directory (zip-slip protection).
+     * Import a database and images from a ZIP file. Requires an authenticated admin user. The handler rejects uploads that are not valid ZIP archives, exceed :data:`MAX_IMPORT_BYTES`, or contain entries whose resolved paths fall outside the extraction directory (zip-slip protection).  The upload is streamed to disk asynchronously; extracting it and moving the files into place is blocking work and runs in a threadpool.
      * Import Database
      */
     async importDatabaseApiV1DatabaseImportPostRaw(requestParameters: ImportDatabaseApiV1DatabaseImportPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
@@ -142,7 +142,7 @@ export class DatabaseApi extends runtime.BaseAPI {
     }
 
     /**
-     * Import a database and images from a ZIP file. Requires an authenticated admin user. The handler rejects uploads that are not valid ZIP archives, exceed :data:`MAX_IMPORT_BYTES`, or contain entries whose resolved paths fall outside the extraction directory (zip-slip protection).
+     * Import a database and images from a ZIP file. Requires an authenticated admin user. The handler rejects uploads that are not valid ZIP archives, exceed :data:`MAX_IMPORT_BYTES`, or contain entries whose resolved paths fall outside the extraction directory (zip-slip protection).  The upload is streamed to disk asynchronously; extracting it and moving the files into place is blocking work and runs in a threadpool.
      * Import Database
      */
     async importDatabaseApiV1DatabaseImportPost(requestParameters: ImportDatabaseApiV1DatabaseImportPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {

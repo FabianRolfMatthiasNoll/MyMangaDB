@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   Container,
@@ -35,6 +35,7 @@ import VolumeManager from "../components/VolumeManager";
 import { useUser } from "../context/UserContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { useStatusMeta } from "../hooks/useStatusMeta";
 
 const MangaDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -44,8 +45,11 @@ const MangaDetails: React.FC = () => {
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const { isAdmin } = useUser();
+  const { getStatusLabel, getStatusColor } = useStatusMeta();
   const [manga, setManga] = useState<Manga | null>(null);
+  const [loadFailed, setLoadFailed] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>("");
+  const imageUrlRef = useRef<string>("");
   const [editMode, setEditMode] = useState<boolean>(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [notification, setNotification] = useState<{
@@ -60,9 +64,16 @@ const MangaDetails: React.FC = () => {
 
   useEffect(() => {
     const fetchManga = async () => {
-      if (id) {
+      if (!id) {
+        return;
+      }
+      try {
         const mangaData = await getMangaDetails(Number(id));
         setManga(mangaData);
+        setLoadFailed(false);
+      } catch {
+        // The request failed - show an error instead of an endless spinner.
+        setLoadFailed(true);
       }
     };
 
@@ -70,25 +81,51 @@ const MangaDetails: React.FC = () => {
   }, [id]);
 
   useEffect(() => {
-    if (manga && manga.coverImage) {
-      let isMounted = true;
-      const fetchImage = async () => {
-        const url = await fetchMangaCoverImageAsBlobUrl(manga.coverImage!);
-        if (isMounted) {
-          setImageUrl(url);
-        }
-      };
-
-      fetchImage();
-
-      return () => {
-        isMounted = false;
-        if (imageUrl) {
-          URL.revokeObjectURL(imageUrl);
-        }
-      };
+    if (!manga?.coverImage) {
+      return;
     }
+
+    let isMounted = true;
+    const fetchImage = async () => {
+      const url = await fetchMangaCoverImageAsBlobUrl(manga.coverImage!);
+      if (!isMounted) {
+        // The effect was cleaned up while the request was in flight - release
+        // the blob URL we just created instead of leaking it.
+        if (url) {
+          URL.revokeObjectURL(url);
+        }
+        return;
+      }
+      imageUrlRef.current = url;
+      setImageUrl(url);
+    };
+
+    fetchImage();
+
+    return () => {
+      isMounted = false;
+      // Revoke the URL that was actually created. Reading it from the state
+      // here would use the value from the render the effect started in, which
+      // is stale and leaves the blob URL alive.
+      if (imageUrlRef.current) {
+        URL.revokeObjectURL(imageUrlRef.current);
+        imageUrlRef.current = "";
+      }
+    };
   }, [manga?.coverImage]);
+
+  if (loadFailed) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {t("manga.loadFailed")}
+        </Alert>
+        <Button startIcon={<ArrowBackIcon />} onClick={() => navigate("/")}>
+          {t("common.backToDashboard")}
+        </Button>
+      </Container>
+    );
+  }
 
   if (!manga) {
     return (
@@ -163,21 +200,6 @@ const MangaDetails: React.FC = () => {
 
   const handleCancel = () => {
     setEditMode(false);
-  };
-
-  const getStatusColor = (status: string) => {
-    const statusColors: { [key: string]: string } = {
-      "Not Started": theme.palette.error.main,
-      Reading: theme.palette.info.main,
-      Completed: theme.palette.success.main,
-      "On Hold": theme.palette.warning.main,
-      Dropped: theme.palette.error.main,
-      "Plan to Read": theme.palette.secondary.main,
-      Ongoing: theme.palette.info.main,
-      Hiatus: theme.palette.warning.main,
-      Discontinued: theme.palette.error.main,
-    };
-    return statusColors[status] || theme.palette.grey[500];
   };
 
   const handleCloseNotification = () => {
@@ -328,7 +350,9 @@ const MangaDetails: React.FC = () => {
               <Box sx={{ display: "flex", gap: 1, mb: 3, flexWrap: "wrap" }}>
                 {manga.readingStatus && (
                   <Chip
-                    label={`Reading: ${manga.readingStatus}`}
+                    label={`${t("manga.readingStatus")}: ${getStatusLabel(
+                      manga.readingStatus
+                    )}`}
                     sx={{
                       bgcolor: getStatusColor(manga.readingStatus),
                       color: "white",
@@ -338,7 +362,9 @@ const MangaDetails: React.FC = () => {
                 )}
                 {manga.overallStatus && (
                   <Chip
-                    label={`Collection: ${manga.overallStatus}`}
+                    label={`${t("manga.overallStatus")}: ${getStatusLabel(
+                      manga.overallStatus
+                    )}`}
                     sx={{
                       bgcolor: getStatusColor(manga.overallStatus),
                       color: "white",

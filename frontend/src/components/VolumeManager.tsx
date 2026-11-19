@@ -19,6 +19,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { Manga, Volume } from "../api/models";
 import { useUser } from "../context/UserContext";
 import { updateMangaDetails } from "../services/mangaService";
+import { notify } from "../services/notificationService";
 
 import { parseVolumeString } from "../utils/volumeUtils";
 
@@ -96,7 +97,7 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
       setOpen(false);
     } catch (error) {
       console.error("Failed to update volumes", error);
-      alert("Failed to update volumes");
+      notify(t("volume.saveFailed"), "error");
     } finally {
       setLoading(false);
     }

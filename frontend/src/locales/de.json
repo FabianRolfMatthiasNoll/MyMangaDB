@@ -53,6 +53,7 @@
     "overallStatus": "Gesamtstatus",
     "ratingRange": "Bewertungsbereich",
     "errorLoading": "Fehler beim Laden",
+    "retry": "Erneut versuchen",
     "noResults": "Keine Ergebnisse gefunden.",
     "noMangaYet": "Noch keine Manga"
   },
@@ -73,6 +74,7 @@
     "deleteTitle": "Manga löschen",
     "updatedSuccess": "Manga erfolgreich aktualisiert",
     "updateFailed": "Manga konnte nicht aktualisiert werden",
+    "loadFailed": "Der Manga konnte nicht geladen werden. Möglicherweise wurde er gelöscht oder der Server ist nicht erreichbar.",
     "deleteFailed": "Manga konnte nicht gelöscht werden",
     "addNewManga": "Neuen Manga hinzufügen",
     "searchManga": "Manga suchen",
@@ -113,6 +115,11 @@
     "filterByList": "Nach Liste filtern",
     "resetFilters": "Filter zurücksetzen"
   },
+  "categories": {
+    "manga": "Manga",
+    "novel": "Roman",
+    "doujinshi": "Doujinshi"
+  },
   "status": {
     "notStarted": "Nicht begonnen",
     "reading": "Lesend",
@@ -122,7 +129,7 @@
     "planToRead": "Geplant",
     "ongoing": "Laufend",
     "hiatus": "Pausiert",
-    "discontinued": "Eingestellt"
+    "cancelled": "Eingestellt"
   },
   "errors": {
     "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",

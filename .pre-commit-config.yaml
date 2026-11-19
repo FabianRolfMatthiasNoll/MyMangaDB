@@ -33,6 +33,10 @@ repos:
     hooks:
       - id: prettier
         types_or: [json, yaml, markdown]
+        # Pin the node version. Without this, nodeenv resolves the latest
+        # release, which is currently a nightly whose version string it cannot
+        # parse ("27.0.0-alpha.0.1.1") - the hook then fails to install.
+        language_version: "22.14.0"
 
   - repo: local
     hooks:
@@ -40,6 +44,7 @@ repos:
         name: ESLint (Frontend)
         entry: npx eslint
         language: node
+        language_version: "22.14.0"
         files: frontend/src/.*\.[jt]sx?$
         pass_filenames: true
         types: [javascript, jsx, ts, tsx]

@@ -3,6 +3,7 @@ import logging
 import xml.etree.ElementTree as ET
 
 from fastapi import UploadFile
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
 
 from backend.app.handlers.jikan import JikanHandler
@@ -23,6 +24,17 @@ class MALImporter:
         self.jikan = JikanHandler()
 
     async def import_list(self, file: UploadFile) -> ImportResponse:
+        """Import a MyAnimeList export.
+
+        The upload is read asynchronously; the import itself does blocking
+        HTTP requests and database writes, so it runs in a threadpool. Without
+        that, importing a large list stalls the event loop and every other
+        request for the duration of the import.
+        """
+        content = await file.read()
+        return await run_in_threadpool(self._import_content, content)
+
+    def _import_content(self, content: bytes) -> ImportResponse:
         total = 0
         imported = 0
         skipped = 0
@@ -30,9 +42,6 @@ class MALImporter:
         logs = []
 
         try:
-            # Read the file content
-            content = await file.read()
-
             # Try to decompress if it's gzipped
             try:
                 xml_content = gzip.decompress(content)

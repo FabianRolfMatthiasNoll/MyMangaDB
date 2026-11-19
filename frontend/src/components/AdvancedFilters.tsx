@@ -18,6 +18,8 @@ import {
   ListModel,
 } from "../api/models";
 import { SelectChangeEvent } from "@mui/material/Select";
+import { useStatusMeta } from "../hooks/useStatusMeta";
+import { useCategoryLabel } from "../hooks/useCategoryLabel";
 
 interface AdvancedFiltersProps {
   filterCategory: string[];
@@ -49,6 +51,9 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
   resetFilters,
 }) => {
   const { t } = useTranslation();
+  const { getStatusLabel } = useStatusMeta();
+  const getCategoryLabel = useCategoryLabel();
+
   const handleCategoryChange = (event: SelectChangeEvent<string[]>) => {
     setFilterCategory(event.target.value as string[]);
   };
@@ -80,7 +85,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
         >
           {Object.values(Category).map((category) => (
             <MenuItem key={category} value={category}>
-              {category}
+              {getCategoryLabel(category)}
             </MenuItem>
           ))}
         </Select>
@@ -93,9 +98,9 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           onChange={handleReadingStatusChange}
           label={t("filters.readingStatus")}
         >
-          {Object.entries(ReadingStatus).map(([key, value]) => (
-            <MenuItem key={key} value={value}>
-              {key}
+          {Object.values(ReadingStatus).map((value) => (
+            <MenuItem key={value} value={value}>
+              {getStatusLabel(value)}
             </MenuItem>
           ))}
         </Select>
@@ -108,9 +113,9 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           onChange={handleOverallStatusChange}
           label={t("filters.overallStatus")}
         >
-          {Object.entries(OverallStatus).map(([key, value]) => (
-            <MenuItem key={key} value={value}>
-              {key}
+          {Object.values(OverallStatus).map((value) => (
+            <MenuItem key={value} value={value}>
+              {getStatusLabel(value)}
             </MenuItem>
           ))}
         </Select>

@@ -28,6 +28,7 @@ import GenresPage from "./pages/GenresPage";
 import GenreDetailPage from "./pages/GenreDetailPage";
 import LoginPage from "./pages/LoginPage";
 import StatisticsPage from "./pages/StatisticsPage";
+import NotificationHost from "./components/NotificationHost";
 import { isAuthenticated } from "./services/auth";
 import { useUser } from "./context/UserContext";
 
@@ -67,6 +68,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <NotificationHost />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />

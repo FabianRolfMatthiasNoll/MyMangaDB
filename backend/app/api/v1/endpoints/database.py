@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, Response
 
 from backend.app.api import deps
@@ -42,13 +43,18 @@ def _is_within(directory: Path, target: Path) -> bool:
     response_class=Response,
     dependencies=[Depends(deps.get_current_active_superuser)],
 )
-async def export_database() -> Response:
+def export_database() -> Response:
     """
     Export the database and images as a ZIP file.
 
     Requires an authenticated admin user. Both reading the live database file
     (which contains user password hashes) and downloading every stored image
     are inherently privileged operations.
+
+    This endpoint is a plain ``def`` on purpose: zipping the database and
+    every image is blocking work, and FastAPI runs sync endpoints in a
+    threadpool. Declaring it ``async`` would block the event loop and stall
+    every other request for the duration of the export.
 
     Returns:
         Response: A ZIP file containing the database and images.
@@ -167,6 +173,103 @@ async def cleanup_file(file_path: str):
         logging.error(f"Error in background cleanup: {str(e)}")
 
 
+def _extract_import_archive(temp_dir: str, temp_zip: str) -> None:
+    """Replace the live database and images with the contents of the archive.
+
+    This does the blocking filesystem work - extracting the archive, taking a
+    backup and moving the files into place. It is meant to be run in a
+    threadpool so that it does not block the event loop.
+
+    Raises:
+        HTTPException: if the archive is not a valid ZIP, has no database
+            entry or contains entries that would be written outside
+            ``temp_dir`` (zip-slip).
+        zipfile.BadZipFile: if the upload is not a ZIP archive at all.
+    """
+    # Open the archive explicitly to reject anything that is not a valid
+    # ZIP before we touch ``extractall``. ``extractall`` would happily
+    # write outside ``temp_dir`` if a member name had traversal segments
+    # in it, so we extract each member ourselves after checking it.
+    with zipfile.ZipFile(temp_zip, "r") as zipf:
+        # Reject archives whose entry names try to escape the
+        # extraction directory (zip-slip) or contain NULs / absolute
+        # paths. We resolve each member against temp_dir and require
+        # it to stay under that directory.
+        for member in zipf.infolist():
+            member_path = Path(temp_dir) / member.filename
+            if not _is_within(Path(temp_dir), member_path.resolve()):
+                raise HTTPException(
+                    status_code=400,
+                    detail=("Archive contains entries with illegal path names"),
+                )
+
+        # Identify which member is "the database". We require the
+        # basename (no path separators) to look like a plain db
+        # filename so members like ``../../../etc/passwd.db`` are
+        # never treated as the database.
+        db_member = None
+        for member in zipf.infolist():
+            basename = os.path.basename(member.filename)
+            if member.filename.endswith(".db") and _DB_BASENAME_PATTERN.match(basename):
+                db_member = member.filename
+                break
+
+        if not db_member:
+            raise HTTPException(
+                status_code=400,
+                detail="No database file found in the ZIP",
+            )
+
+        # Back up the current database and images before we mutate
+        # anything; a corrupted upload should still be recoverable.
+        backup_dir = os.path.join(os.path.dirname(DATABASE_PATH), "backup")
+        os.makedirs(backup_dir, exist_ok=True)
+
+        if os.path.exists(DATABASE_PATH):
+            shutil.copy2(
+                DATABASE_PATH,
+                os.path.join(backup_dir, "database_backup.db"),
+            )
+
+        if os.path.exists(IMAGE_PATH):
+            backup_images = os.path.join(backup_dir, "images_backup")
+            if os.path.exists(backup_images):
+                shutil.rmtree(backup_images)
+            shutil.copytree(IMAGE_PATH, backup_images)
+
+        # Extract every member, double-checking the resolved path on
+        # each write to defend against symlink-style tricks.
+        for member in zipf.infolist():
+            member_target = (Path(temp_dir) / member.filename).resolve()
+            if not _is_within(Path(temp_dir), member_target):
+                raise HTTPException(
+                    status_code=400,
+                    detail=("Archive contains entries with illegal path names"),
+                )
+            zipf.extract(member, temp_dir)
+
+        # Move the database file
+        extracted_db = os.path.join(temp_dir, db_member)
+        if not _is_within(Path(temp_dir), Path(extracted_db).resolve()):
+            raise HTTPException(
+                status_code=400, detail="Invalid database path in archive"
+            )
+        if os.path.exists(extracted_db):
+            shutil.move(extracted_db, DATABASE_PATH)
+
+        # Move the images directory if one was provided.
+        extracted_images = os.path.join(temp_dir, "images")
+        candidate = Path(extracted_images).resolve()
+        if not _is_within(Path(temp_dir), candidate):
+            raise HTTPException(
+                status_code=400, detail="Invalid images path in archive"
+            )
+        if os.path.exists(extracted_images):
+            if os.path.exists(IMAGE_PATH):
+                shutil.rmtree(IMAGE_PATH)
+            shutil.move(extracted_images, IMAGE_PATH)
+
+
 @router.post(
     "/import",
     dependencies=[Depends(deps.get_current_active_superuser)],
@@ -183,6 +286,9 @@ async def import_database(
     admin user. The handler rejects uploads that are not valid ZIP archives,
     exceed :data:`MAX_IMPORT_BYTES`, or contain entries whose resolved paths
     fall outside the extraction directory (zip-slip protection).
+
+    The upload is streamed to disk asynchronously; extracting it and moving
+    the files into place is blocking work and runs in a threadpool.
     """
     temp_dir = None
     try:
@@ -211,96 +317,8 @@ async def import_database(
                     )
                 buffer.write(chunk)
 
-        # Open the archive explicitly to reject anything that is not a valid
-        # ZIP before we touch ``extractall``. ``extractall`` would happily
-        # write outside ``temp_dir`` if a member name had traversal segments
-        # in it, so we extract each member ourselves after checking it.
         try:
-            with zipfile.ZipFile(temp_zip, "r") as zipf:
-                # Reject archives whose entry names try to escape the
-                # extraction directory (zip-slip) or contain NULs / absolute
-                # paths. We resolve each member against temp_dir and require
-                # it to stay under that directory.
-                for member in zipf.infolist():
-                    member_path = Path(temp_dir) / member.filename
-                    if not _is_within(Path(temp_dir), member_path.resolve()):
-                        raise HTTPException(
-                            status_code=400,
-                            detail=(
-                                "Archive contains entries with illegal path " "names"
-                            ),
-                        )
-
-                # Identify which member is "the database". We require the
-                # basename (no path separators) to look like a plain db
-                # filename so members like ``../../../etc/passwd.db`` are
-                # never treated as the database.
-                db_member = None
-                for member in zipf.infolist():
-                    basename = os.path.basename(member.filename)
-                    if member.filename.endswith(".db") and _DB_BASENAME_PATTERN.match(
-                        basename
-                    ):
-                        db_member = member.filename
-                        break
-
-                if not db_member:
-                    raise HTTPException(
-                        status_code=400,
-                        detail="No database file found in the ZIP",
-                    )
-
-                # Back up the current database and images before we mutate
-                # anything; a corrupted upload should still be recoverable.
-                backup_dir = os.path.join(os.path.dirname(DATABASE_PATH), "backup")
-                os.makedirs(backup_dir, exist_ok=True)
-
-                if os.path.exists(DATABASE_PATH):
-                    shutil.copy2(
-                        DATABASE_PATH,
-                        os.path.join(backup_dir, "database_backup.db"),
-                    )
-
-                if os.path.exists(IMAGE_PATH):
-                    backup_images = os.path.join(backup_dir, "images_backup")
-                    if os.path.exists(backup_images):
-                        shutil.rmtree(backup_images)
-                    shutil.copytree(IMAGE_PATH, backup_images)
-
-                # Extract every member, double-checking the resolved path on
-                # each write to defend against symlink-style tricks.
-                for member in zipf.infolist():
-                    member_target = (Path(temp_dir) / member.filename).resolve()
-                    if not _is_within(Path(temp_dir), member_target):
-                        raise HTTPException(
-                            status_code=400,
-                            detail=(
-                                "Archive contains entries with illegal path " "names"
-                            ),
-                        )
-                    zipf.extract(member, temp_dir)
-
-                # Move the database file
-                extracted_db = os.path.join(temp_dir, db_member)
-                if not _is_within(Path(temp_dir), Path(extracted_db).resolve()):
-                    raise HTTPException(
-                        status_code=400, detail="Invalid database path in archive"
-                    )
-                if os.path.exists(extracted_db):
-                    shutil.move(extracted_db, DATABASE_PATH)
-
-                # Move the images directory if one was provided.
-                extracted_images = os.path.join(temp_dir, "images")
-                candidate = Path(extracted_images).resolve()
-                if not _is_within(Path(temp_dir), candidate):
-                    raise HTTPException(
-                        status_code=400, detail="Invalid images path in archive"
-                    )
-                if os.path.exists(extracted_images):
-                    if os.path.exists(IMAGE_PATH):
-                        shutil.rmtree(IMAGE_PATH)
-                    shutil.move(extracted_images, IMAGE_PATH)
-
+            await run_in_threadpool(_extract_import_archive, temp_dir, temp_zip)
         except zipfile.BadZipFile:
             raise HTTPException(
                 status_code=400, detail="Uploaded file is not a valid ZIP archive"
@@ -314,4 +332,4 @@ async def import_database(
         raise HTTPException(status_code=500, detail=f"Import failed: {str(e)}")
     finally:
         if temp_dir and os.path.isdir(temp_dir):
-            shutil.rmtree(temp_dir, ignore_errors=True)
+            await run_in_threadpool(shutil.rmtree, temp_dir, ignore_errors=True)

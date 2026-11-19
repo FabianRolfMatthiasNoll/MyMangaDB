@@ -2,6 +2,7 @@ import { HTTPValidationError, ValidationError } from "../api";
 import { ResponseError } from "../api/runtime";
 import { logout } from "./auth";
 import i18n from "../i18n";
+import { notify } from "./notificationService";
 
 let sessionExpiredShown = false;
 
@@ -12,7 +13,7 @@ export const handleApiError = async (error: unknown) => {
   if (responseError.response && (responseError.response.status === 401 || responseError.response.status === 403)) {
     if (!sessionExpiredShown) {
       sessionExpiredShown = true;
-      alert(i18n.t("errors.sessionExpired"));
+      notify(i18n.t("errors.sessionExpired"), "error");
       setTimeout(() => {
         sessionExpiredShown = false;
       }, 5000);
@@ -27,7 +28,7 @@ export const handleApiError = async (error: unknown) => {
     if (errorData && errorData.detail) {
       // If it's a simple string message
       if (typeof errorData.detail === "string") {
-        alert(errorData.detail);
+        notify(errorData.detail, "error");
         return;
       }
 
@@ -40,14 +41,14 @@ export const handleApiError = async (error: unknown) => {
           })
           .join("\n");
 
-        alert(`${i18n.t("errors.validationFailed")}\n${validationErrors}`);
+        notify(`${i18n.t("errors.validationFailed")}\n${validationErrors}`, "error");
         return;
       }
     }
   }
 
   // Fallback for unknown errors
-  alert(i18n.t("errors.unexpected"));
+  notify(i18n.t("errors.unexpected"), "error");
 };
 
 export const apiCallWrapper = async <T>(apiCall: () => Promise<T>, fallback: T) => {
@@ -56,5 +57,24 @@ export const apiCallWrapper = async <T>(apiCall: () => Promise<T>, fallback: T) 
   } catch (error) {
     await handleApiError(error);
     return fallback;
+  }
+};
+
+/**
+ * Like {@link apiCallWrapper}, but re-throws the error after handling it.
+ *
+ * Use this when the caller has to tell "the request failed" apart from "the
+ * request succeeded and there is nothing to show". The fallback value of
+ * `apiCallWrapper` makes a failed request indistinguishable from an empty
+ * one, which is how a failed load ended up rendering an endless spinner.
+ */
+export const apiCallWrapperOrThrow = async <T>(
+  apiCall: () => Promise<T>
+): Promise<T> => {
+  try {
+    return await apiCall();
+  } catch (error) {
+    await handleApiError(error);
+    throw error;
   }
 };
