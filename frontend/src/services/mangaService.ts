@@ -17,6 +17,7 @@ export const getMangas = async (
   ratingMin?: number,
   ratingMax?: number,
   listId?: number,
+  ownershipStatuses?: string[],
 ) =>
   apiCallWrapperOrThrow(() =>
     mangasApi.getMangasApiV1MangasGetAllGet({
@@ -30,6 +31,7 @@ export const getMangas = async (
       ratingMin: ratingMin !== undefined ? ratingMin : undefined,
       ratingMax: ratingMax !== undefined ? ratingMax : undefined,
       listId: listId !== undefined ? listId : undefined,
+      ownershipStatuses: ownershipStatuses?.length ? ownershipStatuses : undefined,
     })
   );
 

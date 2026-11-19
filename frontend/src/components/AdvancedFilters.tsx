@@ -16,10 +16,12 @@ import {
   ReadingStatus,
   Category,
   ListModel,
+  OwnershipStatus,
 } from "../api/models";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { useStatusMeta } from "../hooks/useStatusMeta";
 import { useCategoryLabel } from "../hooks/useCategoryLabel";
+import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
 
 interface AdvancedFiltersProps {
   filterCategory: string[];
@@ -30,6 +32,8 @@ interface AdvancedFiltersProps {
   setFilterOverallStatus: (status: string[]) => void;
   ratingRange: number[];
   setRatingRange: (range: number[]) => void;
+  filterOwnershipStatus: string[];
+  setFilterOwnershipStatus: (status: string[]) => void;
   availableLists: ListModel[];
   filterList: ListModel | null;
   setFilterList: (list: ListModel | null) => void;
@@ -45,6 +49,8 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
   setFilterOverallStatus,
   ratingRange,
   setRatingRange,
+  filterOwnershipStatus,
+  setFilterOwnershipStatus,
   availableLists,
   filterList,
   setFilterList,
@@ -53,6 +59,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
   const { t } = useTranslation();
   const { getStatusLabel } = useStatusMeta();
   const getCategoryLabel = useCategoryLabel();
+  const { getOwnershipLabel } = useOwnershipStatus();
 
   const handleCategoryChange = (event: SelectChangeEvent<string[]>) => {
     setFilterCategory(event.target.value as string[]);
@@ -71,6 +78,12 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
     newValue: number | number[]
   ) => {
     setRatingRange(newValue as number[]);
+  };
+
+  const handleOwnershipStatusChange = (
+    event: SelectChangeEvent<string[]>
+  ) => {
+    setFilterOwnershipStatus(event.target.value as string[]);
   };
 
   return (
@@ -116,6 +129,21 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           {Object.values(OverallStatus).map((value) => (
             <MenuItem key={value} value={value}>
               {getStatusLabel(value)}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControl variant="outlined" sx={{ mb: 2 }}>
+        <InputLabel>{t("filters.ownershipStatus")}</InputLabel>
+        <Select
+          multiple
+          value={filterOwnershipStatus}
+          onChange={handleOwnershipStatusChange}
+          label={t("filters.ownershipStatus")}
+        >
+          {Object.values(OwnershipStatus).map((value) => (
+            <MenuItem key={value} value={value}>
+              {getOwnershipLabel(value)}
             </MenuItem>
           ))}
         </Select>

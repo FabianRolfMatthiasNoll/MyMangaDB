@@ -30,12 +30,14 @@ vi.mock("../components/AdvancedFilters", () => ({
     setFilterOverallStatus,
     setRatingRange,
     setFilterList,
+    setFilterOwnershipStatus,
   }: {
     setFilterCategory: (value: string[]) => void;
     setFilterReadingStatus: (value: string[]) => void;
     setFilterOverallStatus: (value: string[]) => void;
     setRatingRange: (value: number[]) => void;
     setFilterList: (value: { id: number; name: string } | null) => void;
+    setFilterOwnershipStatus: (value: string[]) => void;
   }) => (
     <>
       <button onClick={() => setFilterCategory(["manga"])}>Category</button>
@@ -48,6 +50,9 @@ vi.mock("../components/AdvancedFilters", () => ({
       <button onClick={() => setRatingRange([4, 5])}>Rating</button>
       <button onClick={() => setFilterList({ id: 7, name: "Shelf" })}>
         List
+      </button>
+      <button onClick={() => setFilterOwnershipStatus(["wishlist"])}>
+        Ownership
       </button>
     </>
   ),
@@ -83,16 +88,16 @@ describe("Dashboard advanced filters", () => {
     fireEvent.click(screen.getByRole("button", { name: "Advanced filters" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Category" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], undefined, undefined, 0, 5, undefined));
+    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], undefined, undefined, 0, 5, undefined, undefined));
 
     fireEvent.click(screen.getByRole("button", { name: "Reading status" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], ["in_progress"], undefined, 0, 5, undefined));
+    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], ["in_progress"], undefined, 0, 5, undefined, undefined));
 
     fireEvent.click(screen.getByRole("button", { name: "Overall status" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], ["in_progress"], ["ongoing"], 0, 5, undefined));
+    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], ["in_progress"], ["ongoing"], 0, 5, undefined, undefined));
 
     fireEvent.click(screen.getByRole("button", { name: "Rating" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], ["in_progress"], ["ongoing"], 4, 5, undefined));
+    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], ["in_progress"], ["ongoing"], 4, 5, undefined, undefined));
   });
 
   it("filters by list id instead of smuggling the list into the search", async () => {
@@ -114,7 +119,33 @@ describe("Dashboard advanced filters", () => {
         undefined,
         0,
         5,
-        7
+        7,
+        undefined
+      )
+    );
+  });
+
+  it("filters by ownership status", async () => {
+    renderDashboard();
+
+    await waitFor(() => expect(getMangas).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole("button", { name: "Advanced filters" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Ownership" }));
+
+    await waitFor(() =>
+      expect(getMangas).toHaveBeenLastCalledWith(
+        1,
+        20,
+        "",
+        "asc",
+        undefined,
+        undefined,
+        undefined,
+        0,
+        5,
+        undefined,
+        ["wishlist"]
       )
     );
   });

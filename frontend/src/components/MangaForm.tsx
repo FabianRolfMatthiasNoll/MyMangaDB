@@ -11,15 +11,18 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 import { Author, Genre, Manga, ListModel, Category } from "../api/models";
-import { OverallStatus, ReadingStatus } from "../api/models";
+import { OverallStatus, OwnershipStatus, ReadingStatus } from "../api/models";
 import { getAuthors } from "../services/authorService";
 import { getGenres } from "../services/genreService";
 import { getAllLists } from "../services/listService";
 import { useStatusMeta } from "../hooks/useStatusMeta";
 import { useCategoryLabel } from "../hooks/useCategoryLabel";
+import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 
@@ -51,6 +54,7 @@ const MangaForm: React.FC<MangaFormProps> = ({
   const { t } = useTranslation();
   const { getStatusLabel } = useStatusMeta();
   const getCategoryLabel = useCategoryLabel();
+  const { getOwnershipLabel } = useOwnershipStatus();
   const [editableManga, setEditableManga] = useState<Manga>(manga);
   const [availableAuthors, setAvailableAuthors] = useState<Author[]>([]);
   const [availableGenres, setAvailableGenres] = useState<Genre[]>([]);
@@ -301,6 +305,28 @@ const MangaForm: React.FC<MangaFormProps> = ({
           ))}
         </Select>
       </FormControl>
+      <Box>
+        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+          {t("manga.ownershipStatus")}
+        </Typography>
+        {/* A toggle group instead of a dropdown: there are only three
+            choices and the current one should stay visible. */}
+        <ToggleButtonGroup
+          exclusive
+          fullWidth
+          size="small"
+          value={editableManga.ownershipStatus || OwnershipStatus.Owned}
+          onChange={(_event, value) =>
+            value && handleChange("ownershipStatus", value)
+          }
+        >
+          {Object.values(OwnershipStatus).map((value) => (
+            <ToggleButton key={value} value={value}>
+              {getOwnershipLabel(value)}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </Box>
       <FormControl fullWidth>
         <InputLabel>{t("manga.readingStatus")}</InputLabel>
         <Select

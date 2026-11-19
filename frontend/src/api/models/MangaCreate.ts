@@ -41,6 +41,13 @@ import {
     GenreCreateToJSON,
     GenreCreateToJSONTyped,
 } from './GenreCreate';
+import type { OwnershipStatus } from './OwnershipStatus';
+import {
+    OwnershipStatusFromJSON,
+    OwnershipStatusFromJSONTyped,
+    OwnershipStatusToJSON,
+    OwnershipStatusToJSONTyped,
+} from './OwnershipStatus';
 import type { AuthorCreate } from './AuthorCreate';
 import {
     AuthorCreateFromJSON,
@@ -100,6 +107,10 @@ export interface MangaCreate {
     /**
      *
      */
+    ownershipStatus?: OwnershipStatus;
+    /**
+     *
+     */
     summary?: string | null;
     /**
      *
@@ -155,6 +166,7 @@ export function MangaCreateFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'starRating': json['star_rating'] === undefined ? undefined : json['star_rating'] === null ? null : json['star_rating'],
         'language': json['language'] === undefined ? undefined : json['language'] === null ? null : json['language'],
         'category': CategoryFromJSON(json['category']),
+        'ownershipStatus': json['ownership_status'] == null ? undefined : OwnershipStatusFromJSON(json['ownership_status']),
         'summary': json['summary'] === undefined ? undefined : json['summary'] === null ? null : json['summary'],
         'coverImage': json['cover_image'] === undefined ? undefined : json['cover_image'] === null ? null : json['cover_image'],
         'authors': ((json['authors'] as Array<any>).map(AuthorCreateFromJSON)),
@@ -182,6 +194,7 @@ export function MangaCreateToJSONTyped(value?: MangaCreate | null, ignoreDiscrim
         'star_rating': value['starRating'],
         'language': value['language'],
         'category': CategoryToJSON(value['category']),
+        'ownership_status': OwnershipStatusToJSON(value['ownershipStatus']),
         'summary': value['summary'],
         'cover_image': value['coverImage'],
         'authors': ((value['authors'] as Array<any>).map(AuthorCreateToJSON)),

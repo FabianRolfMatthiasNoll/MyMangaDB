@@ -68,6 +68,7 @@
     "category": "Category",
     "readingStatus": "Reading Status",
     "overallStatus": "Overall Status",
+    "ownershipStatus": "Ownership",
     "uploadCoverImage": "Upload Cover Image",
     "volumes": "Volumes",
     "deleteConfirm": "Are you sure you want to delete \"{{title}}\"? This action cannot be undone.",
@@ -111,6 +112,7 @@
     "category": "Category",
     "readingStatus": "Reading Status",
     "overallStatus": "Overall Status",
+    "ownershipStatus": "Ownership",
     "ratingRange": "Rating Range",
     "filterByList": "Filter by List",
     "resetFilters": "Reset Filters"
@@ -119,6 +121,11 @@
     "manga": "Manga",
     "novel": "Novel",
     "doujinshi": "Doujinshi"
+  },
+  "ownership": {
+    "owned": "Owned",
+    "wishlist": "Wishlist",
+    "ordered": "Ordered"
   },
   "status": {
     "notStarted": "Not Started",

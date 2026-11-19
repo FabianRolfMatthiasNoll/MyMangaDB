@@ -68,6 +68,7 @@
     "category": "Kategorie",
     "readingStatus": "Lesestatus",
     "overallStatus": "Gesamtstatus",
+    "ownershipStatus": "Besitz",
     "uploadCoverImage": "Coverbild hochladen",
     "volumes": "Bände",
     "deleteConfirm": "Sind Sie sicher, dass Sie \"{{title}}\" löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
@@ -111,6 +112,7 @@
     "category": "Kategorie",
     "readingStatus": "Lesestatus",
     "overallStatus": "Gesamtstatus",
+    "ownershipStatus": "Besitz",
     "ratingRange": "Bewertungsbereich",
     "filterByList": "Nach Liste filtern",
     "resetFilters": "Filter zurücksetzen"
@@ -119,6 +121,11 @@
     "manga": "Manga",
     "novel": "Roman",
     "doujinshi": "Doujinshi"
+  },
+  "ownership": {
+    "owned": "Im Besitz",
+    "wishlist": "Merkliste",
+    "ordered": "Bestellt"
   },
   "status": {
     "notStarted": "Nicht begonnen",

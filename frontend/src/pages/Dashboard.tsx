@@ -34,6 +34,9 @@ const Dashboard: React.FC = () => {
   const [filterCategory, setFilterCategory] = useState<string[]>([]);
   const [filterReadingStatus, setFilterReadingStatus] = useState<string[]>([]);
   const [filterOverallStatus, setFilterOverallStatus] = useState<string[]>([]);
+  const [filterOwnershipStatus, setFilterOwnershipStatus] = useState<string[]>(
+    []
+  );
   const [ratingRange, setRatingRange] = useState<number[]>([0, 5]);
   const [filterList, setFilterList] = useState<ListModel | null>(null);
 
@@ -60,6 +63,7 @@ const Dashboard: React.FC = () => {
       filterCategory,
       filterReadingStatus,
       filterOverallStatus,
+      filterOwnershipStatus,
       ratingRange,
     ],
     queryFn: ({ pageParam = 1 }) =>
@@ -74,6 +78,7 @@ const Dashboard: React.FC = () => {
         ratingRange[0],
         ratingRange[1],
         filterList?.id,
+        filterOwnershipStatus.length > 0 ? filterOwnershipStatus : undefined
       ),
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length === limit ? allPages.length + 1 : undefined;
@@ -90,6 +95,7 @@ const Dashboard: React.FC = () => {
     setFilterCategory([]);
     setFilterReadingStatus([]);
     setFilterOverallStatus([]);
+    setFilterOwnershipStatus([]);
     setRatingRange([0, 5]);
     setFilterList(null);
     setSearchQuery("");
@@ -138,6 +144,8 @@ const Dashboard: React.FC = () => {
             setFilterOverallStatus={setFilterOverallStatus}
             ratingRange={ratingRange}
             setRatingRange={setRatingRange}
+            filterOwnershipStatus={filterOwnershipStatus}
+            setFilterOwnershipStatus={setFilterOwnershipStatus}
             availableLists={availableLists}
             filterList={filterList}
             setFilterList={setFilterList}
