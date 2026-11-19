@@ -122,7 +122,7 @@
     "planToRead": "Plan to Read",
     "ongoing": "Ongoing",
     "hiatus": "Hiatus",
-    "discontinued": "Discontinued"
+    "cancelled": "Cancelled"
   },
   "errors": {
     "sessionExpired": "Your session has expired. Please log in again.",

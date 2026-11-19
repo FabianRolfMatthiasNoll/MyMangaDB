@@ -122,7 +122,7 @@
     "planToRead": "Geplant",
     "ongoing": "Laufend",
     "hiatus": "Pausiert",
-    "discontinued": "Eingestellt"
+    "cancelled": "Eingestellt"
   },
   "errors": {
     "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",

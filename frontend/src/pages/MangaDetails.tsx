@@ -35,6 +35,7 @@ import VolumeManager from "../components/VolumeManager";
 import { useUser } from "../context/UserContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { useStatusMeta } from "../hooks/useStatusMeta";
 
 const MangaDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -44,6 +45,7 @@ const MangaDetails: React.FC = () => {
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const { isAdmin } = useUser();
+  const { getStatusLabel, getStatusColor } = useStatusMeta();
   const [manga, setManga] = useState<Manga | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
   const [editMode, setEditMode] = useState<boolean>(false);
@@ -163,21 +165,6 @@ const MangaDetails: React.FC = () => {
 
   const handleCancel = () => {
     setEditMode(false);
-  };
-
-  const getStatusColor = (status: string) => {
-    const statusColors: { [key: string]: string } = {
-      "Not Started": theme.palette.error.main,
-      Reading: theme.palette.info.main,
-      Completed: theme.palette.success.main,
-      "On Hold": theme.palette.warning.main,
-      Dropped: theme.palette.error.main,
-      "Plan to Read": theme.palette.secondary.main,
-      Ongoing: theme.palette.info.main,
-      Hiatus: theme.palette.warning.main,
-      Discontinued: theme.palette.error.main,
-    };
-    return statusColors[status] || theme.palette.grey[500];
   };
 
   const handleCloseNotification = () => {
@@ -328,7 +315,9 @@ const MangaDetails: React.FC = () => {
               <Box sx={{ display: "flex", gap: 1, mb: 3, flexWrap: "wrap" }}>
                 {manga.readingStatus && (
                   <Chip
-                    label={`Reading: ${manga.readingStatus}`}
+                    label={`${t("manga.readingStatus")}: ${getStatusLabel(
+                      manga.readingStatus
+                    )}`}
                     sx={{
                       bgcolor: getStatusColor(manga.readingStatus),
                       color: "white",
@@ -338,7 +327,9 @@ const MangaDetails: React.FC = () => {
                 )}
                 {manga.overallStatus && (
                   <Chip
-                    label={`Collection: ${manga.overallStatus}`}
+                    label={`${t("manga.overallStatus")}: ${getStatusLabel(
+                      manga.overallStatus
+                    )}`}
                     sx={{
                       bgcolor: getStatusColor(manga.overallStatus),
                       color: "white",

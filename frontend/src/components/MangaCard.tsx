@@ -12,6 +12,7 @@ import {
 import { Manga } from "../api/models";
 import { Link } from "react-router-dom";
 import { getMangaCoverImageUrl } from "../services/imageService";
+import { useStatusMeta } from "../hooks/useStatusMeta";
 
 interface MangaCardProps {
   manga: Manga;
@@ -20,6 +21,7 @@ interface MangaCardProps {
 
 const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
   const theme = useTheme();
+  const { getStatusLabel, getStatusColor } = useStatusMeta();
   const imageUrl = manga.coverImage
     ? getMangaCoverImageUrl(manga.coverImage)
     : "";
@@ -67,21 +69,6 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
     width: "100%",
     height: "100%",
     objectFit: "cover",
-  };
-
-  const getStatusColor = (status: string) => {
-    const statusColors: { [key: string]: string } = {
-      "Not Started": theme.palette.error.main,
-      Reading: theme.palette.info.main,
-      Completed: theme.palette.success.main,
-      "On Hold": theme.palette.warning.main,
-      Dropped: theme.palette.error.main,
-      "Plan to Read": theme.palette.secondary.main,
-      Ongoing: theme.palette.info.main,
-      Hiatus: theme.palette.warning.main,
-      Discontinued: theme.palette.error.main,
-    };
-    return statusColors[status] || theme.palette.grey[500];
   };
 
   return (
@@ -143,7 +130,7 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
               <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
                 {manga.readingStatus && (
                   <Chip
-                    label={manga.readingStatus}
+                    label={getStatusLabel(manga.readingStatus)}
                     size="small"
                     sx={{
                       bgcolor: getStatusColor(manga.readingStatus),
@@ -155,7 +142,7 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
                 )}
                 {manga.overallStatus && (
                   <Chip
-                    label={manga.overallStatus}
+                    label={getStatusLabel(manga.overallStatus)}
                     size="small"
                     sx={{
                       bgcolor: getStatusColor(manga.overallStatus),

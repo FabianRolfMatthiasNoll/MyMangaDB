@@ -12,6 +12,7 @@ import {
 import { Manga } from "../api/models";
 import { Link } from "react-router-dom";
 import { fetchMangaCoverImageAsBlobUrl } from "../services/imageService";
+import { useStatusMeta } from "../hooks/useStatusMeta";
 
 interface MobileMangaListItemProps {
   manga: Manga;
@@ -20,6 +21,7 @@ interface MobileMangaListItemProps {
 
 const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId }) => {
   const theme = useTheme();
+  const { getStatusLabel, getStatusColor } = useStatusMeta();
   const [imageUrl, setImageUrl] = useState("");
 
   useEffect(() => {
@@ -42,21 +44,6 @@ const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId
       }
     };
   }, [manga.coverImage]);
-
-  const getStatusColor = (status: string) => {
-    const statusColors: { [key: string]: string } = {
-      "Not Started": theme.palette.error.main,
-      "Reading": theme.palette.info.main,
-      "Completed": theme.palette.success.main,
-      "On Hold": theme.palette.warning.main,
-      "Dropped": theme.palette.error.main,
-      "Plan to Read": theme.palette.secondary.main,
-      "Ongoing": theme.palette.info.main,
-      "Hiatus": theme.palette.warning.main,
-      "Discontinued": theme.palette.error.main,
-    };
-    return statusColors[status] || theme.palette.grey[500];
-  };
 
   return (
     <ListItem key={manga.id} sx={{ px: 0, py: 1 }}>
@@ -132,7 +119,7 @@ const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId
           <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
             {manga.readingStatus && (
               <Chip
-                label={manga.readingStatus}
+                label={getStatusLabel(manga.readingStatus)}
                 size="small"
                 sx={{
                   bgcolor: getStatusColor(manga.readingStatus),
@@ -144,7 +131,7 @@ const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId
             )}
             {manga.overallStatus && (
               <Chip
-                label={manga.overallStatus}
+                label={getStatusLabel(manga.overallStatus)}
                 size="small"
                 sx={{
                   bgcolor: getStatusColor(manga.overallStatus),
