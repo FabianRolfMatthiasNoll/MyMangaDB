@@ -90,7 +90,7 @@ const MangaForm: React.FC<MangaFormProps> = ({
     }
   }, [availableLists, initialLists]);
 
-  const handleChange = (field: keyof Manga, value: any) => {
+  const handleChange = (field: keyof Manga, value: Manga[keyof Manga]) => {
     setEditableManga({ ...editableManga, [field]: value });
   };
 
@@ -136,8 +136,8 @@ const MangaForm: React.FC<MangaFormProps> = ({
     onSave(mangaToSave, coverImage || undefined);
   };
 
-  const handleAuthorsChange = (_: any, newValue: any[]) => {
-    const authors = newValue.reduce((acc, option) => {
+  const handleAuthorsChange = (_: unknown, newValue: (Author | string)[]) => {
+    const authors = newValue.reduce((acc: Author[], option) => {
       if (typeof option === "string") {
         const existingAuthor = availableAuthors.find(
           (author) => author.name.toLowerCase() === option.toLowerCase()
@@ -155,8 +155,8 @@ const MangaForm: React.FC<MangaFormProps> = ({
     handleChange("authors", authors);
   };
 
-  const handleGenresChange = (_: any, newValue: any[]) => {
-    const genres = newValue.reduce((acc, option) => {
+  const handleGenresChange = (_: unknown, newValue: (Genre | string)[]) => {
+    const genres = newValue.reduce((acc: Genre[], option) => {
       if (typeof option === "string") {
         const existingGenre = availableGenres.find(
           (genre) => genre.name.toLowerCase() === option.toLowerCase()
