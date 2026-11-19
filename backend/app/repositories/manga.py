@@ -179,13 +179,6 @@ class MangaRepository(BaseRepository):
         BaseRepository.commit_session(db)
         db.refresh(db_manga)
 
-        # Update manga counts
-        for author in authors:
-            author.manga_count = len(author.mangas)
-        for genre in genres:
-            genre.manga_count = len(genre.mangas)
-        BaseRepository.commit_session(db)
-
         return Manga.model_validate(db_manga)
 
     @staticmethod
@@ -193,10 +186,6 @@ class MangaRepository(BaseRepository):
         db_manga = db.query(MangaModel).filter(MangaModel.id == manga_data.id).first()
         if not db_manga:
             raise RepositoryError("Manga not found")
-
-        # Store old authors and genres for count update
-        old_authors = set(db_manga.authors)
-        old_genres = set(db_manga.genres)
 
         # Handle cover image update
         if manga_data.cover_image != db_manga.cover_image:
@@ -255,16 +244,6 @@ class MangaRepository(BaseRepository):
         BaseRepository.commit_session(db)
         db.refresh(db_manga)
 
-        # Update manga counts for both old and new authors/genres
-        all_authors = set(db_manga.authors) | old_authors
-        all_genres = set(db_manga.genres) | old_genres
-
-        for author in all_authors:
-            author.manga_count = len(author.mangas)
-        for genre in all_genres:
-            genre.manga_count = len(genre.mangas)
-        BaseRepository.commit_session(db)
-
         return Manga.model_validate(db_manga)
 
     @staticmethod
@@ -291,12 +270,13 @@ class MangaRepository(BaseRepository):
         db.delete(db_manga)
         BaseRepository.commit_session(db)
 
-        # Update manga counts
+        # The counts are derived, so the values loaded before the delete are
+        # now stale. Expiring the affected rows makes the next access
+        # recompute them.
         for author in authors:
-            author.manga_count = len(author.mangas)
+            db.expire(author)
         for genre in genres:
-            genre.manga_count = len(genre.mangas)
-        BaseRepository.commit_session(db)
+            db.expire(genre)
 
         return Manga.model_validate(db_manga)
 
