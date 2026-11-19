@@ -4,11 +4,11 @@ import uuid
 from typing import List as TypedList
 from typing import Optional
 
-import requests
 from sqlalchemy import asc, desc, or_
 from sqlalchemy.orm import Session
 
 from backend.app import settings
+from backend.app.core.remote_images import download_public_image
 from backend.app.models import Author as AuthorModel
 from backend.app.models import Genre as GenreModel
 from backend.app.models import List as ListModel
@@ -347,17 +347,12 @@ class MangaRepository(BaseRepository):
             save_path = os.path.join(settings.IMAGE_SAVE_PATH, filename)
             os.makedirs(settings.IMAGE_SAVE_PATH, exist_ok=True)
             try:
-                # Check for SSL verification disable
-                verify_ssl = os.getenv("DISABLE_SSL_VERIFY", "false").lower() != "true"
-                if not verify_ssl:
-                    import urllib3
-
-                    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-                response = requests.get(cover_image_url, verify=verify_ssl)
-                response.raise_for_status()
+                # The URL comes from the request body, so the download has to
+                # be restricted to public addresses - otherwise the backend
+                # could be pointed at internal services (SSRF).
+                content = download_public_image(cover_image_url)
                 with open(save_path, "wb") as f:
-                    f.write(response.content)
+                    f.write(content)
                 return filename
             except Exception as e:
                 logger.warning("Failed to download cover image: %s", e)
