@@ -115,6 +115,11 @@
     "filterByList": "Filter by List",
     "resetFilters": "Reset Filters"
   },
+  "categories": {
+    "manga": "Manga",
+    "novel": "Novel",
+    "doujinshi": "Doujinshi"
+  },
   "status": {
     "notStarted": "Not Started",
     "reading": "Reading",
