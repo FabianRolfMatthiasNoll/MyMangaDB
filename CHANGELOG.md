@@ -1,3 +1,10 @@
+## [2.8.5](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.8.4...v2.8.5) (2026-11-19)
+
+
+### Bug Fixes
+
+* **security:** Dont start backend without secure token ([e6e11a4](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/commit/e6e11a47b4ef8b348c94abc4ecc0db7eecb1fae4))
+
 ## [2.8.4](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.8.3...v2.8.4) (2026-10-27)
 
 ## [2.8.3](https://github.com/FabianRolfMatthiasNoll/MyMangaDB/compare/v2.8.2...v2.8.3) (2026-09-05)
