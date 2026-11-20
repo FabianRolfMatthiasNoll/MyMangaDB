@@ -95,6 +95,9 @@
   },
   "volume": {
     "volumesOwned": "Bände ({{count}} vorhanden)",
+    "volumesOfTotal": "Bände ({{count}} von {{total}})",
+    "totalVolumes": "Die Reihe hat insgesamt Bände",
+    "totalVolumesHint": "Mit dieser Zahl weiß die App, welche Bände noch fehlen.",
     "manageVolumes": "Bände verwalten",
     "noVolumesTracked": "Noch keine Bände erfasst.",
     "owned": "Vorhanden",

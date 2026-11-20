@@ -95,6 +95,9 @@
   },
   "volume": {
     "volumesOwned": "Volumes ({{count}} Owned)",
+    "volumesOfTotal": "Volumes ({{count}} of {{total}})",
+    "totalVolumes": "The series has volumes in total",
+    "totalVolumesHint": "With this number the app knows which volumes are still missing.",
     "manageVolumes": "Manage Volumes",
     "noVolumesTracked": "No volumes tracked yet.",
     "owned": "Owned",

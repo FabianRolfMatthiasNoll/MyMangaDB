@@ -32,6 +32,7 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
   const { isAdmin } = useUser();
   const [open, setOpen] = useState(false);
   const [inputString, setInputString] = useState("");
+  const [totalVolumes, setTotalVolumes] = useState("");
   const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
 
@@ -69,6 +70,11 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
         }
       }
       setInputString(ranges.join("; "));
+      setTotalVolumes(
+        manga.totalVolumes !== null && manga.totalVolumes !== undefined
+          ? String(manga.totalVolumes)
+          : ""
+      );
     }
     // The input is filled from the volumes of the manga, not from the set
     // that is derived from them.
@@ -90,7 +96,12 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
       }));
 
       // Update manga
-      const updatedManga = { ...manga, volumes: newVolumes };
+      const updatedManga = {
+        ...manga,
+        volumes: newVolumes,
+        totalVolumes:
+          totalVolumes.trim() === "" ? null : Number(totalVolumes),
+      };
       await updateMangaDetails(updatedManga);
       await invalidateMangaQueries(queryClient);
       onUpdate();
@@ -114,7 +125,12 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
         }}
       >
         <Typography variant="h6">
-          {t("volume.volumesOwned", { count: ownedVolumes.size })}
+          {manga.totalVolumes
+            ? t("volume.volumesOfTotal", {
+                count: ownedVolumes.size,
+                total: manga.totalVolumes,
+              })
+            : t("volume.volumesOwned", { count: ownedVolumes.size })}
         </Typography>
         {isAdmin && (
           <Button
@@ -165,6 +181,18 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
             value={inputString}
             onChange={(e) => setInputString(e.target.value)}
             placeholder={t("volume.e.gVolumes")}
+          />
+          <TextField
+            margin="dense"
+            id="totalVolumes"
+            label={t("volume.totalVolumes")}
+            type="number"
+            fullWidth
+            variant="outlined"
+            value={totalVolumes}
+            onChange={(e) => setTotalVolumes(e.target.value)}
+            slotProps={{ htmlInput: { min: 0 } }}
+            helperText={t("volume.totalVolumesHint")}
           />
         </DialogContent>
         <DialogActions>
