@@ -14,6 +14,7 @@ import { Manga, MangaCreate, Category } from "../api/models";
 import { createManga } from "../services/mangaService";
 import { saveMangaCover } from "../services/imageService";
 import { useQueryClient } from "@tanstack/react-query";
+import { invalidateMangaQueries } from "../services/queryInvalidation";
 import { useTranslation } from "react-i18next";
 
 const CreateManga: React.FC = () => {
@@ -77,8 +78,7 @@ const CreateManga: React.FC = () => {
 
       const createdManga = await createManga(mangaCreate);
       if (createdManga) {
-        await queryClient.invalidateQueries({ queryKey: ["mangas"] });
-        await queryClient.invalidateQueries({ queryKey: ["lists"] });
+        await invalidateMangaQueries(queryClient);
         navigate(`/manga/${createdManga.id}`);
       }
     } catch (error) {

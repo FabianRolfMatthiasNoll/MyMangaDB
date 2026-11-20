@@ -13,12 +13,15 @@ import {
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutlineOutlined";
+import { useQueryClient } from "@tanstack/react-query";
+import { invalidateMangaQueries } from "../../services/queryInvalidation";
 import ImportMALModal from "./ImportMALModal";
 
 const ImportMALSection: React.FC = () => {
   const { t } = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   return (
     <Paper sx={{ p: 3, mt: 3 }}>
@@ -91,9 +94,10 @@ const ImportMALSection: React.FC = () => {
       <ImportMALModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        onImportSuccess={() =>
-          setSuccessMessage(t("errors.databaseImportedSuccess"))
-        }
+        onImportSuccess={() => {
+          setSuccessMessage(t("errors.databaseImportedSuccess"));
+          invalidateMangaQueries(queryClient);
+        }}
       />
     </Paper>
   );

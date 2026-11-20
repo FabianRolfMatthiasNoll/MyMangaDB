@@ -23,7 +23,8 @@ import AdvancedFilters from "../components/AdvancedFilters";
 import MangaList from "../components/MangaList";
 import AutomaticSearchModal from "../components/AutomaticSearchModal";
 import { useNavigate } from "react-router-dom";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
+import { invalidateMangaQueries } from "../services/queryInvalidation";
 import { useTranslation } from "react-i18next";
 
 const Dashboard: React.FC = () => {
@@ -46,6 +47,8 @@ const Dashboard: React.FC = () => {
     queryKey: ["lists"],
     queryFn: getAllLists,
   });
+
+  const queryClient = useQueryClient();
 
   const [showSecondaryFabs, setShowSecondaryFabs] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -267,7 +270,7 @@ const Dashboard: React.FC = () => {
         open={showModal}
         onClose={() => setShowModal(false)}
         onMangaAdded={() => {
-          refetch();
+          invalidateMangaQueries(queryClient);
         }}
       />
     </Box>

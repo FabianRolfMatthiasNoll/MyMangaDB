@@ -30,6 +30,7 @@ import {
   setPriority,
 } from "../services/wishlistService";
 import { notify } from "../services/notificationService";
+import { invalidateMangaQueries } from "../services/queryInvalidation";
 import { useUser } from "../context/UserContext";
 import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
 import {
@@ -65,8 +66,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
   const volumes = seriesVolumesOf(manga);
 
   const refresh = async () => {
-    await queryClient.invalidateQueries({ queryKey: ["wishlist"] });
-    await queryClient.invalidateQueries({ queryKey: ["mangas"] });
+    await invalidateMangaQueries(queryClient);
   };
 
   const runAction = async (action: () => Promise<unknown>) => {

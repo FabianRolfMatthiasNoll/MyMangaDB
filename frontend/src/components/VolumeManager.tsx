@@ -15,6 +15,8 @@ import { Manga, Volume } from "../api/models";
 import { useUser } from "../context/UserContext";
 import { updateMangaDetails } from "../services/mangaService";
 import { notify } from "../services/notificationService";
+import { useQueryClient } from "@tanstack/react-query";
+import { invalidateMangaQueries } from "../services/queryInvalidation";
 
 import { parseVolumeString } from "../utils/volumeUtils";
 import { ownedVolumesOf } from "../utils/wishlist";
@@ -31,6 +33,7 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
   const [open, setOpen] = useState(false);
   const [inputString, setInputString] = useState("");
   const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   // Calculate owned volumes and max volume
   const ownedVolumes = new Set(ownedVolumesOf(manga));
@@ -89,6 +92,7 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
       // Update manga
       const updatedManga = { ...manga, volumes: newVolumes };
       await updateMangaDetails(updatedManga);
+      await invalidateMangaQueries(queryClient);
       onUpdate();
       setOpen(false);
     } catch (error) {
