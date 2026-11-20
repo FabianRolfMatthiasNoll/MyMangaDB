@@ -106,7 +106,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
             severity: "error",
           });
         }
-      } catch (error) {
+      } catch {
         setSnackbar({
           open: true,
           message: t("common.errorLoading"),
@@ -135,7 +135,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
       });
       // Call the callback to refresh dashboard
       onMangaAdded?.();
-    } catch (error) {
+    } catch {
       setSnackbar({
         open: true,
         message: t("manga.addError"),

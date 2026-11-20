@@ -16,6 +16,77 @@ import { getStatistics } from "../services/statisticsService";
 import { Statistics, StatisticCount } from "../api/models";
 import { useTranslation } from "react-i18next";
 
+const formatLabel = (label: string) => {
+  // Replace underscores with spaces and capitalize each word
+  return label
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
+const StatCard = ({ title, value }: { title: string; value: number }) => (
+  <Paper sx={{ p: 3, textAlign: "center", height: "100%" }}>
+    <Typography variant="h4" color="primary">
+      {value}
+    </Typography>
+    <Typography variant="subtitle1" color="text.secondary">
+      {title}
+    </Typography>
+  </Paper>
+);
+
+const DistributionList = ({
+  title,
+  data,
+  isRating = false,
+}: {
+  title: string;
+  data: StatisticCount[];
+  isRating?: boolean;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <Paper sx={{ p: 3, height: "100%" }}>
+      <Typography variant="h6" gutterBottom>
+        {title}
+      </Typography>
+      <Divider sx={{ mb: 2 }} />
+      <List dense>
+        {data.map((item, index) => (
+          <ListItem key={index}>
+            <ListItemText
+              primary={
+                isRating ? (
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    {item.label === "Unrated" ? (
+                      <Typography variant="body2">{t("common.unrated")}</Typography>
+                    ) : (
+                      <>
+                        <Rating
+                          value={Number(item.label)}
+                          readOnly
+                          size="small"
+                          precision={0.5}
+                        />
+                        <Typography variant="body2" sx={{ ml: 1 }}>
+                          ({item.label})
+                        </Typography>
+                      </>
+                    )}
+                  </Box>
+                ) : (
+                  formatLabel(item.label)
+                )
+              }
+            />
+            <Typography variant="body2">{item.count}</Typography>
+          </ListItem>
+        ))}
+      </List>
+    </Paper>
+  );
+};
+
 const StatisticsPage: React.FC = () => {
   const { t } = useTranslation();
   const [stats, setStats] = useState<Statistics | null>(null);
@@ -57,74 +128,6 @@ const StatisticsPage: React.FC = () => {
       </Container>
     );
   }
-
-  const formatLabel = (label: string) => {
-    // Replace underscores with spaces and capitalize each word
-    return label
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
-
-  const StatCard = ({ title, value }: { title: string; value: number }) => (
-    <Paper sx={{ p: 3, textAlign: "center", height: "100%" }}>
-      <Typography variant="h4" color="primary">
-        {value}
-      </Typography>
-      <Typography variant="subtitle1" color="text.secondary">
-        {title}
-      </Typography>
-    </Paper>
-  );
-
-  const DistributionList = ({
-    title,
-    data,
-    isRating = false,
-  }: {
-    title: string;
-    data: StatisticCount[];
-    isRating?: boolean;
-  }) => (
-    <Paper sx={{ p: 3, height: "100%" }}>
-      <Typography variant="h6" gutterBottom>
-        {title}
-      </Typography>
-      <Divider sx={{ mb: 2 }} />
-      <List dense>
-        {data.map((item, index) => (
-          <ListItem key={index}>
-            <ListItemText
-              primary={
-                isRating ? (
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    {item.label === "Unrated" ? (
-                      <Typography variant="body2">{t("common.unrated")}</Typography>
-                    ) : (
-                      <>
-                        <Rating
-                          value={Number(item.label)}
-                          readOnly
-                          size="small"
-                          precision={0.5}
-                        />
-                        <Typography variant="body2" sx={{ ml: 1 }}>
-                          ({item.label})
-                        </Typography>
-                      </>
-                    )}
-                  </Box>
-                ) : (
-                  formatLabel(item.label)
-                )
-              }
-            />
-            <Typography variant="body2">{item.count}</Typography>
-          </ListItem>
-        ))}
-      </List>
-    </Paper>
-  );
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>

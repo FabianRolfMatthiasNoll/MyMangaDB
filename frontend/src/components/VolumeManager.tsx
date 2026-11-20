@@ -67,6 +67,9 @@ const VolumeManager: React.FC<VolumeManagerProps> = ({ manga, onUpdate }) => {
       }
       setInputString(ranges.join("; "));
     }
+    // The input is filled from the volumes of the manga, not from the set
+    // that is derived from them.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, manga.volumes]);
 
   const handleSave = async () => {

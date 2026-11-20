@@ -64,7 +64,7 @@ const ImportMALModal: React.FC<ImportMALModalProps> = ({
       } else {
         setError(t("errors.failedToImportDatabase"));
       }
-    } catch (err) {
+    } catch {
       setError(t("errors.failedToImportDatabase"));
     } finally {
       setLoading(false);

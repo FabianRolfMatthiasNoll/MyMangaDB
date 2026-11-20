@@ -26,9 +26,9 @@ class DatabaseService {
     } catch (error) {
       console.error("Error exporting database:", error);
       if (error instanceof Error) {
-        throw new Error(`Export failed: ${error.message}`);
+        throw new Error(`Export failed: ${error.message}`, { cause: error });
       }
-      throw new Error("Export failed: Unknown error");
+      throw new Error("Export failed: Unknown error", { cause: error });
     }
   }
 

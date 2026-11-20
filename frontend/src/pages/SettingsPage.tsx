@@ -21,22 +21,22 @@ const SettingsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchSettings();
-  }, []);
-
   const fetchSettings = async () => {
     try {
       setLoading(true);
       const data = await getSettings();
       setSettings(data);
       setError(null);
-    } catch (err) {
+    } catch {
       setError("Failed to fetch settings");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
 
   if (loading && !settings) {
     return (

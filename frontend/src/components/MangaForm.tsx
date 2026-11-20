@@ -92,6 +92,9 @@ const MangaForm: React.FC<MangaFormProps> = ({
       );
       setSelectedLists(preselected);
     }
+    // The selection is only filled once - it should not be refilled when the
+    // user removes a list.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [availableLists, initialLists]);
 
   const handleChange = (field: keyof Manga, value: Manga[keyof Manga]) => {
