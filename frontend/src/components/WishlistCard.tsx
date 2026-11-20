@@ -108,7 +108,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
         gap: 1.5,
       }}
     >
-      <Stack direction="row" spacing={2} alignItems="flex-start">
+      <Stack direction="row" spacing={2} sx={{ alignItems: "flex-start" }}>
         <Box
           component={Link}
           to={`/manga/${manga.id}`}
@@ -148,7 +148,10 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
         </Box>
 
         <Box sx={{ minWidth: 0, flex: 1 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+          <Stack
+            direction="row"
+            sx={{ justifyContent: "space-between", alignItems: "flex-start" }}
+          >
             <Typography
               variant="h6"
               component={Link}
@@ -188,7 +191,11 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
             </Typography>
           )}
 
-          <Stack direction="row" spacing={1} sx={{ mt: 1 }} flexWrap="wrap">
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ mt: 1, flexWrap: "wrap" }}
+          >
             <Chip
               label={getOwnershipLabel(manga.ownershipStatus)}
               size="small"

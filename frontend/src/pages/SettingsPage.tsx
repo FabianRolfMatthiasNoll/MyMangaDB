@@ -41,10 +41,12 @@ const SettingsPage: React.FC = () => {
   if (loading && !settings) {
     return (
       <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="80vh"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "80vh",
+        }}
       >
         <CircularProgress />
       </Box>
@@ -53,7 +55,7 @@ const SettingsPage: React.FC = () => {
 
   return (
     <Container maxWidth="md">
-      <Box py={4}>
+      <Box sx={{ py: 4 }}>
         <Typography variant="h4" gutterBottom>
           {t("settings.title")}
         </Typography>

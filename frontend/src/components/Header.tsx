@@ -9,6 +9,7 @@ import {
   AppBar,
   Badge,
   Box,
+  Button,
   IconButton,
   Menu,
   MenuItem,
@@ -172,45 +173,44 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
                 >
                   MyMangaDB
                 </Typography>
-                {menuItems.map((item) => (
-                  <MenuItem
-                    key={item.text}
-                    component={Link}
-                    to={item.path}
-                    selected={location.pathname === item.path}
-                    sx={{
-                      borderRadius: 2,
-                      "&.Mui-selected": {
-                        backgroundColor:
-                          theme.palette.mode === "dark"
-                            ? theme.palette.primary.dark
-                            : theme.palette.primary.light,
-                        color: theme.palette.primary.contrastText,
-                      },
-                      "&.Mui-selected:hover": {
-                        backgroundColor:
-                          theme.palette.mode === "dark"
-                            ? theme.palette.primary.dark
-                            : theme.palette.primary.light,
-                      },
-                      "&:hover": {
-                        backgroundColor:
-                          theme.palette.mode === "dark"
-                            ? theme.palette.primary.main
-                            : theme.palette.primary.light,
-                        color: theme.palette.primary.contrastText,
-                      },
-                    }}
-                  >
-                    <Badge
-                      color="secondary"
-                      badgeContent={item.badge}
-                      invisible={!item.badge}
+                {menuItems.map((item) => {
+                  const isSelected = location.pathname === item.path;
+                  return (
+                    <Button
+                      key={item.text}
+                      component={Link}
+                      to={item.path}
+                      color="inherit"
+                      sx={{
+                        borderRadius: 2,
+                        ...(isSelected && {
+                          backgroundColor:
+                            theme.palette.mode === "dark"
+                              ? theme.palette.primary.dark
+                              : theme.palette.primary.light,
+                          color: theme.palette.primary.contrastText,
+                        }),
+                        "&:hover": {
+                          backgroundColor:
+                            theme.palette.mode === "dark"
+                              ? theme.palette.primary.main
+                              : theme.palette.primary.light,
+                          color: theme.palette.primary.contrastText,
+                        },
+                      }}
                     >
-                      <Typography textAlign="center">{item.text}</Typography>
-                    </Badge>
-                  </MenuItem>
-                ))}
+                      <Badge
+                        color="secondary"
+                        badgeContent={item.badge}
+                        invisible={!item.badge}
+                      >
+                        <Typography sx={{ textAlign: "center" }}>
+                          {item.text}
+                        </Typography>
+                      </Badge>
+                    </Button>
+                  );
+                })}
               </>
             )}
           </Box>

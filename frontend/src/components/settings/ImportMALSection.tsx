@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutlineOutlined";
 import ImportMALModal from "./ImportMALModal";
 
 const ImportMALSection: React.FC = () => {
@@ -35,7 +35,7 @@ const ImportMALSection: React.FC = () => {
             </Box>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" sx={{ marginBottom: "16px" }}>
               {t("importMAL.title")}
             </Typography>
             <ol>

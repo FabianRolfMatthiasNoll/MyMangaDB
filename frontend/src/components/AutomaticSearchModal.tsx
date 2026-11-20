@@ -390,7 +390,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
             </Button>
           </Box>
           {searchResults.length > 0 && (
-            <Box mt={2}>
+            <Box sx={{ mt: 2 }}>
               <Typography variant="h6">{t("manga.searchResults")}</Typography>
               <Box>{renderSearchResults()}</Box>
             </Box>

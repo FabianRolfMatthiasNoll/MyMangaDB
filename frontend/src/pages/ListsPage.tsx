@@ -111,10 +111,12 @@ const ListsPage: React.FC = () => {
   if (loading) {
     return (
       <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="80vh"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "80vh",
+        }}
       >
         <CircularProgress />
       </Box>
@@ -123,16 +125,18 @@ const ListsPage: React.FC = () => {
 
   return (
     <Container maxWidth="lg">
-      <Box p={isMobile ? 2 : 3}>
+      <Box sx={{ p: isMobile ? 2 : 3 }}>
         <Paper
           elevation={0}
           sx={{ p: isMobile ? 2 : 3, mb: 4, backgroundColor: "transparent" }}
         >
           <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            mb={4}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 4,
+            }}
           >
             <Typography
               variant={isMobile ? "h5" : "h4"}
@@ -161,9 +165,9 @@ const ListsPage: React.FC = () => {
 
           {lists.length === 0 ? (
             <Box
-              textAlign="center"
-              py={8}
               sx={{
+                textAlign: "center",
+                py: 8,
                 backgroundColor: "background.paper",
                 borderRadius: 2,
                 boxShadow: 1,
@@ -211,9 +215,11 @@ const ListsPage: React.FC = () => {
                     }}
                   >
                     <Box
-                      display="flex"
-                      justifyContent="space-between"
-                      alignItems="center"
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
                       onClick={() => handleListClick(list.id)}
                     >
                       <Box>
@@ -284,10 +290,12 @@ const ListsPage: React.FC = () => {
         <Dialog
           open={dialogOpen}
           onClose={handleCloseDialog}
-          PaperProps={{
-            sx: {
-              borderRadius: 2,
-              minWidth: isMobile ? "90%" : "400px",
+          slotProps={{
+            paper: {
+              sx: {
+                borderRadius: 2,
+                minWidth: isMobile ? "90%" : "400px",
+              },
             },
           }}
         >

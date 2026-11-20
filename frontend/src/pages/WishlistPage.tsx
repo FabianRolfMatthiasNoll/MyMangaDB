@@ -171,9 +171,11 @@ const WishlistPage: React.FC = () => {
       <Stack
         direction={{ xs: "column", sm: "row" }}
         spacing={2}
-        justifyContent="space-between"
-        alignItems={{ xs: "stretch", sm: "center" }}
-        sx={{ mb: 3 }}
+        sx={{
+          justifyContent: "space-between",
+          alignItems: { xs: "stretch", sm: "center" },
+          mb: 3,
+        }}
       >
         <Box>
           <Typography variant="h4">{t("wishlist.title")}</Typography>
@@ -219,7 +221,12 @@ const WishlistPage: React.FC = () => {
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
                 {t("wishlist.recentlyAddedDescription")}
               </Typography>
-              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+              <Stack
+                direction="row"
+                spacing={1}
+                useFlexGap
+                sx={{ flexWrap: "wrap" }}
+              >
                 {recent.map((manga) => (
                   <Chip
                     key={manga.id}

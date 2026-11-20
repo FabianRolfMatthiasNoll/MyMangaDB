@@ -166,14 +166,18 @@ const ImportMALModal: React.FC<ImportMALModalProps> = ({
                         <ListItemText
                           primary={log.title}
                           secondary={t(`errors.infoCodes.${log.infoCode}` as const) || log.infoCode}
-                          primaryTypographyProps={{
-                            fontWeight: "bold",
-                            color:
-                              log.status === "failed"
-                                ? "error"
-                                : log.status === "skipped"
-                                ? "text.secondary"
-                                : "text.primary",
+                          slotProps={{
+                            primary: {
+                              sx: {
+                                fontWeight: "bold",
+                                color:
+                                  log.status === "failed"
+                                    ? "error"
+                                    : log.status === "skipped"
+                                    ? "text.secondary"
+                                    : "text.primary",
+                              },
+                            },
                           }}
                         />
                         <Chip

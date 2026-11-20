@@ -47,10 +47,12 @@ const AuthorsPage: React.FC = () => {
   if (isLoading) {
     return (
       <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="80vh"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "80vh",
+        }}
       >
         <CircularProgress />
       </Box>
@@ -60,10 +62,12 @@ const AuthorsPage: React.FC = () => {
   if (error) {
     return (
       <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="80vh"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "80vh",
+        }}
       >
         <Typography color="error">{t("errors.errorLoadingAuthors")}</Typography>
       </Box>
@@ -72,9 +76,16 @@ const AuthorsPage: React.FC = () => {
 
   return (
     <Container maxWidth="lg">
-      <Box p={isMobile ? 2 : 3}>
+      <Box sx={{ p: isMobile ? 2 : 3 }}>
         <Paper elevation={0} sx={{ p: isMobile ? 2 : 3, mb: 4, backgroundColor: 'transparent' }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 4,
+            }}
+          >
             <Typography variant={isMobile ? "h5" : "h4"} sx={{ fontWeight: 'bold' }}>
               {t("authors.title")}
             </Typography>
@@ -82,12 +93,12 @@ const AuthorsPage: React.FC = () => {
 
           {authors.length === 0 ? (
             <Box
-              textAlign="center"
-              py={8}
               sx={{
-                backgroundColor: 'background.paper',
+                textAlign: "center",
+                py: 8,
+                backgroundColor: "background.paper",
                 borderRadius: 2,
-                boxShadow: 1
+                boxShadow: 1,
               }}
             >
               <Typography variant="h6" color="text.secondary" gutterBottom>

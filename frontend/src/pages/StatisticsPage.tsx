@@ -38,10 +38,12 @@ const StatisticsPage: React.FC = () => {
   if (loading) {
     return (
       <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="80vh"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "80vh",
+        }}
       >
         <CircularProgress />
       </Box>
@@ -95,7 +97,7 @@ const StatisticsPage: React.FC = () => {
             <ListItemText
               primary={
                 isRating ? (
-                  <Box display="flex" alignItems="center">
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
                     {item.label === "Unrated" ? (
                       <Typography variant="body2">{t("common.unrated")}</Typography>
                     ) : (

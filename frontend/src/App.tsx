@@ -79,7 +79,7 @@ function App() {
               element={
                 <>
                   <Header toggleThemeMode={toggleThemeMode} />
-                  <Box display="flex">
+                  <Box sx={{ display: "flex" }}>
                     <Routes>
                       <Route path="/" element={<Dashboard />} />
                       <Route path="/wishlist" element={<WishlistPage />} />

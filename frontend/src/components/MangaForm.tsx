@@ -211,12 +211,12 @@ const MangaForm: React.FC<MangaFormProps> = ({
             fullWidth
           />
         )}
-        renderTags={(tagValue, getTagProps) =>
+        renderValue={(tagValue, getItemProps) =>
           tagValue.map((option, index) => (
             <Chip
-              label={option.name}
-              {...getTagProps({ index })}
-              key={option.id}
+              label={typeof option === "string" ? option : option.name}
+              {...getItemProps({ index })}
+              key={typeof option === "string" ? option : option.id}
             />
           ))
         }
@@ -239,12 +239,12 @@ const MangaForm: React.FC<MangaFormProps> = ({
             fullWidth
           />
         )}
-        renderTags={(tagValue, getTagProps) =>
+        renderValue={(tagValue, getItemProps) =>
           tagValue.map((option, index) => (
             <Chip
-              label={option.name}
-              {...getTagProps({ index })}
-              key={option.id}
+              label={typeof option === "string" ? option : option.name}
+              {...getItemProps({ index })}
+              key={typeof option === "string" ? option : option.id}
             />
           ))
         }
@@ -267,12 +267,12 @@ const MangaForm: React.FC<MangaFormProps> = ({
             fullWidth
           />
         )}
-        renderTags={(tagValue, getTagProps) =>
+        renderValue={(tagValue, getItemProps) =>
           tagValue.map((option, index) => (
             <Chip
-              label={option.name}
-              {...getTagProps({ index })}
-              key={option.id || index}
+              label={typeof option === "string" ? option : option.name}
+              {...getItemProps({ index })}
+              key={typeof option === "string" ? option : option.id || index}
             />
           ))
         }

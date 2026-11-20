@@ -171,7 +171,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
             <Switch
               checked={showWishlist}
               onChange={onToggleWishlist}
-              inputProps={{ "aria-label": t("filters.showWishlist") }}
+              slotProps={{ input: { "aria-label": t("filters.showWishlist") } }}
             />
           }
           label={t("filters.showWishlist")}

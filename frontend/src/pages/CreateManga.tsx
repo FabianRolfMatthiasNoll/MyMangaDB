@@ -89,9 +89,9 @@ const CreateManga: React.FC = () => {
 
   return (
     <Container maxWidth="md">
-      <Box p={3}>
+      <Box sx={{ p: 3 }}>
         <Paper elevation={0} sx={{ p: 3, backgroundColor: 'transparent' }}>
-          <Box display="flex" alignItems="center" mb={3}>
+          <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
             <IconButton
               onClick={() => navigate(-1)}
               sx={{
