@@ -4,7 +4,7 @@
 
 ### Prerequisites
 
-- **Python 3.12+** (backend)
+- **Python 3.13+** (backend)
 - **Node.js 20+** (frontend)
 - **Git**
 - **Task** (task runner) — [Installation guide](https://taskfile.dev/#installation)
