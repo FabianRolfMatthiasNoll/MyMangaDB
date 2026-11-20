@@ -1,0 +1,14 @@
+# The dependencies that are only needed to develop and test the backend.
+# They are not installed in the Docker image.
+
+-r requirements.txt
+
+pytest
+httpx
+pytest-asyncio
+pre-commit
+# Pinned to the version the pre-commit hooks use, so that `task lint` and
+# the hooks do not disagree about the formatting.
+black==26.10.1
+flake8
+isort
