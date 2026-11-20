@@ -32,8 +32,7 @@ def legacy_database(tmp_path):
     """
     db_path = tmp_path / "legacy.db"
     connection = sqlite3.connect(db_path)
-    connection.executescript(
-        """
+    connection.executescript("""
         CREATE TABLE authors (
             id INTEGER NOT NULL PRIMARY KEY,
             name VARCHAR,
@@ -99,8 +98,7 @@ def legacy_database(tmp_path):
         );
         INSERT INTO mangas (id, title, category) VALUES (1, 'Existing Manga', 'manga');
         INSERT INTO authors (id, name, manga_count) VALUES (1, 'Someone', 1);
-        """
-    )
+        """)
     connection.commit()
     connection.close()
     return db_path

@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -8,22 +8,25 @@ repos:
       - id: check-toml
       - id: check-added-large-files
       - id: check-json
+        # The tsconfig files are JSON with comments. The TypeScript compiler
+        # accepts that, a JSON parser does not.
+        exclude: ^frontend/tsconfig(\.node)?\.json$
       - id: check-merge-conflict
 
   - repo: https://github.com/psf/black
-    rev: 24.2.0
+    rev: 26.10.1
     hooks:
       - id: black
         language_version: python3
 
   - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+    rev: 9.0.2
     hooks:
       - id: isort
         args: ["--profile", "black"]
 
   - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
+    rev: 7.5.0
     hooks:
       - id: flake8
         args: ["--max-line-length=88", "--extend-ignore=E203"]
