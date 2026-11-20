@@ -319,4 +319,5 @@ yarn-error.log*
 # Local GitHub issue drafts - these are working notes, the issues themselves
 # live on GitHub.
 ISSUES.md
+issues.md
 /0[0-9]-*.md
