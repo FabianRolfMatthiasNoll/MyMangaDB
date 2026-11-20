@@ -22,15 +22,18 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
+import bcrypt
 import jwt
-from passlib.context import CryptContext
 
 from backend import config
 
 logger = logging.getLogger(__name__)
 
-# Setup password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# bcrypt only takes the first 72 bytes of a password into account. The
+# hashes of the existing installations were created by passlib, which
+# truncated longer passwords silently, so the same is done here to keep
+# them valid.
+MAX_PASSWORD_BYTES = 72
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 1 week for convenience
@@ -67,12 +70,29 @@ SECRET_KEY_FILE_NAME = ".secret_key"
 _secret_key: Optional[str] = None
 
 
+def _password_bytes(password: str) -> bytes:
+    """The bytes of the password that bcrypt actually hashes."""
+    return password.encode("utf-8")[:MAX_PASSWORD_BYTES]
+
+
 def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+    """Check a password against its hash.
+
+    A hash that bcrypt cannot read counts as a wrong password instead of
+    an error, so a corrupted entry cannot turn a login into a 500.
+    """
+    try:
+        return bcrypt.checkpw(
+            _password_bytes(plain_password),
+            hashed_password.encode("utf-8"),
+        )
+    except ValueError:
+        return False
 
 
 def get_password_hash(password):
-    return pwd_context.hash(password)
+    """Hash a password with bcrypt."""
+    return bcrypt.hashpw(_password_bytes(password), bcrypt.gensalt()).decode("utf-8")
 
 
 def secret_key_path() -> Path:

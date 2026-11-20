@@ -13,7 +13,9 @@ bs4
 selenium
 PyJWT==2.15.0
 python-dotenv==1.2.2
-bcrypt==4.0.1
+# passlib is not used anymore: it is unmaintained since 2020 and it is the
+# reason bcrypt had to be pinned to 4.0.1.
+bcrypt>=5.0.0
 pytest
 httpx
 pytest-asyncio
@@ -23,4 +25,3 @@ pre-commit
 black==26.10.1
 flake8
 isort
-passlib
