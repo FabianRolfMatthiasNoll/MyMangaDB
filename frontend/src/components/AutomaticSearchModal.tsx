@@ -25,6 +25,7 @@ import {
   CircularProgress,
   InputAdornment,
   IconButton,
+  Stack,
 } from "@mui/material";
 import { getSources, getSearchResults } from "../services/sourceService";
 import { createManga } from "../services/mangaService";
@@ -271,43 +272,45 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
           >
             {manga.summary}
           </Typography>
-          <ButtonGroup
-            variant="outlined"
-            sx={{ mt: 1, mr: 1, flexWrap: "wrap" }}
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ mt: 1, alignItems: "center", flexWrap: "wrap", rowGap: 1 }}
           >
+            <ButtonGroup variant="outlined">
+              <Button
+                onClick={() => handleCreateManga(manga)}
+                disabled={creatingManga === manga.title}
+              >
+                {creatingManga === manga.title ? (
+                  <>
+                    <CircularProgress size={20} sx={{ mr: 1 }} color="inherit" />
+                    {t("common.adding")}
+                  </>
+                ) : (
+                  t("manga.addToDatabase")
+                )}
+              </Button>
+              <Button
+                onClick={() =>
+                  handleCreateManga({
+                    ...manga,
+                    ownershipStatus: OwnershipStatus.Wishlist,
+                  })
+                }
+                disabled={creatingManga === manga.title}
+              >
+                {t("manga.addToWishlist")}
+              </Button>
+            </ButtonGroup>
             <Button
-              onClick={() => handleCreateManga(manga)}
+              variant="outlined"
+              onClick={() => handleOpenVolumeDialog(manga)}
               disabled={creatingManga === manga.title}
             >
-              {creatingManga === manga.title ? (
-                <>
-                  <CircularProgress size={20} sx={{ mr: 1 }} color="inherit" />
-                  {t("common.adding")}
-                </>
-              ) : (
-                t("manga.addToDatabase")
-              )}
+              {t("common.addWithVolumes")}
             </Button>
-            <Button
-              onClick={() =>
-                handleCreateManga({
-                  ...manga,
-                  ownershipStatus: OwnershipStatus.Wishlist,
-                })
-              }
-              disabled={creatingManga === manga.title}
-            >
-              {t("manga.addToWishlist")}
-            </Button>
-          </ButtonGroup>
-          <Button
-            variant="outlined"
-            onClick={() => handleOpenVolumeDialog(manga)}
-            disabled={creatingManga === manga.title}
-            sx={{ mt: 1 }}
-          >
-            {t("common.addWithVolumes")}
-          </Button>
+          </Stack>
         </CardContent>
       </Card>
     ));
