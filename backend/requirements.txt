@@ -1,16 +1,12 @@
+# The dependencies of the backend server. The desktop app needs a few more
+# packages - see requirements-desktop.txt.
+
 fastapi
 uvicorn
 sqlalchemy
 alembic
-openpyxl
-pywebview
 requests
 python-multipart
-PyQt5
-PyQtWebEngine
-qtpy
-bs4
-selenium
 PyJWT==2.15.0
 python-dotenv==1.2.2
 # passlib is not used anymore: it is unmaintained since 2020 and it is the
