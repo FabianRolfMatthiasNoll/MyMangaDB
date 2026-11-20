@@ -188,6 +188,7 @@
   },
   "errors": {
     "sessionExpired": "Your session has expired. Please log in again.",
+    "notAllowed": "You are not allowed to do that. An admin is needed.",
     "unexpected": "An unexpected error occurred. Please try again later.",
     "validationFailed": "Validation failed:",
     "failedToFetchSettings": "Failed to fetch settings",

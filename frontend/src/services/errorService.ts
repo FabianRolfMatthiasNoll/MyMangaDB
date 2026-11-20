@@ -15,8 +15,8 @@ const KNOWN_DETAILS: Record<string, string> = {
 export const handleApiError = async (error: unknown) => {
   const responseError = error as ResponseError;
 
-  // Handle 401 Unauthorized / 403 Forbidden - token expired or invalid
-  if (responseError.response && (responseError.response.status === 401 || responseError.response.status === 403)) {
+  // 401 means the token is gone or invalid - the session has to end.
+  if (responseError.response?.status === 401) {
     if (!sessionExpiredShown) {
       sessionExpiredShown = true;
       notify(i18n.t("errors.sessionExpired"), "error");
@@ -25,6 +25,14 @@ export const handleApiError = async (error: unknown) => {
       }, 5000);
     }
     logout();
+    return;
+  }
+
+  // 403 means the session is fine but the action is not allowed. Logging
+  // the user out here would throw away a valid session because they tried
+  // something they are not allowed to do.
+  if (responseError.response?.status === 403) {
+    notify(i18n.t("errors.notAllowed"), "error");
     return;
   }
 
@@ -48,7 +56,10 @@ export const handleApiError = async (error: unknown) => {
           })
           .join("\n");
 
-        notify(`${i18n.t("errors.validationFailed")}\n${validationErrors}`, "error");
+        notify(
+          `${i18n.t("errors.validationFailed")}\n${validationErrors}`,
+          "error",
+        );
         return;
       }
     }
@@ -58,7 +69,10 @@ export const handleApiError = async (error: unknown) => {
   notify(i18n.t("errors.unexpected"), "error");
 };
 
-export const apiCallWrapper = async <T>(apiCall: () => Promise<T>, fallback: T) => {
+export const apiCallWrapper = async <T>(
+  apiCall: () => Promise<T>,
+  fallback: T,
+) => {
   try {
     return await apiCall();
   } catch (error) {
@@ -76,7 +90,7 @@ export const apiCallWrapper = async <T>(apiCall: () => Promise<T>, fallback: T) 
  * one, which is how a failed load ended up rendering an endless spinner.
  */
 export const apiCallWrapperOrThrow = async <T>(
-  apiCall: () => Promise<T>
+  apiCall: () => Promise<T>,
 ): Promise<T> => {
   try {
     return await apiCall();

@@ -188,6 +188,7 @@
   },
   "errors": {
     "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
+    "notAllowed": "Das darfst Du nicht. Dafür wird ein Administrator benötigt.",
     "unexpected": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
     "validationFailed": "Validierung fehlgeschlagen:",
     "failedToFetchSettings": "Einstellungen konnten nicht geladen werden",

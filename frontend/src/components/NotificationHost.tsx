@@ -15,8 +15,11 @@ const NotificationHost: React.FC = () => {
   const [queue, setQueue] = useState<Notification[]>([]);
 
   useEffect(
-    () => subscribeToNotifications((notification) => setQueue((q) => [...q, notification])),
-    []
+    () =>
+      subscribeToNotifications((notification) =>
+        setQueue((q) => [...q, notification]),
+      ),
+    [],
   );
 
   const handleClose = useCallback(() => {
@@ -27,6 +30,11 @@ const NotificationHost: React.FC = () => {
 
   return (
     <Snackbar
+      // Every notification gets its own snackbar. Without the key the
+      // second message reuses the first one, and its timer - which only
+      // restarts when the snackbar opens - never runs again, so the message
+      // stays on screen forever.
+      key={current?.id ?? "empty"}
       open={!!current}
       autoHideDuration={6000}
       onClose={handleClose}
