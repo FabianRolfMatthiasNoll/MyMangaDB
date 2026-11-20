@@ -36,6 +36,9 @@ repos:
     hooks:
       - id: prettier
         types_or: [json, yaml, markdown]
+        # The changelog is written by semantic-release. Formatting it would
+        # only be undone by the next release.
+        exclude: ^CHANGELOG\.md$
         # Pin the node version. Without this, nodeenv resolves the latest
         # release, which is currently a nightly whose version string it cannot
         # parse ("27.0.0-alpha.0.1.1") - the hook then fails to install.
