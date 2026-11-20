@@ -35,6 +35,9 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
   const cardStyles = {
     maxWidth: 350,
     position: "relative",
+    // The card is a link, and a link is inline by default. The line box
+    // around it then adds a strip of empty space above and below the cover.
+    display: "block",
     borderRadius: 2,
     overflow: "hidden",
     border: isWishlist
