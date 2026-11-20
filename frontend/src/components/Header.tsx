@@ -183,6 +183,10 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
                       color="inherit"
                       sx={{
                         borderRadius: 2,
+                        // A button shouts its label in capital letters, a
+                        // menu item does not. The navigation is a list of
+                        // words, not a call to action.
+                        textTransform: "none",
                         ...(isSelected && {
                           backgroundColor:
                             theme.palette.mode === "dark"
