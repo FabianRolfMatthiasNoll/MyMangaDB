@@ -52,7 +52,14 @@ const GenreDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "80vh",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -61,7 +68,7 @@ const GenreDetailPage: React.FC = () => {
   if (!genre) {
     return (
       <Container maxWidth="lg">
-        <Box p={3}>
+        <Box sx={{ p: 3 }}>
           <Typography variant="h5">{t("errors.genreNotFound")}</Typography>
         </Box>
       </Container>
@@ -70,7 +77,7 @@ const GenreDetailPage: React.FC = () => {
 
   return (
     <Container maxWidth="lg">
-      <Box p={isMobile ? 2 : 3}>
+      <Box sx={{ p: isMobile ? 2 : 3 }}>
         <Paper
           elevation={0}
           sx={{
@@ -80,7 +87,7 @@ const GenreDetailPage: React.FC = () => {
             borderRadius: 2
           }}
         >
-          <Box display="flex" alignItems="center" mb={3}>
+          <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
             <IconButton
               onClick={handleBack}
               sx={{
@@ -106,12 +113,12 @@ const GenreDetailPage: React.FC = () => {
 
           {mangas.length === 0 ? (
             <Box
-              textAlign="center"
-              py={8}
               sx={{
-                backgroundColor: 'background.paper',
+                textAlign: "center",
+                py: 8,
+                backgroundColor: "background.paper",
                 borderRadius: 2,
-                boxShadow: 1
+                boxShadow: 1,
               }}
             >
               <Typography variant="h6" color="text.secondary" gutterBottom>

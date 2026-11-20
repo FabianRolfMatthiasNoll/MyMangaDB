@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
+import { mapValues, parseDate, parseDateTime, serializeDate, serializeDateTime } from '../runtime';
 import type { Category } from './Category';
 import {
     CategoryFromJSON,
@@ -55,6 +55,13 @@ import {
     GenreToJSON,
     GenreToJSONTyped,
 } from './Genre';
+import type { OwnershipStatus } from './OwnershipStatus';
+import {
+    OwnershipStatusFromJSON,
+    OwnershipStatusFromJSONTyped,
+    OwnershipStatusToJSON,
+    OwnershipStatusToJSONTyped,
+} from './OwnershipStatus';
 import type { OverallStatus } from './OverallStatus';
 import {
     OverallStatusFromJSON,
@@ -97,6 +104,22 @@ export interface Manga {
      *
      */
     category: Category;
+    /**
+     *
+     */
+    ownershipStatus?: OwnershipStatus;
+    /**
+     *
+     */
+    addedAt?: Date | null;
+    /**
+     *
+     */
+    priority?: boolean;
+    /**
+     *
+     */
+    totalVolumes?: number | null;
     /**
      *
      */
@@ -160,6 +183,10 @@ export function MangaFromJSONTyped(json: any, ignoreDiscriminator: boolean): Man
         'starRating': json['star_rating'] === undefined ? undefined : json['star_rating'] === null ? null : json['star_rating'],
         'language': json['language'] === undefined ? undefined : json['language'] === null ? null : json['language'],
         'category': CategoryFromJSON(json['category']),
+        'ownershipStatus': json['ownership_status'] == null ? undefined : OwnershipStatusFromJSON(json['ownership_status']),
+        'addedAt': json['added_at'] === undefined ? undefined : json['added_at'] === null ? null : (parseDateTime(json['added_at'])),
+        'priority': json['priority'] == null ? undefined : json['priority'],
+        'totalVolumes': json['total_volumes'] === undefined ? undefined : json['total_volumes'] === null ? null : json['total_volumes'],
         'summary': json['summary'] === undefined ? undefined : json['summary'] === null ? null : json['summary'],
         'coverImage': json['cover_image'] === undefined ? undefined : json['cover_image'] === null ? null : json['cover_image'],
         'id': json['id'],
@@ -188,6 +215,10 @@ export function MangaToJSONTyped(value?: Manga | null, ignoreDiscriminator: bool
         'star_rating': value['starRating'],
         'language': value['language'],
         'category': CategoryToJSON(value['category']),
+        'ownership_status': OwnershipStatusToJSON(value['ownershipStatus']),
+        'added_at': value['addedAt'] == null ? value['addedAt'] : serializeDateTime(value['addedAt']),
+        'priority': value['priority'],
+        'total_volumes': value['totalVolumes'],
         'summary': value['summary'],
         'cover_image': value['coverImage'],
         'id': value['id'],

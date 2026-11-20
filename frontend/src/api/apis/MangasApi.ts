@@ -98,6 +98,14 @@ export interface GetMangasApiV1MangasGetAllGetRequest {
      * Filter by the id of a list
      */
     listId?: number | null;
+    /**
+     * Filter by ownership states (owned, wishlist, ordered)
+     */
+    ownershipStatuses?: Array<string> | null;
+    /**
+     * Leave out the titles that are only wanted. A title you already own a volume of stays in the collection.
+     */
+    hidePureWishes?: boolean;
 }
 
 export interface GetMangasByAuthorApiV1MangasByAuthorAuthorIdGetRequest {
@@ -390,6 +398,14 @@ export class MangasApi extends runtime.BaseAPI {
             queryParameters['list_id'] = requestParameters['listId'];
         }
 
+        if (requestParameters['ownershipStatuses'] != null) {
+            queryParameters['ownership_statuses'] = requestParameters['ownershipStatuses'];
+        }
+
+        if (requestParameters['hidePureWishes'] != null) {
+            queryParameters['hide_pure_wishes'] = requestParameters['hidePureWishes'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         if (this.configuration && this.configuration.accessToken) {
@@ -409,7 +425,7 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delivers a paginated list of mangas. Optional search (title LIKE), filters (category, status, rating, list), and sort order can be specified.
+     * Delivers a paginated list of mangas. Optional search (title LIKE), filters (category, status, rating, list, ownership), and sort order can be specified.
      * Get mangas with server-side paging, search and sort
      */
     async getMangasApiV1MangasGetAllGetRaw(requestParameters: GetMangasApiV1MangasGetAllGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Manga>>> {
@@ -420,7 +436,7 @@ export class MangasApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delivers a paginated list of mangas. Optional search (title LIKE), filters (category, status, rating, list), and sort order can be specified.
+     * Delivers a paginated list of mangas. Optional search (title LIKE), filters (category, status, rating, list, ownership), and sort order can be specified.
      * Get mangas with server-side paging, search and sort
      */
     async getMangasApiV1MangasGetAllGet(requestParameters: GetMangasApiV1MangasGetAllGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Manga>> {

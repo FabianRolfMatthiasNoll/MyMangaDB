@@ -2,22 +2,26 @@
 
 ## Properties
 
-| Name            | Type                                   |
-| --------------- | -------------------------------------- |
-| `title`         | string                                 |
-| `japaneseTitle` | string                                 |
-| `readingStatus` | [ReadingStatus](ReadingStatus.md)      |
-| `overallStatus` | [OverallStatus](OverallStatus.md)      |
-| `starRating`    | number                                 |
-| `language`      | string                                 |
-| `category`      | [Category](Category.md)                |
-| `summary`       | string                                 |
-| `coverImage`    | string                                 |
-| `id`            | number                                 |
-| `authors`       | [Array&lt;Author&gt;](Author.md)       |
-| `genres`        | [Array&lt;Genre&gt;](Genre.md)         |
-| `lists`         | [Array&lt;ListModel&gt;](ListModel.md) |
-| `volumes`       | [Array&lt;Volume&gt;](Volume.md)       |
+| Name              | Type                                   |
+| ----------------- | -------------------------------------- |
+| `title`           | string                                 |
+| `japaneseTitle`   | string                                 |
+| `readingStatus`   | [ReadingStatus](ReadingStatus.md)      |
+| `overallStatus`   | [OverallStatus](OverallStatus.md)      |
+| `starRating`      | number                                 |
+| `language`        | string                                 |
+| `category`        | [Category](Category.md)                |
+| `ownershipStatus` | [OwnershipStatus](OwnershipStatus.md)  |
+| `addedAt`         | Date                                   |
+| `priority`        | boolean                                |
+| `totalVolumes`    | number                                 |
+| `summary`         | string                                 |
+| `coverImage`      | string                                 |
+| `id`              | number                                 |
+| `authors`         | [Array&lt;Author&gt;](Author.md)       |
+| `genres`          | [Array&lt;Genre&gt;](Genre.md)         |
+| `lists`           | [Array&lt;ListModel&gt;](ListModel.md) |
+| `volumes`         | [Array&lt;Volume&gt;](Volume.md)       |
 
 ## Example
 
@@ -33,6 +37,10 @@ const example = {
   starRating: null,
   language: null,
   category: null,
+  ownershipStatus: null,
+  addedAt: null,
+  priority: null,
+  totalVolumes: null,
   summary: null,
   coverImage: null,
   id: null,

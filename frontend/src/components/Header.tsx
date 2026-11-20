@@ -7,7 +7,9 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import LanguageIcon from "@mui/icons-material/Language";
 import {
   AppBar,
+  Badge,
   Box,
+  Button,
   IconButton,
   Menu,
   MenuItem,
@@ -17,7 +19,9 @@ import {
   useMediaQuery,
   Tooltip,
 } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import { logout } from "../services/auth";
+import { getWishlistMangas } from "../services/wishlistService";
 import { useUser } from "../context/UserContext";
 import { useTranslation } from "react-i18next";
 
@@ -34,8 +38,16 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
   const { isAdmin } = useUser();
   const { t, i18n } = useTranslation();
 
+  // The wishlist is shared with the wishlist page, so this is served from
+  // the cache once it has been loaded there.
+  const { data: wishlist = [] } = useQuery({
+    queryKey: ["wishlist"],
+    queryFn: getWishlistMangas,
+  });
+
   const menuItems = [
     { text: t("nav.dashboard"), path: "/" },
+    { text: t("nav.wishlist"), path: "/wishlist", badge: wishlist.length },
     { text: t("nav.lists"), path: "/lists" },
     { text: t("nav.authors"), path: "/authors" },
     { text: t("nav.genres"), path: "/genres" },
@@ -86,7 +98,13 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
           selected={location.pathname === item.path}
           onClick={handleMenuClose}
         >
-          {item.text}
+          <Badge
+            color="secondary"
+            badgeContent={item.badge}
+            invisible={!item.badge}
+          >
+            {item.text}
+          </Badge>
         </MenuItem>
       ))}
       <MenuItem onClick={handleLogout}>{t("nav.logout")}</MenuItem>
@@ -155,39 +173,48 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
                 >
                   MyMangaDB
                 </Typography>
-                {menuItems.map((item) => (
-                  <MenuItem
-                    key={item.text}
-                    component={Link}
-                    to={item.path}
-                    selected={location.pathname === item.path}
-                    sx={{
-                      borderRadius: 2,
-                      "&.Mui-selected": {
-                        backgroundColor:
-                          theme.palette.mode === "dark"
-                            ? theme.palette.primary.dark
-                            : theme.palette.primary.light,
-                        color: theme.palette.primary.contrastText,
-                      },
-                      "&.Mui-selected:hover": {
-                        backgroundColor:
-                          theme.palette.mode === "dark"
-                            ? theme.palette.primary.dark
-                            : theme.palette.primary.light,
-                      },
-                      "&:hover": {
-                        backgroundColor:
-                          theme.palette.mode === "dark"
-                            ? theme.palette.primary.main
-                            : theme.palette.primary.light,
-                        color: theme.palette.primary.contrastText,
-                      },
-                    }}
-                  >
-                    <Typography textAlign="center">{item.text}</Typography>
-                  </MenuItem>
-                ))}
+                {menuItems.map((item) => {
+                  const isSelected = location.pathname === item.path;
+                  return (
+                    <Button
+                      key={item.text}
+                      component={Link}
+                      to={item.path}
+                      color="inherit"
+                      sx={{
+                        borderRadius: 2,
+                        // A button shouts its label in capital letters, a
+                        // menu item does not. The navigation is a list of
+                        // words, not a call to action.
+                        textTransform: "none",
+                        ...(isSelected && {
+                          backgroundColor:
+                            theme.palette.mode === "dark"
+                              ? theme.palette.primary.dark
+                              : theme.palette.primary.light,
+                          color: theme.palette.primary.contrastText,
+                        }),
+                        "&:hover": {
+                          backgroundColor:
+                            theme.palette.mode === "dark"
+                              ? theme.palette.primary.main
+                              : theme.palette.primary.light,
+                          color: theme.palette.primary.contrastText,
+                        },
+                      }}
+                    >
+                      <Badge
+                        color="secondary"
+                        badgeContent={item.badge}
+                        invisible={!item.badge}
+                      >
+                        <Typography sx={{ textAlign: "center" }}>
+                          {item.text}
+                        </Typography>
+                      </Badge>
+                    </Button>
+                  );
+                })}
               </>
             )}
           </Box>

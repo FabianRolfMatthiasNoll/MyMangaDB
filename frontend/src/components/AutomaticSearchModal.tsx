@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
+  ButtonGroup,
   Dialog,
   DialogActions,
   DialogContent,
@@ -24,10 +25,11 @@ import {
   CircularProgress,
   InputAdornment,
   IconButton,
+  Stack,
 } from "@mui/material";
 import { getSources, getSearchResults } from "../services/sourceService";
 import { createManga } from "../services/mangaService";
-import { Source, MangaCreate, VolumeCreate } from "../api/models";
+import { Source, MangaCreate, OwnershipStatus, VolumeCreate } from "../api/models";
 import { parseVolumeString } from "../utils/volumeUtils";
 import { HighlightOff } from "@mui/icons-material";
 
@@ -105,7 +107,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
             severity: "error",
           });
         }
-      } catch (error) {
+      } catch {
         setSnackbar({
           open: true,
           message: t("common.errorLoading"),
@@ -134,7 +136,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
       });
       // Call the callback to refresh dashboard
       onMangaAdded?.();
-    } catch (error) {
+    } catch {
       setSnackbar({
         open: true,
         message: t("manga.addError"),
@@ -270,29 +272,45 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
           >
             {manga.summary}
           </Typography>
-          <Button
-            variant="contained"
-            onClick={() => handleCreateManga(manga)}
-            disabled={creatingManga === manga.title}
-            sx={{ mt: 1, mr: 1 }}
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ mt: 1, alignItems: "center", flexWrap: "wrap", rowGap: 1 }}
           >
-            {creatingManga === manga.title ? (
-              <>
-                <CircularProgress size={20} sx={{ mr: 1 }} color="inherit" />
-                {t("common.adding")}
-              </>
-            ) : (
-              t("manga.addToDatabase")
-            )}
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => handleOpenVolumeDialog(manga)}
-            disabled={creatingManga === manga.title}
-            sx={{ mt: 1 }}
-          >
-            {t("common.addWithVolumes")}
-          </Button>
+            <ButtonGroup variant="outlined">
+              <Button
+                onClick={() => handleCreateManga(manga)}
+                disabled={creatingManga === manga.title}
+              >
+                {creatingManga === manga.title ? (
+                  <>
+                    <CircularProgress size={20} sx={{ mr: 1 }} color="inherit" />
+                    {t("common.adding")}
+                  </>
+                ) : (
+                  t("manga.addToDatabase")
+                )}
+              </Button>
+              <Button
+                onClick={() =>
+                  handleCreateManga({
+                    ...manga,
+                    ownershipStatus: OwnershipStatus.Wishlist,
+                  })
+                }
+                disabled={creatingManga === manga.title}
+              >
+                {t("manga.addToWishlist")}
+              </Button>
+            </ButtonGroup>
+            <Button
+              variant="outlined"
+              onClick={() => handleOpenVolumeDialog(manga)}
+              disabled={creatingManga === manga.title}
+            >
+              {t("common.addWithVolumes")}
+            </Button>
+          </Stack>
         </CardContent>
       </Card>
     ));
@@ -375,7 +393,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
             </Button>
           </Box>
           {searchResults.length > 0 && (
-            <Box mt={2}>
+            <Box sx={{ mt: 2 }}>
               <Typography variant="h6">{t("manga.searchResults")}</Typography>
               <Box>{renderSearchResults()}</Box>
             </Box>

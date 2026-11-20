@@ -68,9 +68,11 @@ tasks:
     cmds:
       - test -d .venv || python3 -m venv .venv
       - .venv/bin/pip install --upgrade pip
-      - .venv/bin/pip install -r requirements.txt
+      - .venv/bin/pip install -r requirements-dev.txt -r requirements-desktop.txt
     sources:
       - requirements.txt
+      - requirements-dev.txt
+      - requirements-desktop.txt
 
   backend:run:
     desc: Run the FastAPI backend server

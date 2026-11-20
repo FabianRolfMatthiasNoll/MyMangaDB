@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -18,7 +18,18 @@ const queryClient = new QueryClient({
   },
 });
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+const root = createRoot(document.getElementById("root")!, {
+  // React does not throw a render error anymore, it reports it. Without
+  // these handlers the error would be swallowed.
+  onUncaughtError: (error, errorInfo) => {
+    console.error("Uncaught error:", error, errorInfo.componentStack);
+  },
+  onCaughtError: (error, errorInfo) => {
+    console.error("Caught error:", error, errorInfo.componentStack);
+  },
+});
+
+root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <UserProvider>

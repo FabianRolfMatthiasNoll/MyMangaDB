@@ -1,7 +1,9 @@
 import enum
 
 from sqlalchemy import (
+    Boolean,
     Column,
+    DateTime,
     Enum,
     Float,
     ForeignKey,
@@ -9,6 +11,7 @@ from sqlalchemy import (
     String,
     Table,
     Text,
+    false,
     func,
     select,
 )
@@ -38,6 +41,14 @@ class Category(enum.Enum):
     manga = "manga"
     novel = "novel"
     doujinshi = "doujinshi"
+
+
+class OwnershipStatus(enum.Enum):
+    """Whether a title is part of the collection or only wanted."""
+
+    owned = "owned"
+    wishlist = "wishlist"
+    ordered = "ordered"
 
 
 class Role(enum.Enum):
@@ -124,6 +135,33 @@ class Manga(Base):
     star_rating = Column(Float)  # 1 to 5 stars
     language = Column(String)
     category = Column(Enum(Category))
+    # Whether the title is owned, wanted or on the way. Independent of the
+    # reading status - "not started" means different things for a title you
+    # own and for a title you only want.
+    ownership_status = Column(
+        Enum(OwnershipStatus),
+        nullable=False,
+        default=OwnershipStatus.owned,
+        server_default=OwnershipStatus.owned.value,
+    )
+    # When the title joined the collection. The database fills this in, so
+    # the value is the same no matter how the entry was created.
+    added_at = Column(
+        DateTime,
+        nullable=False,
+        server_default=func.now(),
+    )
+    # Whether the title is prioritised. Only meaningful for a wishlist
+    # entry, where it pulls a wanted title out of the noise.
+    priority = Column(
+        Boolean,
+        nullable=False,
+        default=False,
+        server_default=false(),
+    )
+    # How many volumes the series has in total, when that is known. It turns
+    # "I am missing volumes 3 and 4" into "I am missing 24 of 27 volumes".
+    total_volumes = Column(Integer, nullable=True)
     summary = Column(Text)
     cover_image = Column(String)
 

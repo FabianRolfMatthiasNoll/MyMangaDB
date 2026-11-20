@@ -16,74 +16,36 @@ import { getStatistics } from "../services/statisticsService";
 import { Statistics, StatisticCount } from "../api/models";
 import { useTranslation } from "react-i18next";
 
-const StatisticsPage: React.FC = () => {
+const formatLabel = (label: string) => {
+  // Replace underscores with spaces and capitalize each word
+  return label
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
+const StatCard = ({ title, value }: { title: string; value: number }) => (
+  <Paper sx={{ p: 3, textAlign: "center", height: "100%" }}>
+    <Typography variant="h4" color="primary">
+      {value}
+    </Typography>
+    <Typography variant="subtitle1" color="text.secondary">
+      {title}
+    </Typography>
+  </Paper>
+);
+
+const DistributionList = ({
+  title,
+  data,
+  isRating = false,
+}: {
+  title: string;
+  data: StatisticCount[];
+  isRating?: boolean;
+}) => {
   const { t } = useTranslation();
-  const [stats, setStats] = useState<Statistics | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const data = await getStatistics();
-        setStats(data);
-      } catch (error) {
-        console.error("Error fetching statistics:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
-  }, []);
-
-  if (loading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="80vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (!stats) {
-    return (
-      <Container>
-        <Typography variant="h5">{t("common.errorLoading")}</Typography>
-      </Container>
-    );
-  }
-
-  const formatLabel = (label: string) => {
-    // Replace underscores with spaces and capitalize each word
-    return label
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
-
-  const StatCard = ({ title, value }: { title: string; value: number }) => (
-    <Paper sx={{ p: 3, textAlign: "center", height: "100%" }}>
-      <Typography variant="h4" color="primary">
-        {value}
-      </Typography>
-      <Typography variant="subtitle1" color="text.secondary">
-        {title}
-      </Typography>
-    </Paper>
-  );
-
-  const DistributionList = ({
-    title,
-    data,
-    isRating = false,
-  }: {
-    title: string;
-    data: StatisticCount[];
-    isRating?: boolean;
-  }) => (
+  return (
     <Paper sx={{ p: 3, height: "100%" }}>
       <Typography variant="h6" gutterBottom>
         {title}
@@ -95,7 +57,7 @@ const StatisticsPage: React.FC = () => {
             <ListItemText
               primary={
                 isRating ? (
-                  <Box display="flex" alignItems="center">
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
                     {item.label === "Unrated" ? (
                       <Typography variant="body2">{t("common.unrated")}</Typography>
                     ) : (
@@ -123,6 +85,49 @@ const StatisticsPage: React.FC = () => {
       </List>
     </Paper>
   );
+};
+
+const StatisticsPage: React.FC = () => {
+  const { t } = useTranslation();
+  const [stats, setStats] = useState<Statistics | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await getStatistics();
+        setStats(data);
+      } catch (error) {
+        console.error("Error fetching statistics:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "80vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!stats) {
+    return (
+      <Container>
+        <Typography variant="h5">{t("common.errorLoading")}</Typography>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>

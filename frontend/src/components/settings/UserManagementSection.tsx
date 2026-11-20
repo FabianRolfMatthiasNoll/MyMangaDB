@@ -47,7 +47,7 @@ const UserManagementSection: React.FC = () => {
         text: t("errors.passwordUpdateSuccess"),
       });
       setNewPassword("");
-    } catch (err) {
+    } catch {
       setPasswordMessage({
         type: "error",
         text: t("errors.passwordUpdateFailed"),

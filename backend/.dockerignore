@@ -1,0 +1,34 @@
+# The local virtualenv. It is huge and does not belong in the image - the
+# dependencies are installed from requirements.txt.
+.venv
+venv
+env
+
+# Local configuration. It holds the API_TOKEN, which must never end up in
+# an image.
+.env
+.env.*
+
+# Caches and build artifacts.
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# The tests are not needed at runtime.
+tests/
+
+# Local data.
+data/
+images/
+*.db
+*.sqlite3
+*.sqlite3-journal
+
+# Tooling.
+.git
+.github
+Dockerfile
+.dockerignore

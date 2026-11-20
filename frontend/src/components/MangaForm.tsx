@@ -11,15 +11,18 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 import { Author, Genre, Manga, ListModel, Category } from "../api/models";
-import { OverallStatus, ReadingStatus } from "../api/models";
+import { OverallStatus, OwnershipStatus, ReadingStatus } from "../api/models";
 import { getAuthors } from "../services/authorService";
 import { getGenres } from "../services/genreService";
 import { getAllLists } from "../services/listService";
 import { useStatusMeta } from "../hooks/useStatusMeta";
 import { useCategoryLabel } from "../hooks/useCategoryLabel";
+import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 
@@ -51,6 +54,7 @@ const MangaForm: React.FC<MangaFormProps> = ({
   const { t } = useTranslation();
   const { getStatusLabel } = useStatusMeta();
   const getCategoryLabel = useCategoryLabel();
+  const { getOwnershipLabel } = useOwnershipStatus();
   const [editableManga, setEditableManga] = useState<Manga>(manga);
   const [availableAuthors, setAvailableAuthors] = useState<Author[]>([]);
   const [availableGenres, setAvailableGenres] = useState<Genre[]>([]);
@@ -88,6 +92,9 @@ const MangaForm: React.FC<MangaFormProps> = ({
       );
       setSelectedLists(preselected);
     }
+    // The selection is only filled once - it should not be refilled when the
+    // user removes a list.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [availableLists, initialLists]);
 
   const handleChange = (field: keyof Manga, value: Manga[keyof Manga]) => {
@@ -207,12 +214,12 @@ const MangaForm: React.FC<MangaFormProps> = ({
             fullWidth
           />
         )}
-        renderTags={(tagValue, getTagProps) =>
+        renderValue={(tagValue, getItemProps) =>
           tagValue.map((option, index) => (
             <Chip
-              label={option.name}
-              {...getTagProps({ index })}
-              key={option.id}
+              label={typeof option === "string" ? option : option.name}
+              {...getItemProps({ index })}
+              key={typeof option === "string" ? option : option.id}
             />
           ))
         }
@@ -235,12 +242,12 @@ const MangaForm: React.FC<MangaFormProps> = ({
             fullWidth
           />
         )}
-        renderTags={(tagValue, getTagProps) =>
+        renderValue={(tagValue, getItemProps) =>
           tagValue.map((option, index) => (
             <Chip
-              label={option.name}
-              {...getTagProps({ index })}
-              key={option.id}
+              label={typeof option === "string" ? option : option.name}
+              {...getItemProps({ index })}
+              key={typeof option === "string" ? option : option.id}
             />
           ))
         }
@@ -263,12 +270,12 @@ const MangaForm: React.FC<MangaFormProps> = ({
             fullWidth
           />
         )}
-        renderTags={(tagValue, getTagProps) =>
+        renderValue={(tagValue, getItemProps) =>
           tagValue.map((option, index) => (
             <Chip
-              label={option.name}
-              {...getTagProps({ index })}
-              key={option.id || index}
+              label={typeof option === "string" ? option : option.name}
+              {...getItemProps({ index })}
+              key={typeof option === "string" ? option : option.id || index}
             />
           ))
         }
@@ -301,6 +308,28 @@ const MangaForm: React.FC<MangaFormProps> = ({
           ))}
         </Select>
       </FormControl>
+      <Box>
+        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+          {t("manga.ownershipStatus")}
+        </Typography>
+        {/* A toggle group instead of a dropdown: there are only three
+            choices and the current one should stay visible. */}
+        <ToggleButtonGroup
+          exclusive
+          fullWidth
+          size="small"
+          value={editableManga.ownershipStatus || OwnershipStatus.Owned}
+          onChange={(_event, value) =>
+            value && handleChange("ownershipStatus", value)
+          }
+        >
+          {Object.values(OwnershipStatus).map((value) => (
+            <ToggleButton key={value} value={value}>
+              {getOwnershipLabel(value)}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </Box>
       <FormControl fullWidth>
         <InputLabel>{t("manga.readingStatus")}</InputLabel>
         <Select

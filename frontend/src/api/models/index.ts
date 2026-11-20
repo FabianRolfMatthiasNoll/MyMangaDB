@@ -14,6 +14,7 @@ export * from './LocationInner';
 export * from './Manga';
 export * from './MangaCreate';
 export * from './OverallStatus';
+export * from './OwnershipStatus';
 export * from './ReadingStatus';
 export * from './Role';
 export * from './Source';

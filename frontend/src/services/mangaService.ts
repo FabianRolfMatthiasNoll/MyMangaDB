@@ -6,18 +6,37 @@ import { saveMangaCover } from "./imageService";
 
 const mangasApi = new MangasApi(configuration);
 
-export const getMangas = async (
-  page: number,
-  limit: number,
-  search?: string,
-  sort?: string,
-  categories?: string[],
-  readingStatuses?: string[],
-  overallStatuses?: string[],
-  ratingMin?: number,
-  ratingMax?: number,
-  listId?: number,
-) =>
+/** The filters and paging the manga collection can be queried with. */
+export interface MangaQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sort?: string;
+  categories?: string[];
+  readingStatuses?: string[];
+  overallStatuses?: string[];
+  ratingMin?: number;
+  ratingMax?: number;
+  listId?: number;
+  ownershipStatuses?: string[];
+  /** Leave out the titles that are only wanted. */
+  hidePureWishes?: boolean;
+}
+
+export const getMangas = async ({
+  page = 1,
+  limit = 20,
+  search,
+  sort,
+  categories,
+  readingStatuses,
+  overallStatuses,
+  ratingMin,
+  ratingMax,
+  listId,
+  ownershipStatuses,
+  hidePureWishes,
+}: MangaQuery = {}) =>
   apiCallWrapperOrThrow(() =>
     mangasApi.getMangasApiV1MangasGetAllGet({
       skip: (page - 1) * limit,
@@ -30,6 +49,8 @@ export const getMangas = async (
       ratingMin: ratingMin !== undefined ? ratingMin : undefined,
       ratingMax: ratingMax !== undefined ? ratingMax : undefined,
       listId: listId !== undefined ? listId : undefined,
+      ownershipStatuses: ownershipStatuses?.length ? ownershipStatuses : undefined,
+      hidePureWishes: hidePureWishes !== undefined ? hidePureWishes : undefined,
     })
   );
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   Container,
@@ -29,13 +29,25 @@ import {
   updateMangaDetails,
   deleteManga,
 } from "../services/mangaService";
-import { Manga } from "../api/models";
+import { Manga, OwnershipStatus } from "../api/models";
 import MangaForm from "../components/MangaForm";
 import VolumeManager from "../components/VolumeManager";
 import { useUser } from "../context/UserContext";
 import { useQueryClient } from "@tanstack/react-query";
+import { invalidateMangaQueries } from "../services/queryInvalidation";
+import { notify } from "../services/notificationService";
 import { useTranslation } from "react-i18next";
 import { useStatusMeta } from "../hooks/useStatusMeta";
+import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
+import { formatVolumeRange, missingVolumesOf } from "../utils/wishlist";
+
+// The label of the back button, depending on where it leads.
+const BACK_LABELS: Record<string, string> = {
+  list: "common.backToList",
+  wishlist: "common.backToWishlist",
+  history: "common.back",
+  dashboard: "common.backToDashboard",
+};
 
 const MangaDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -46,6 +58,7 @@ const MangaDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { isAdmin } = useUser();
   const { getStatusLabel, getStatusColor } = useStatusMeta();
+  const { getOwnershipLabel, getOwnershipColor } = useOwnershipStatus();
   const [manga, setManga] = useState<Manga | null>(null);
   const [loadFailed, setLoadFailed] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -114,14 +127,39 @@ const MangaDetails: React.FC = () => {
     };
   }, [manga?.coverImage]);
 
+  // Where does the back button lead? The wishlist and a list are known by
+  // the state they pass along, everything else goes back to the page the
+  // user came from. A manga that was opened directly - in a new tab, for
+  // example - has no page to go back to.
+  const backTarget = useMemo(() => {
+    if (location.state?.from === "list-detail" && location.state?.listId) {
+      return { path: `/lists/${location.state.listId}`, label: "list" };
+    }
+    if (location.state?.from === "wishlist") {
+      return { path: "/wishlist", label: "wishlist" };
+    }
+    if ((window.history.state?.idx ?? 0) > 0) {
+      return { path: null, label: "history" };
+    }
+    return { path: "/", label: "dashboard" };
+  }, [location.state]);
+
+  const handleBackClick = () => {
+    if (backTarget.path) {
+      navigate(backTarget.path);
+      return;
+    }
+    navigate(-1);
+  };
+
   if (loadFailed) {
     return (
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <Alert severity="error" sx={{ mb: 2 }}>
           {t("manga.loadFailed")}
         </Alert>
-        <Button startIcon={<ArrowBackIcon />} onClick={() => navigate("/")}>
-          {t("common.backToDashboard")}
+        <Button startIcon={<ArrowBackIcon />} onClick={handleBackClick}>
+          {t(BACK_LABELS[backTarget.label])}
         </Button>
       </Container>
     );
@@ -146,14 +184,6 @@ const MangaDetails: React.FC = () => {
     setEditMode(!editMode);
   };
 
-  const handleBackClick = () => {
-    if (location.state?.from === "list-detail" && location.state?.listId) {
-      navigate(`/lists/${location.state.listId}`);
-    } else {
-      navigate("/");
-    }
-  };
-
   const handleDeleteClick = () => {
     setDeleteDialogOpen(true);
   };
@@ -162,8 +192,7 @@ const MangaDetails: React.FC = () => {
     if (id) {
       try {
         await deleteManga(Number(id));
-        await queryClient.invalidateQueries({ queryKey: ["mangas"] });
-        await queryClient.invalidateQueries({ queryKey: ["lists"] });
+        await invalidateMangaQueries(queryClient);
         navigate("/");
       } catch (error) {
         console.error("Failed to delete manga:", error);
@@ -181,8 +210,7 @@ const MangaDetails: React.FC = () => {
       const savedManga = await updateMangaDetails(updatedManga, coverImage);
       setManga(savedManga);
       setEditMode(false);
-      await queryClient.invalidateQueries({ queryKey: ["mangas"] });
-      await queryClient.invalidateQueries({ queryKey: ["lists"] });
+      await invalidateMangaQueries(queryClient);
       setNotification({
         open: true,
         message: t("manga.updatedSuccess"),
@@ -202,6 +230,35 @@ const MangaDetails: React.FC = () => {
     setEditMode(false);
   };
 
+  // The volumes of the series that are still missing. Without a known total
+  // the app cannot tell which ones are missing - only the gaps between the
+  // volumes that are on the shelf.
+  const missingVolumes = missingVolumesOf(manga);
+  const totalKnown = Boolean(manga.totalVolumes);
+  const canWishlistTheRest =
+    isAdmin &&
+    totalKnown &&
+    missingVolumes.length > 0 &&
+    manga.ownershipStatus === OwnershipStatus.Owned;
+
+  // Put the rest of the series on the wishlist. The volumes that are
+  // already on the shelf stay where they are - the title keeps them and is
+  // wanted at the same time.
+  const handleAddMissingToWishlist = async () => {
+    try {
+      const updated = await updateMangaDetails({
+        ...manga,
+        ownershipStatus: OwnershipStatus.Wishlist,
+      });
+      setManga(updated);
+      await invalidateMangaQueries(queryClient);
+      notify(t("wishlist.addedToWishlist"), "success");
+    } catch (error) {
+      console.error("Failed to add the missing volumes to the wishlist:", error);
+      notify(t("wishlist.actionFailed"), "error");
+    }
+  };
+
   const handleCloseNotification = () => {
     setNotification((prev) => ({ ...prev, open: false }));
   };
@@ -210,9 +267,7 @@ const MangaDetails: React.FC = () => {
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
         <Button startIcon={<ArrowBackIcon />} onClick={handleBackClick}>
-          {location.state?.from === "list-detail"
-            ? t("common.backToList")
-            : t("common.backToDashboard")}
+          {t(BACK_LABELS[backTarget.label])}
         </Button>
         {isAdmin && (
           <Box>
@@ -348,6 +403,18 @@ const MangaDetails: React.FC = () => {
 
               {/* Status Badges */}
               <Box sx={{ display: "flex", gap: 1, mb: 3, flexWrap: "wrap" }}>
+                {manga.ownershipStatus && (
+                  <Chip
+                    label={`${t("manga.ownershipStatus")}: ${getOwnershipLabel(
+                      manga.ownershipStatus
+                    )}`}
+                    sx={{
+                      bgcolor: getOwnershipColor(manga.ownershipStatus),
+                      color: "white",
+                      fontWeight: 500,
+                    }}
+                  />
+                )}
                 {manga.readingStatus && (
                   <Chip
                     label={`${t("manga.readingStatus")}: ${getStatusLabel(
@@ -513,6 +580,32 @@ const MangaDetails: React.FC = () => {
                     setManga(updatedManga);
                   }}
                 />
+              )}
+
+              {/* The rest of the series can go on the wishlist. */}
+              {manga.totalVolumes && missingVolumes.length > 0 && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    {t("wishlist.missingVolumes", {
+                      count: missingVolumes.length,
+                      range: formatVolumeRange(missingVolumes),
+                    })}
+                  </Typography>
+                  {canWishlistTheRest ? (
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={handleAddMissingToWishlist}
+                      sx={{ alignSelf: "flex-start" }}
+                    >
+                      {t("wishlist.addMissingToWishlist")}
+                    </Button>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      {t("wishlist.missingVolumesHint")}
+                    </Typography>
+                  )}
+                </Box>
               )}
             </Paper>
           </Grid>

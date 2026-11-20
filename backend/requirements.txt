@@ -1,23 +1,15 @@
+# The dependencies of the backend server. The tests and the linting tools
+# live in requirements-dev.txt, the desktop app needs a few more packages -
+# see requirements-desktop.txt.
+
 fastapi
 uvicorn
 sqlalchemy
-openpyxl
-pywebview
+alembic
 requests
 python-multipart
-PyQt5
-PyQtWebEngine
-qtpy
-bs4
-selenium
 PyJWT==2.15.0
 python-dotenv==1.2.2
-bcrypt==4.0.1
-pytest
-httpx
-pytest-asyncio
-pre-commit
-black
-flake8
-isort
-passlib
+# passlib is not used anymore: it is unmaintained since 2020 and it is the
+# reason bcrypt had to be pinned to 4.0.1.
+bcrypt>=5.0.0
