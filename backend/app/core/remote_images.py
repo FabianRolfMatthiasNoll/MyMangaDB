@@ -24,7 +24,11 @@ import urllib3
 MAX_IMAGE_BYTES = 20 * 1024 * 1024
 
 # (connect, read) timeout in seconds.
-REQUEST_TIMEOUT = (5, 15)
+#
+# The cover is downloaded while the manga is added, so the user waits for
+# it. A host that does not answer must not hold that up for long - the
+# manga is added without a cover instead.
+REQUEST_TIMEOUT = (3, 10)
 
 # How many redirects to follow before giving up.
 MAX_REDIRECTS = 3
