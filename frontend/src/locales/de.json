@@ -201,7 +201,7 @@
     "genreNotFound": "Genre nicht gefunden",
     "failedToCreateManga": "Manga konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
     "searchError": "Bei der Suche ist ein Fehler aufgetreten.",
-    "mangaAlreadyExists": "Manga existiert bereits in der Datenbank",
+    "mangaAlreadyExists": "Dieser Titel ist bereits in Deiner Sammlung. Öffne ihn, um die fehlenden Bände auf die Merkliste zu nehmen.",
     "infoCodes": {
       "MANGA_EXISTS": "Manga existiert bereits in der Datenbank",
       "INVALID_XML": "Ungültige XML-Datei",

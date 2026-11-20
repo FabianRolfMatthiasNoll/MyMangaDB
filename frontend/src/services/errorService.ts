@@ -6,6 +6,12 @@ import { notify } from "./notificationService";
 
 let sessionExpiredShown = false;
 
+// The backend reports a few known problems in plain words. They get a
+// proper message instead of the raw text.
+const KNOWN_DETAILS: Record<string, string> = {
+  "Manga already exists": "errors.mangaAlreadyExists",
+};
+
 export const handleApiError = async (error: unknown) => {
   const responseError = error as ResponseError;
 
@@ -28,7 +34,8 @@ export const handleApiError = async (error: unknown) => {
     if (errorData && errorData.detail) {
       // If it's a simple string message
       if (typeof errorData.detail === "string") {
-        notify(errorData.detail, "error");
+        const known = KNOWN_DETAILS[errorData.detail];
+        notify(known ? i18n.t(known) : errorData.detail, "error");
         return;
       }
 
