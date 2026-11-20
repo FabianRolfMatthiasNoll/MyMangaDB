@@ -12,9 +12,9 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
-import { getMangas } from "../services/mangaService";
+import { getMangas, MangaQuery } from "../services/mangaService";
 import { getAllLists } from "../services/listService";
-import { ListModel, OwnershipStatus } from "../api/models";
+import { ListModel } from "../api/models";
 import { useShowWishlistInDashboard } from "../hooks/useShowWishlistInDashboard";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useTheme } from "@mui/material/styles";
@@ -72,8 +72,8 @@ const Dashboard: React.FC = () => {
       ratingRange,
       showWishlist,
     ],
-    queryFn: ({ pageParam = 1 }) =>
-      getMangas({
+    queryFn: ({ pageParam = 1 }) => {
+      const query: MangaQuery = {
         page: pageParam,
         limit,
         search: searchQuery,
@@ -86,16 +86,20 @@ const Dashboard: React.FC = () => {
         ratingMin: ratingRange[0],
         ratingMax: ratingRange[1],
         listId: filterList?.id,
-        // The dashboard shows the collection. Titles that are only wanted
-        // stay out unless the user asks for them - an explicit ownership
-        // filter always wins.
-        ownershipStatuses:
-          filterOwnershipStatus.length > 0
-            ? filterOwnershipStatus
-            : showWishlist
-            ? undefined
-            : [OwnershipStatus.Owned, OwnershipStatus.Ordered],
-      }),
+      };
+
+      if (filterOwnershipStatus.length > 0) {
+        // An explicit ownership filter always wins.
+        query.ownershipStatuses = filterOwnershipStatus;
+      } else {
+        // The dashboard shows the collection. The titles that are only
+        // wanted stay out unless the user asks for them - a title you
+        // already own a volume of stays.
+        query.hidePureWishes = !showWishlist;
+      }
+
+      return getMangas(query);
+    },
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length === limit ? allPages.length + 1 : undefined;
     },

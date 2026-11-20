@@ -19,6 +19,8 @@ export interface MangaQuery {
   ratingMax?: number;
   listId?: number;
   ownershipStatuses?: string[];
+  /** Leave out the titles that are only wanted. */
+  hidePureWishes?: boolean;
 }
 
 export const getMangas = async ({
@@ -33,6 +35,7 @@ export const getMangas = async ({
   ratingMax,
   listId,
   ownershipStatuses,
+  hidePureWishes,
 }: MangaQuery = {}) =>
   apiCallWrapperOrThrow(() =>
     mangasApi.getMangasApiV1MangasGetAllGet({
@@ -47,6 +50,7 @@ export const getMangas = async ({
       ratingMax: ratingMax !== undefined ? ratingMax : undefined,
       listId: listId !== undefined ? listId : undefined,
       ownershipStatuses: ownershipStatuses?.length ? ownershipStatuses : undefined,
+      hidePureWishes: hidePureWishes !== undefined ? hidePureWishes : undefined,
     })
   );
 
