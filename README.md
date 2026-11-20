@@ -104,6 +104,40 @@ first start and stores it next to the database
 local installations secure out of the box. Set `API_TOKEN` explicitly if you
 run several instances or want the sessions to survive a reinstall.
 
+### Trying a development build
+
+Every push to a branch publishes the container images to the GitHub Container
+Registry under a **dev** tag, so a build can be tried on a server before it
+is released. The images are **never** published as `latest` - that tag
+belongs to the stable release.
+
+| Tag            | Points at                                                      |
+| -------------- | -------------------------------------------------------------- |
+| `dev`          | The newest development build of `master`.                      |
+| `dev-<sha>`    | One specific build. Use this to pin a server to a known state. |
+| `dev-<branch>` | The newest build of a branch, e.g. `dev-feature-_87_wishlist`. |
+
+To try one on a server:
+
+```bash
+echo "API_TOKEN=$(openssl rand -hex 32)" > .env
+docker compose -f docker-compose.dev.yml up -d
+```
+
+The frontend is then on `http://<server>:8080` and the API on port `8000`.
+Pin a specific build with `MYMANGADB_VERSION=dev-<sha>`.
+
+The images are in the GitHub Container Registry. A public repository can be
+pulled anonymously; a private one needs a token:
+
+```bash
+echo "$GITHUB_TOKEN" | docker login ghcr.io -u <user> --password-stdin
+```
+
+> The dev images are built from a branch, so they may contain work that is
+> not released yet. The database is migrated automatically on startup - the
+> same migrations a release would run.
+
 ### Local Home use
 
 Just download the binaries from the latest release and use them. Available for linux and windows.
