@@ -1,6 +1,6 @@
 import { Manga, OwnershipStatus, Volume } from "../api/models";
 import { deleteManga, getMangas, updateMangaDetails } from "./mangaService";
-import { missingVolumesOf } from "../utils/wishlist";
+import { missingVolumesOf, ownedVolumesOf } from "../utils/wishlist";
 
 /** The API returns at most 100 entries per page. */
 const PAGE_SIZE = 100;
@@ -34,7 +34,7 @@ export const getWishlistMangas = async (): Promise<Manga[]> => {
  */
 export const setOwnershipStatus = async (
   manga: Manga,
-  ownershipStatus: OwnershipStatus
+  ownershipStatus: OwnershipStatus,
 ): Promise<Manga> => {
   const updated = await updateMangaDetails({ ...manga, ownershipStatus });
   if (!updated) {
@@ -48,9 +48,58 @@ export const setOwnershipStatus = async (
  */
 export const setPriority = async (
   manga: Manga,
-  priority: boolean
+  priority: boolean,
 ): Promise<Manga> => {
   const updated = await updateMangaDetails({ ...manga, priority });
+  if (!updated) {
+    throw new Error("The manga could not be updated");
+  }
+  return updated;
+};
+
+/**
+ * Move some of the wanted volumes into the collection.
+ *
+ * The title stays on the wishlist - only the volumes that were received
+ * move. When the last missing volume is filled, the title is complete and
+ * leaves the wishlist.
+ */
+export const addVolumesToCollection = async (
+  manga: Manga,
+  volumeNumbers: number[],
+): Promise<Manga> => {
+  const owned = new Set(ownedVolumesOf(manga));
+  const received = volumeNumbers.filter(
+    (number) => !owned.has(number) && number > 0,
+  );
+
+  if (received.length === 0) {
+    return manga;
+  }
+
+  const volumes: Volume[] = [
+    ...manga.volumes,
+    ...received.map((number) => ({
+      id: 0,
+      mangaId: manga.id,
+      volumeNumber: number.toString(),
+      coverImage: null,
+    })),
+  ];
+
+  // The series is complete when every volume up to the total is on the
+  // shelf. Without a known total the app cannot tell - the title then stays
+  // on the wishlist until it is marked as owned by hand.
+  const complete =
+    manga.totalVolumes !== null &&
+    manga.totalVolumes !== undefined &&
+    missingVolumesOf({ ...manga, volumes }).length === 0;
+
+  const updated = await updateMangaDetails({
+    ...manga,
+    ownershipStatus: complete ? OwnershipStatus.Owned : manga.ownershipStatus,
+    volumes,
+  });
   if (!updated) {
     throw new Error("The manga could not be updated");
   }
@@ -83,7 +132,8 @@ export const completeSeries = async (manga: Manga): Promise<Manga> => {
 
 /**
  * Drop a title from the wishlist for good.
+ *
+ * Returns the deleted title, or null when the request failed.
  */
-export const removeFromWishlist = async (manga: Manga): Promise<void> => {
-  await deleteManga(manga.id);
-};
+export const removeFromWishlist = async (manga: Manga): Promise<Manga | null> =>
+  deleteManga(manga.id);

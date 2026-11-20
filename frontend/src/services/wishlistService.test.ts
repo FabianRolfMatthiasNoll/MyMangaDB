@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Manga, OwnershipStatus } from "../api/models";
 import {
+  addVolumesToCollection,
   completeSeries,
   removeFromWishlist,
   setOwnershipStatus,
@@ -53,7 +54,7 @@ describe("wishlistService", () => {
     await setOwnershipStatus(entry, OwnershipStatus.Owned);
 
     expect(updateMangaDetails).toHaveBeenCalledWith(
-      expect.objectContaining({ ownershipStatus: OwnershipStatus.Owned })
+      expect.objectContaining({ ownershipStatus: OwnershipStatus.Owned }),
     );
   });
 
@@ -63,7 +64,7 @@ describe("wishlistService", () => {
     await setOwnershipStatus(entry, OwnershipStatus.Ordered);
 
     expect(updateMangaDetails).toHaveBeenCalledWith(
-      expect.objectContaining({ ownershipStatus: OwnershipStatus.Ordered })
+      expect.objectContaining({ ownershipStatus: OwnershipStatus.Ordered }),
     );
   });
 
@@ -72,12 +73,12 @@ describe("wishlistService", () => {
 
     await setPriority(entry, true);
     expect(updateMangaDetails).toHaveBeenLastCalledWith(
-      expect.objectContaining({ priority: true })
+      expect.objectContaining({ priority: true }),
     );
 
     await setPriority(entry, false);
     expect(updateMangaDetails).toHaveBeenLastCalledWith(
-      expect.objectContaining({ priority: false })
+      expect.objectContaining({ priority: false }),
     );
   });
 
@@ -114,11 +115,50 @@ describe("wishlistService", () => {
     expect(deleteManga).toHaveBeenCalledWith(entry.id);
   });
 
+  it("moves received volumes into the collection", async () => {
+    const entry = manga(["1"]);
+
+    await addVolumesToCollection(entry, [2, 3, 4, 5]);
+
+    const sent = vi.mocked(updateMangaDetails).mock.calls[0][0];
+    expect(sent.volumes.map((volume) => volume.volumeNumber)).toEqual([
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+    ]);
+    // The rest of the series is still wanted.
+    expect(sent.ownershipStatus).toBe(OwnershipStatus.Wishlist);
+  });
+
+  it("does not add volumes that are already owned", async () => {
+    const entry = manga(["1", "2"]);
+
+    await addVolumesToCollection(entry, [2, 3]);
+
+    const sent = vi.mocked(updateMangaDetails).mock.calls[0][0];
+    expect(sent.volumes.map((volume) => volume.volumeNumber)).toEqual([
+      "1",
+      "2",
+      "3",
+    ]);
+  });
+
+  it("leaves the wishlist when the last missing volume arrives", async () => {
+    const entry = { ...manga(["1"]), totalVolumes: 2 };
+
+    await addVolumesToCollection(entry, [2]);
+
+    const sent = vi.mocked(updateMangaDetails).mock.calls[0][0];
+    expect(sent.ownershipStatus).toBe(OwnershipStatus.Owned);
+  });
+
   it("fails when the title could not be updated", async () => {
     vi.mocked(updateMangaDetails).mockResolvedValue(null);
 
     await expect(
-      setOwnershipStatus(manga(), OwnershipStatus.Owned)
+      setOwnershipStatus(manga(), OwnershipStatus.Owned),
     ).rejects.toThrow();
   });
 });

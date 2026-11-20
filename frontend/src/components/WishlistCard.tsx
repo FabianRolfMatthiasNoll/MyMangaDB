@@ -15,6 +15,7 @@ import {
   MenuItem,
   Paper,
   Stack,
+  TextField,
   Typography,
   alpha,
   useTheme,
@@ -24,6 +25,7 @@ import StarIcon from "@mui/icons-material/Star";
 import { Manga, OwnershipStatus } from "../api/models";
 import { getMangaCoverImageUrl } from "../services/imageService";
 import {
+  addVolumesToCollection,
   completeSeries as completeSeriesRequest,
   removeFromWishlist,
   setOwnershipStatus,
@@ -36,8 +38,10 @@ import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
 import {
   formatVolumeRange,
   missingVolumesOf,
+  ownedVolumesOf,
   seriesVolumesOf,
 } from "../utils/wishlist";
+import { parseVolumeString } from "../utils/volumeUtils";
 import VolumeStrip from "./VolumeStrip";
 
 interface WishlistCardProps {
@@ -60,10 +64,13 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
 
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const [removeOpen, setRemoveOpen] = useState(false);
+  const [addVolumesOpen, setAddVolumesOpen] = useState(false);
+  const [volumeInput, setVolumeInput] = useState("");
   const [busy, setBusy] = useState(false);
 
   const missing = missingVolumesOf(manga);
   const volumes = seriesVolumesOf(manga);
+  const owned = ownedVolumesOf(manga);
 
   const refresh = async () => {
     await invalidateMangaQueries(queryClient);
@@ -86,9 +93,43 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
   const handleCompleteSeries = () =>
     runAction(() => completeSeriesRequest(manga));
 
+  const handleOpenAddVolumes = () => {
+    setVolumeInput("");
+    setAddVolumesOpen(true);
+    setMenuAnchor(null);
+  };
+
+  // Some of the wanted volumes arrived - they move into the collection, the
+  // rest stays on the wishlist.
+  const handleAddVolumes = async () => {
+    const numbers = parseVolumeString(volumeInput);
+    if (numbers.length === 0) {
+      notify(t("wishlist.noVolumesEntered"), "error");
+      return;
+    }
+
+    setBusy(true);
+    try {
+      await addVolumesToCollection(manga, numbers);
+      await refresh();
+      setAddVolumesOpen(false);
+      notify(t("wishlist.volumesAdded", { count: numbers.length }), "success");
+    } catch (error) {
+      console.error("Failed to add the volumes", error);
+      notify(t("wishlist.actionFailed"), "error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const handleRemove = () =>
     runAction(async () => {
-      await removeFromWishlist(manga);
+      // The removal has to report back whether it worked. Otherwise the
+      // user is told that the title is gone while it is still there.
+      const removed = await removeFromWishlist(manga);
+      if (!removed) {
+        throw new Error("The title could not be removed");
+      }
       notify(t("wishlist.removed", { title: manga.title }), "success");
     });
 
@@ -164,6 +205,9 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
                 display: "block",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
+                // Without this the ellipsis never kicks in and a long
+                // title wraps over several lines.
+                whiteSpace: "nowrap",
               }}
             >
               {manga.title}
@@ -193,11 +237,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
             </Typography>
           )}
 
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{ mt: 1, flexWrap: "wrap" }}
-          >
+          <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: "wrap" }}>
             <Chip
               label={getOwnershipLabel(manga.ownershipStatus)}
               size="small"
@@ -233,24 +273,34 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
           </Typography>
           <VolumeStrip
             volumes={volumes}
-            filled={new Set(missing)}
-            filledLabel={t("wishlist.missing")}
-            emptyLabel={t("volume.owned")}
-            color="secondary"
+            // A filled square means the same thing everywhere: the volume
+            // is on the shelf. The empty ones are what is still wanted.
+            filled={new Set(owned)}
+            filledLabel={t("volume.owned")}
+            emptyLabel={t("wishlist.missing")}
           />
         </Box>
       )}
 
       {isAdmin && missing.length > 0 && (
-        <Button
-          variant="outlined"
-          size="small"
-          disabled={busy}
-          onClick={handleCompleteSeries}
-          sx={{ alignSelf: "flex-start" }}
-        >
-          {t("wishlist.completeSeries")}
-        </Button>
+        <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
+          <Button
+            variant="outlined"
+            size="small"
+            disabled={busy}
+            onClick={handleCompleteSeries}
+          >
+            {t("wishlist.completeSeries")}
+          </Button>
+          <Button
+            variant="outlined"
+            size="small"
+            disabled={busy}
+            onClick={handleOpenAddVolumes}
+          >
+            {t("wishlist.addVolumes")}
+          </Button>
+        </Stack>
       )}
 
       <Menu
@@ -259,19 +309,21 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
         onClose={() => setMenuAnchor(null)}
       >
         <MenuItem
+          onClick={handleOpenAddVolumes}
+          disabled={missing.length === 0}
+        >
+          {t("wishlist.addVolumes")}
+        </MenuItem>
+        <MenuItem
           onClick={() =>
-            runAction(() =>
-              setOwnershipStatus(manga, OwnershipStatus.Owned)
-            )
+            runAction(() => setOwnershipStatus(manga, OwnershipStatus.Owned))
           }
         >
           {t("wishlist.markAsOwned")}
         </MenuItem>
         <MenuItem
           onClick={() =>
-            runAction(() =>
-              setOwnershipStatus(manga, OwnershipStatus.Ordered)
-            )
+            runAction(() => setOwnershipStatus(manga, OwnershipStatus.Ordered))
           }
         >
           {t("wishlist.markAsOrdered")}
@@ -279,12 +331,59 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
         <MenuItem
           onClick={() => runAction(() => setPriority(manga, !manga.priority))}
         >
-          {manga.priority ? t("wishlist.clearPriority") : t("wishlist.priority")}
+          {manga.priority
+            ? t("wishlist.clearPriority")
+            : t("wishlist.priority")}
         </MenuItem>
         <MenuItem onClick={() => setRemoveOpen(true)}>
           {t("wishlist.remove")}
         </MenuItem>
       </Menu>
+
+      <Dialog
+        open={addVolumesOpen}
+        onClose={() => setAddVolumesOpen(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>{t("wishlist.addVolumesTitle")}</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            {t("wishlist.addVolumesDescription")}
+          </Typography>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="receivedVolumes"
+            label={t("wishlist.receivedVolumes")}
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={volumeInput}
+            onChange={(event) => setVolumeInput(event.target.value)}
+            placeholder={t("volume.e.gVolumes")}
+            helperText={
+              missing.length > 0
+                ? t("wishlist.missingVolumesHint", {
+                    range: formatVolumeRange(missing),
+                  })
+                : undefined
+            }
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAddVolumesOpen(false)}>
+            {t("common.cancel")}
+          </Button>
+          <Button
+            variant="contained"
+            disabled={busy}
+            onClick={handleAddVolumes}
+          >
+            {t("wishlist.addVolumes")}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog open={removeOpen} onClose={() => setRemoveOpen(false)}>
         <DialogTitle>{t("wishlist.removeTitle")}</DialogTitle>

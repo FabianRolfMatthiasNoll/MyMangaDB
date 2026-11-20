@@ -22,9 +22,9 @@ import { Manga } from "../api/models";
 import { getWishlistMangas } from "../services/wishlistService";
 import {
   formatRelativeDate,
-  isPartiallyOwned,
   isUnowned,
   missingVolumeCount,
+  ownedVolumesOf,
 } from "../utils/wishlist";
 import WishlistCard from "../components/WishlistCard";
 
@@ -48,7 +48,12 @@ const WishlistPage: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<SortOrder>("title");
   const [tab, setTab] = useState(0);
 
-  const { data: wishlist = [], isLoading, isError, refetch } = useQuery({
+  const {
+    data: wishlist = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["wishlist"],
     queryFn: getWishlistMangas,
   });
@@ -60,8 +65,8 @@ const WishlistPage: React.FC = () => {
           (manga) =>
             manga.title.toLowerCase().includes(term) ||
             manga.authors.some((author) =>
-              author.name.toLowerCase().includes(term)
-            )
+              author.name.toLowerCase().includes(term),
+            ),
         )
       : wishlist;
 
@@ -74,20 +79,24 @@ const WishlistPage: React.FC = () => {
         );
       }
       if (sortOrder === "missing") {
-        return (
-          missingVolumeCount(right) - missingVolumeCount(left)
-        );
+        return missingVolumeCount(right) - missingVolumeCount(left);
       }
       return left.title.localeCompare(right.title);
     });
 
     // A prioritised title always comes first.
     return sorted.sort(
-      (left, right) => Number(right.priority) - Number(left.priority)
+      (left, right) => Number(right.priority) - Number(left.priority),
     );
   }, [wishlist, search, sortOrder]);
 
-  const continuable = filtered.filter(isPartiallyOwned);
+  // Two groups, so that every title on the wishlist is in one of them: a
+  // title you already own a volume of, and a title you do not own yet.
+  // Without the second condition a title whose volumes are all owned would
+  // fall through both groups and disappear from the page.
+  const continuable = filtered.filter(
+    (manga) => ownedVolumesOf(manga).length > 0,
+  );
   const unowned = filtered.filter(isUnowned);
 
   // The newest wishes, shown as a quick strip at the top. They are also part
@@ -98,10 +107,10 @@ const WishlistPage: React.FC = () => {
         .sort(
           (left, right) =>
             new Date(right.addedAt ?? 0).getTime() -
-            new Date(left.addedAt ?? 0).getTime()
+            new Date(left.addedAt ?? 0).getTime(),
         )
         .slice(0, 5),
-    [filtered]
+    [filtered],
   );
 
   const sections = [
@@ -195,9 +204,7 @@ const WishlistPage: React.FC = () => {
             size="small"
             label={t("wishlist.sortBy")}
             value={sortOrder}
-            onChange={(event) =>
-              setSortOrder(event.target.value as SortOrder)
-            }
+            onChange={(event) => setSortOrder(event.target.value as SortOrder)}
             sx={{ minWidth: 160 }}
           >
             {SORT_ORDERS.map((order) => (
@@ -217,8 +224,14 @@ const WishlistPage: React.FC = () => {
         <>
           {recent.length > 0 && (
             <Box sx={{ mb: 4 }}>
-              <Typography variant="h6">{t("wishlist.recentlyAdded")}</Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+              <Typography variant="h6">
+                {t("wishlist.recentlyAdded")}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mb: 1.5 }}
+              >
                 {t("wishlist.recentlyAddedDescription")}
               </Typography>
               <Stack
@@ -237,7 +250,7 @@ const WishlistPage: React.FC = () => {
                     variant="outlined"
                     label={`${manga.title} · ${formatRelativeDate(
                       manga.addedAt,
-                      i18n.language
+                      i18n.language,
                     )}`}
                     sx={{ borderStyle: "dashed" }}
                   />
