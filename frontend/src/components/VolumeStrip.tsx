@@ -1,5 +1,13 @@
 import React from "react";
-import { Box, Paper, Tooltip, Typography, useTheme, alpha } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import {
+  Box,
+  Paper,
+  Tooltip,
+  Typography,
+  useTheme,
+  alpha,
+} from "@mui/material";
 
 interface VolumeStripProps {
   /** The volumes of the series, in order. */
@@ -22,9 +30,11 @@ interface VolumeStripProps {
 /**
  * A row of small squares, one per volume of a series.
  *
- * The filled ones are the volumes that matter for the current view - the
- * ones you own on the manga page, the ones you are still missing on the
- * wishlist. Both use this component so the two pages look the same.
+ * A filled square always means the same thing everywhere: the volume is in
+ * the collection. The empty ones are the ones that are still wanted. The
+ * tooltip says which is which, and the legend below the row repeats it -
+ * without a legend the same square reads as "complete" on one page and
+ * "missing everything" on the other.
  */
 const VolumeStrip: React.FC<VolumeStripProps> = ({
   volumes,
@@ -34,51 +44,109 @@ const VolumeStrip: React.FC<VolumeStripProps> = ({
   color = "primary",
   max = 40,
 }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
 
   const visible = volumes.slice(0, max);
   const hidden = volumes.length - visible.length;
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexWrap: "wrap" }}>
-      {visible.map((volume) => {
-        const isFilled = filled.has(volume);
-        return (
-          <Tooltip key={volume} title={isFilled ? filledLabel : emptyLabel}>
-            <Paper
-              elevation={isFilled ? 2 : 0}
-              sx={{
-                width: 28,
-                height: 28,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: 1,
-                bgcolor: isFilled
-                  ? theme.palette[color].main
-                  : alpha(theme.palette.action.disabledBackground, 0.3),
-                color: isFilled
-                  ? theme.palette[color].contrastText
-                  : theme.palette.text.disabled,
-                fontWeight: "bold",
-                fontSize: "0.75rem",
-                border: isFilled
-                  ? "none"
-                  : `1px solid ${theme.palette.divider}`,
-              }}
-            >
-              {volume}
-            </Paper>
+    <Box>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 0.5,
+          flexWrap: "wrap",
+        }}
+      >
+        {visible.map((volume) => {
+          const isFilled = filled.has(volume);
+          return (
+            <Tooltip key={volume} title={isFilled ? filledLabel : emptyLabel}>
+              <Paper
+                elevation={isFilled ? 2 : 0}
+                sx={{
+                  width: 28,
+                  height: 28,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 1,
+                  bgcolor: isFilled
+                    ? theme.palette[color].main
+                    : alpha(theme.palette.action.disabledBackground, 0.3),
+                  color: isFilled
+                    ? theme.palette[color].contrastText
+                    : theme.palette.text.disabled,
+                  fontWeight: "bold",
+                  fontSize: "0.75rem",
+                  border: isFilled
+                    ? "none"
+                    : `1px solid ${theme.palette.divider}`,
+                }}
+              >
+                {volume}
+              </Paper>
+            </Tooltip>
+          );
+        })}
+        {hidden > 0 && (
+          <Tooltip title={t("volume.moreVolumes", { count: hidden })}>
+            <Typography variant="caption" color="text.secondary">
+              {`+${hidden}`}
+            </Typography>
           </Tooltip>
-        );
-      })}
-      {hidden > 0 && (
-        <Typography variant="caption" color="text.secondary">
-          {`+${hidden}`}
-        </Typography>
-      )}
+        )}
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          gap: 1.5,
+          mt: 0.5,
+          alignItems: "center",
+        }}
+      >
+        <LegendEntry
+          label={filledLabel}
+          filled
+          color={theme.palette[color].main}
+        />
+        <LegendEntry
+          label={emptyLabel}
+          filled={false}
+          color={alpha(theme.palette.action.disabledBackground, 0.3)}
+        />
+      </Box>
     </Box>
   );
 };
+
+/** One entry of the legend below the volume strip. */
+const LegendEntry = ({
+  label,
+  filled,
+  color,
+}: {
+  label: string;
+  filled: boolean;
+  color: string;
+}) => (
+  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+    <Paper
+      elevation={0}
+      sx={{
+        width: 10,
+        height: 10,
+        borderRadius: 0.5,
+        bgcolor: color,
+        border: filled ? "none" : `1px solid ${alpha("#000", 0.2)}`,
+      }}
+    />
+    <Typography variant="caption" color="text.secondary">
+      {label}
+    </Typography>
+  </Box>
+);
 
 export default VolumeStrip;

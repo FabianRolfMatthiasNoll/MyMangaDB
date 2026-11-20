@@ -12,6 +12,7 @@ import {
   Autocomplete,
   Switch,
   TextField,
+  Typography,
 } from "@mui/material";
 import {
   OverallStatus,
@@ -81,14 +82,12 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
   const handleRatingRangeChange = (
     _event: Event,
-    newValue: number | number[]
+    newValue: number | number[],
   ) => {
     setRatingRange(newValue as number[]);
   };
 
-  const handleOwnershipStatusChange = (
-    event: SelectChangeEvent<string[]>
-  ) => {
+  const handleOwnershipStatusChange = (event: SelectChangeEvent<string[]>) => {
     setFilterOwnershipStatus(event.target.value as string[]);
   };
 
@@ -161,7 +160,11 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           value={filterList}
           onChange={(_event, newValue) => setFilterList(newValue)}
           renderInput={(params) => (
-            <TextField {...params} label={t("filters.filterByList")} variant="outlined" />
+            <TextField
+              {...params}
+              label={t("filters.filterByList")}
+              variant="outlined"
+            />
           )}
         />
       </FormControl>
@@ -171,21 +174,36 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
             <Switch
               checked={showWishlist}
               onChange={onToggleWishlist}
+              disabled={filterOwnershipStatus.length > 0}
               slotProps={{ input: { "aria-label": t("filters.showWishlist") } }}
             />
           }
           label={t("filters.showWishlist")}
         />
+        {filterOwnershipStatus.length > 0 && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: "block" }}
+          >
+            {t("filters.showWishlistHint")}
+          </Typography>
+        )}
       </Box>
       <Box sx={{ mb: 2 }}>
-        <InputLabel>{t("filters.ratingRange")}</InputLabel>
-        <Slider
-          value={ratingRange}
-          onChange={handleRatingRangeChange}
-          valueLabelDisplay="auto"
-          min={0}
-          max={5}
-        />
+        <FormControl variant="outlined" fullWidth>
+          <InputLabel id="rating-range-label">
+            {t("filters.ratingRange")}
+          </InputLabel>
+          <Slider
+            value={ratingRange}
+            onChange={handleRatingRangeChange}
+            valueLabelDisplay="auto"
+            min={0}
+            max={5}
+            aria-labelledby="rating-range-label"
+          />
+        </FormControl>
       </Box>
       <Button variant="contained" onClick={resetFilters}>
         {t("filters.resetFilters")}

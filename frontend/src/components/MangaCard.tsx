@@ -4,13 +4,13 @@ import {
   CardMedia,
   Typography,
   Box,
-  CardActionArea,
   Chip,
   useTheme,
   alpha,
 } from "@mui/material";
 import { Manga, OwnershipStatus } from "../api/models";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getMangaCoverImageUrl } from "../services/imageService";
 import { useStatusMeta } from "../hooks/useStatusMeta";
 import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
@@ -21,6 +21,7 @@ interface MangaCardProps {
 }
 
 const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const { getStatusLabel, getStatusColor } = useStatusMeta();
   const { getOwnershipLabel, getOwnershipColor } = useOwnershipStatus();
@@ -33,7 +34,9 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
   const isWishlist = manga.ownershipStatus === OwnershipStatus.Wishlist;
 
   const cardStyles = {
-    maxWidth: 350,
+    // The grid already sizes the card. A fixed maximum width would leave
+    // a ragged edge in the wider cells.
+    width: "100%",
     position: "relative",
     // The card is a link, and a link is inline by default. The line box
     // around it then adds a strip of empty space above and below the cover.
@@ -90,134 +93,151 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
       to={`/manga/${manga.id}`}
       state={listId ? { from: "list-detail", listId } : undefined}
     >
-      <CardActionArea>
-        <Box sx={cardMediaWrapperStyle}>
+      <Box sx={cardMediaWrapperStyle}>
+        {manga.coverImage ? (
           <CardMedia
             component="img"
             image={imageUrl}
-            alt="manga cover"
+            alt={manga.title}
             loading="lazy"
             sx={cardMediaStyle}
           />
-          <Box className="cover" sx={coverStyles}>
-            <Box
+        ) : (
+          // A title without a cover would otherwise show the browser's
+          // broken image icon.
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              px: 2,
+              textAlign: "center",
+              bgcolor: alpha(theme.palette.action.disabledBackground, 0.3),
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              {t("common.noCoverImage")}
+            </Typography>
+          </Box>
+        )}
+        <Box className="cover" sx={coverStyles}>
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              p: 2,
+              display: "flex",
+              flexDirection: "column",
+              gap: 1,
+            }}
+          >
+            <Typography
+              variant="h6"
+              component="div"
               sx={{
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                right: 0,
-                p: 2,
-                display: "flex",
-                flexDirection: "column",
-                gap: 1,
+                fontWeight: 600,
+                color: theme.palette.text.primary,
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
               }}
             >
-              <Typography
-                variant="h6"
-                component="div"
-                sx={{
-                  fontWeight: 600,
-                  color: theme.palette.text.primary,
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {manga.title}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: theme.palette.text.secondary,
-                  display: "-webkit-box",
-                  WebkitLineClamp: 1,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                }}
-              >
-                {manga.authors.map((author) => author.name).join(", ")}
-              </Typography>
-              <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-                {manga.ownershipStatus === OwnershipStatus.Wishlist && (
+              {manga.title}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: theme.palette.text.secondary,
+                display: "-webkit-box",
+                WebkitLineClamp: 1,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+              }}
+            >
+              {manga.authors.map((author) => author.name).join(", ")}
+            </Typography>
+            <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
+              {manga.ownershipStatus === OwnershipStatus.Wishlist && (
+                <Chip
+                  label={getOwnershipLabel(manga.ownershipStatus)}
+                  size="small"
+                  sx={{
+                    bgcolor: getOwnershipColor(manga.ownershipStatus),
+                    color: "white",
+                    fontSize: "0.75rem",
+                    height: 20,
+                  }}
+                />
+              )}
+              {manga.readingStatus && (
+                <Chip
+                  label={getStatusLabel(manga.readingStatus)}
+                  size="small"
+                  sx={{
+                    bgcolor: getStatusColor(manga.readingStatus),
+                    color: "white",
+                    fontSize: "0.75rem",
+                    height: 20,
+                  }}
+                />
+              )}
+              {manga.overallStatus && (
+                <Chip
+                  label={getStatusLabel(manga.overallStatus)}
+                  size="small"
+                  sx={{
+                    bgcolor: getStatusColor(manga.overallStatus),
+                    color: "white",
+                    fontSize: "0.75rem",
+                    height: 20,
+                  }}
+                />
+              )}
+            </Box>
+            <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap", mt: 0.5 }}>
+              {manga.lists &&
+                manga.lists.slice(0, 4).map((list) => (
                   <Chip
-                    label={getOwnershipLabel(manga.ownershipStatus)}
+                    key={list.id}
+                    label={
+                      list.name.length > 13
+                        ? list.name.substring(0, 13) + "..."
+                        : list.name
+                    }
                     size="small"
-                    sx={{
-                      bgcolor: getOwnershipColor(manga.ownershipStatus),
-                      color: "white",
-                      fontSize: "0.75rem",
-                      height: 20,
-                    }}
-                  />
-                )}
-                {manga.readingStatus && (
-                  <Chip
-                    label={getStatusLabel(manga.readingStatus)}
-                    size="small"
-                    sx={{
-                      bgcolor: getStatusColor(manga.readingStatus),
-                      color: "white",
-                      fontSize: "0.75rem",
-                      height: 20,
-                    }}
-                  />
-                )}
-                {manga.overallStatus && (
-                  <Chip
-                    label={getStatusLabel(manga.overallStatus)}
-                    size="small"
-                    sx={{
-                      bgcolor: getStatusColor(manga.overallStatus),
-                      color: "white",
-                      fontSize: "0.75rem",
-                      height: 20,
-                    }}
-                  />
-                )}
-              </Box>
-              <Box
-                sx={{ display: "flex", gap: 0.5, flexWrap: "wrap", mt: 0.5 }}
-              >
-                {manga.lists &&
-                  manga.lists.slice(0, 4).map((list) => (
-                    <Chip
-                      key={list.id}
-                      label={
-                        list.name.length > 13
-                          ? list.name.substring(0, 13) + "..."
-                          : list.name
-                      }
-                      size="small"
-                      variant="outlined"
-                      sx={{
-                        fontSize: "0.7rem",
-                        height: 20,
-                        borderColor: theme.palette.divider,
-                        color: theme.palette.text.secondary,
-                      }}
-                    />
-                  ))}
-                {manga.lists && manga.lists.length > 4 && (
-                  <Chip
-                    label={`+${manga.lists.length - 4}`}
-                    size="small"
+                    variant="outlined"
                     sx={{
                       fontSize: "0.7rem",
                       height: 20,
-                      borderRadius: "50%",
-                      minWidth: 20,
-                      px: 0,
-                      bgcolor: theme.palette.action.selected,
+                      borderColor: theme.palette.divider,
+                      color: theme.palette.text.secondary,
                     }}
                   />
-                )}
-              </Box>
+                ))}
+              {manga.lists && manga.lists.length > 4 && (
+                <Chip
+                  label={`+${manga.lists.length - 4}`}
+                  size="small"
+                  sx={{
+                    fontSize: "0.7rem",
+                    height: 20,
+                    borderRadius: "50%",
+                    minWidth: 20,
+                    px: 0,
+                    bgcolor: theme.palette.action.selected,
+                  }}
+                />
+              )}
             </Box>
           </Box>
         </Box>
-      </CardActionArea>
+      </Box>
     </Card>
   );
 };

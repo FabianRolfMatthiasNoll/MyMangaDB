@@ -10,7 +10,10 @@
     "genres": "Genres",
     "statistics": "Statistics",
     "settings": "Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "menu": "Menu",
+    "lightMode": "Switch to the light theme",
+    "darkMode": "Switch to the dark theme"
   },
   "common": {
     "save": "Save",
@@ -45,6 +48,7 @@
     "close": "Close",
     "addWithVolumes": "Add with Volumes",
     "adding": "Adding...",
+    "added": "Added",
     "searching": "Searching...",
     "saving": "Saving...",
     "manual": "Manual",
@@ -90,7 +94,7 @@
     "addedSuccess": "Successfully added {{title}}",
     "addError": "An error occurred while adding the manga.",
     "addToDatabase": "Add to collection",
-    "addToWishlist": "To wishlist",
+    "addToWishlist": "Add to wishlist",
     "enterVolumesYouOwn": "Enter the volumes you own for {{title}}",
     "e.gVolumes": "e.g. 1-10; 12; 15-20"
   },
@@ -107,10 +111,12 @@
     "enterVolumesYouOwn": "Enter volumes you own...",
     "volumes": "Volumes",
     "e.gVolumes": "e.g. 1-10; 12; 15-20",
+    "moreVolumes": "{{count}} more volume(s)",
     "saveFailed": "Failed to update volumes"
   },
   "search": {
     "searchPlaceholder": "Search",
+    "sortBy": "Sort by title",
     "asc": "Asc",
     "desc": "Desc",
     "advancedFilters": "Advanced Filters"
@@ -121,6 +127,7 @@
     "overallStatus": "Overall Status",
     "ownershipStatus": "Ownership",
     "showWishlist": "Show wishlist items",
+    "showWishlistHint": "The ownership filter decides what is shown, so this switch is off.",
     "ratingRange": "Rating Range",
     "filterByList": "Filter by List",
     "resetFilters": "Reset Filters"

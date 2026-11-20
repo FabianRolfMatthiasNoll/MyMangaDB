@@ -32,7 +32,10 @@ interface NavBarProps {
 const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
   const theme = useTheme();
   const location = useLocation();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // The desktop navigation needs about 1000 pixels for its seven entries.
+  // Below that the labels are squeezed into the fixed-height app bar, so
+  // the drawer takes over earlier than on a phone.
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [langAnchorEl, setLangAnchorEl] = useState<null | HTMLElement>(null);
   const { isAdmin } = useUser();
@@ -137,13 +140,15 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
                 <IconButton
                   edge="start"
                   color="inherit"
-                  aria-label="menu"
+                  aria-label={t("nav.menu")}
                   onClick={handleMenuOpen}
                 >
                   <MenuIcon />
                 </IconButton>
                 <Typography
                   variant="h6"
+                  component={Link}
+                  to="/"
                   sx={{
                     mr: 2,
                     display: { xs: "flex", md: "flex" },
@@ -161,6 +166,8 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
               <>
                 <Typography
                   variant="h6"
+                  component={Link}
+                  to="/"
                   sx={{
                     mr: 2,
                     display: { xs: "flex", md: "flex" },
@@ -205,7 +212,11 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
                     >
                       <Badge
                         color="secondary"
-                        badgeContent={item.badge}
+                        // Three digits do not fit into the small badge
+                        // circle - they would spill over the label.
+                        badgeContent={
+                          item.badge && item.badge > 99 ? "99+" : item.badge
+                        }
                         invisible={!item.badge}
                         // The badge sits on the top right corner of the
                         // label, so it needs room of its own - otherwise it
@@ -260,16 +271,36 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
                 {t("language.de")}
               </MenuItem>
             </Menu>
-            <IconButton onClick={toggleThemeMode} sx={{ alignSelf: "center" }}>
-              {theme.palette.mode === "dark" ? (
-                <LightModeIcon />
-              ) : (
-                <DarkModeRoundedIcon />
-              )}
-            </IconButton>
+            <Tooltip
+              title={
+                theme.palette.mode === "dark"
+                  ? t("nav.lightMode")
+                  : t("nav.darkMode")
+              }
+            >
+              <IconButton
+                onClick={toggleThemeMode}
+                aria-label={
+                  theme.palette.mode === "dark"
+                    ? t("nav.lightMode")
+                    : t("nav.darkMode")
+                }
+                sx={{ alignSelf: "center" }}
+              >
+                {theme.palette.mode === "dark" ? (
+                  <LightModeIcon />
+                ) : (
+                  <DarkModeRoundedIcon />
+                )}
+              </IconButton>
+            </Tooltip>
             {!isMobile && (
               <Tooltip title={t("nav.logout")}>
-                <IconButton onClick={handleLogout} sx={{ alignSelf: "center" }}>
+                <IconButton
+                  onClick={handleLogout}
+                  aria-label={t("nav.logout")}
+                  sx={{ alignSelf: "center" }}
+                >
                   <LogoutIcon />
                 </IconButton>
               </Tooltip>

@@ -10,7 +10,10 @@
     "genres": "Genres",
     "statistics": "Statistiken",
     "settings": "Einstellungen",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "menu": "Menü",
+    "lightMode": "Zum hellen Design wechseln",
+    "darkMode": "Zum dunklen Design wechseln"
   },
   "common": {
     "save": "Speichern",
@@ -45,6 +48,7 @@
     "close": "Schließen",
     "addWithVolumes": "Mit Bänden hinzufügen",
     "adding": "Wird hinzugefügt...",
+    "added": "Hinzugefügt",
     "searching": "Suche läuft...",
     "saving": "Wird gespeichert...",
     "manual": "Manuell",
@@ -107,10 +111,12 @@
     "enterVolumesYouOwn": "Geben Sie die Bände ein, die Sie besitzen...",
     "volumes": "Bände",
     "e.gVolumes": "z.B. 1-10; 12; 15-20",
+    "moreVolumes": "{{count}} weitere Bände",
     "saveFailed": "Bände konnten nicht aktualisiert werden"
   },
   "search": {
     "searchPlaceholder": "Suchen",
+    "sortBy": "Nach Titel sortieren",
     "asc": "Aufsteigend",
     "desc": "Absteigend",
     "advancedFilters": "Erweiterte Filter"
@@ -121,6 +127,7 @@
     "overallStatus": "Gesamtstatus",
     "ownershipStatus": "Besitz",
     "showWishlist": "Merklisten-Titel anzeigen",
+    "showWishlistHint": "Der Besitzfilter entscheidet, was angezeigt wird - dieser Schalter ist daher aus.",
     "ratingRange": "Bewertungsbereich",
     "filterByList": "Nach Liste filtern",
     "resetFilters": "Filter zurücksetzen"

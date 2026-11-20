@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { Manga, OwnershipStatus } from "../api/models";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { fetchMangaCoverImageAsBlobUrl } from "../services/imageService";
 import { useStatusMeta } from "../hooks/useStatusMeta";
 import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
@@ -20,7 +21,11 @@ interface MobileMangaListItemProps {
   listId?: number;
 }
 
-const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId }) => {
+const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({
+  manga,
+  listId,
+}) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const { getStatusLabel, getStatusColor } = useStatusMeta();
   const { getOwnershipLabel, getOwnershipColor } = useOwnershipStatus();
@@ -71,7 +76,9 @@ const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId
         sx={{
           width: "100%",
           display: "flex",
-          height: 120,
+          // A fixed height clips the chips when they wrap onto a second
+          // row.
+          minHeight: 120,
           borderRadius: 2,
           overflow: "hidden",
           border: isWishlist
@@ -89,27 +96,49 @@ const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId
         }}
         component={Link}
         to={`/manga/${manga.id}`}
-        state={listId ? { from: 'list-detail', listId } : undefined}
+        state={listId ? { from: "list-detail", listId } : undefined}
       >
-        <CardMedia
-          component="img"
-          image={imageUrl}
-          alt="manga cover"
-          sx={{
-            width: 80,
-            height: 120,
-            objectFit: "cover",
-          }}
-        />
+        {manga.coverImage ? (
+          <CardMedia
+            component="img"
+            image={imageUrl}
+            alt={manga.title}
+            sx={{
+              width: 80,
+              height: 120,
+              objectFit: "cover",
+            }}
+          />
+        ) : (
+          // A title without a cover would otherwise show the browser's
+          // broken image icon.
+          <Box
+            sx={{
+              width: 80,
+              height: 120,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              p: 1,
+              textAlign: "center",
+              bgcolor: alpha(theme.palette.action.disabledBackground, 0.3),
+            }}
+          >
+            <Typography variant="caption" color="text.secondary">
+              {t("common.noCoverImage")}
+            </Typography>
+          </Box>
+        )}
         <Box
           sx={{
             display: "flex",
             flexDirection: "column",
             flex: 1,
             p: 1.5,
-            background: theme.palette.mode === "dark"
-              ? alpha(theme.palette.background.paper, 0.8)
-              : alpha(theme.palette.background.paper, 0.9),
+            background:
+              theme.palette.mode === "dark"
+                ? alpha(theme.palette.background.paper, 0.8)
+                : alpha(theme.palette.background.paper, 0.9),
           }}
         >
           <Typography
