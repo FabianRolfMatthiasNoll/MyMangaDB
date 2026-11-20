@@ -57,6 +57,7 @@
     "errorLoading": "Fehler beim Laden",
     "retry": "Erneut versuchen",
     "noResults": "Keine Ergebnisse gefunden.",
+    "notAvailable": "Nicht vorhanden",
     "noMangaYet": "Noch keine Manga"
   },
   "manga": {
@@ -251,7 +252,8 @@
   "dashboard": {
     "addManga": "Manga hinzufügen",
     "manual": "Manuell",
-    "automatic": "Automatisch"
+    "automatic": "Automatisch",
+    "nothingHere": "Hier ist noch nichts. Füge einen Titel über die automatische Suche hinzu."
   },
   "lists": {
     "myLists": "Meine Listen",
@@ -261,7 +263,8 @@
     "createYourFirstList": "Erste Liste erstellen",
     "editList": "Liste bearbeiten",
     "listName": "Listenname",
-    "deleteListConfirm": "Sind Sie sicher, dass Sie diese Liste löschen möchten?",
+    "deleteList": "Liste löschen",
+    "deleteListConfirm": "Möchtest Du \"{{name}}\" wirklich löschen? Die Liste wird entfernt, die Titel bleiben in Deiner Sammlung.",
     "mangaCount": "{{count}} Manga(s)",
     "noMangaInList": "Keine Manga in dieser Liste",
     "addMangasFromDetails": "Fügen Sie Manga aus der Manga-Detailseite zu dieser Liste hinzu."

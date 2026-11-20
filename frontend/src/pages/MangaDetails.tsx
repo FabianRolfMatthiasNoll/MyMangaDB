@@ -39,6 +39,7 @@ import { notify } from "../services/notificationService";
 import { useTranslation } from "react-i18next";
 import { useStatusMeta } from "../hooks/useStatusMeta";
 import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
+import { useCategoryLabel } from "../hooks/useCategoryLabel";
 import { formatVolumeRange, missingVolumesOf } from "../utils/wishlist";
 
 // The label of the back button, depending on where it leads.
@@ -59,6 +60,7 @@ const MangaDetails: React.FC = () => {
   const { isAdmin } = useUser();
   const { getStatusLabel, getStatusColor } = useStatusMeta();
   const { getOwnershipLabel, getOwnershipColor } = useOwnershipStatus();
+  const getCategoryLabel = useCategoryLabel();
   const [manga, setManga] = useState<Manga | null>(null);
   const [loadFailed, setLoadFailed] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -191,7 +193,13 @@ const MangaDetails: React.FC = () => {
   const handleDeleteConfirm = async () => {
     if (id) {
       try {
-        await deleteManga(Number(id));
+        // A failed request resolves to null. Without this check the user is
+        // sent back to the dashboard although the title is still there.
+        const deleted = await deleteManga(Number(id));
+        if (!deleted) {
+          setDeleteDialogOpen(false);
+          return;
+        }
         await invalidateMangaQueries(queryClient);
         navigate("/");
       } catch (error) {
@@ -208,6 +216,12 @@ const MangaDetails: React.FC = () => {
   const handleSave = async (updatedManga: Manga, coverImage?: File) => {
     try {
       const savedManga = await updateMangaDetails(updatedManga, coverImage);
+      // A failed request resolves to null. The error was already reported
+      // by the request itself - showing the success message here would tell
+      // the user that the save worked when it did not.
+      if (!savedManga) {
+        return;
+      }
       setManga(savedManga);
       setEditMode(false);
       await invalidateMangaQueries(queryClient);
@@ -250,11 +264,19 @@ const MangaDetails: React.FC = () => {
         ...manga,
         ownershipStatus: OwnershipStatus.Wishlist,
       });
+      // A failed request resolves to null. Setting the state to null would
+      // leave the page on its endless spinner.
+      if (!updated) {
+        return;
+      }
       setManga(updated);
       await invalidateMangaQueries(queryClient);
       notify(t("wishlist.addedToWishlist"), "success");
     } catch (error) {
-      console.error("Failed to add the missing volumes to the wishlist:", error);
+      console.error(
+        "Failed to add the missing volumes to the wishlist:",
+        error,
+      );
       notify(t("wishlist.actionFailed"), "error");
     }
   };
@@ -284,7 +306,9 @@ const MangaDetails: React.FC = () => {
       <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
         <DialogTitle>{t("manga.deleteTitle")}</DialogTitle>
         <DialogContent>
-          <Typography>{t("manga.deleteConfirm")}</Typography>
+          <Typography>
+            {t("manga.deleteConfirm", { title: manga.title })}
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDeleteCancel}>{t("common.cancel")}</Button>
@@ -406,7 +430,7 @@ const MangaDetails: React.FC = () => {
                 {manga.ownershipStatus && (
                   <Chip
                     label={`${t("manga.ownershipStatus")}: ${getOwnershipLabel(
-                      manga.ownershipStatus
+                      manga.ownershipStatus,
                     )}`}
                     sx={{
                       bgcolor: getOwnershipColor(manga.ownershipStatus),
@@ -418,7 +442,7 @@ const MangaDetails: React.FC = () => {
                 {manga.readingStatus && (
                   <Chip
                     label={`${t("manga.readingStatus")}: ${getStatusLabel(
-                      manga.readingStatus
+                      manga.readingStatus,
                     )}`}
                     sx={{
                       bgcolor: getStatusColor(manga.readingStatus),
@@ -430,7 +454,7 @@ const MangaDetails: React.FC = () => {
                 {manga.overallStatus && (
                   <Chip
                     label={`${t("manga.overallStatus")}: ${getStatusLabel(
-                      manga.overallStatus
+                      manga.overallStatus,
                     )}`}
                     sx={{
                       bgcolor: getStatusColor(manga.overallStatus),
@@ -441,7 +465,7 @@ const MangaDetails: React.FC = () => {
                 )}
                 {manga.category && (
                   <Chip
-                    label={manga.category}
+                    label={getCategoryLabel(manga.category)}
                     sx={{
                       bgcolor:
                         theme.palette.mode === "dark"
@@ -518,7 +542,7 @@ const MangaDetails: React.FC = () => {
                     {t("common.language")}
                   </Typography>
                   <Typography variant="body1" gutterBottom>
-                    {manga.language || "N/A"}
+                    {manga.language || t("common.notAvailable")}
                   </Typography>
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6 }}>
@@ -585,7 +609,11 @@ const MangaDetails: React.FC = () => {
               {/* The rest of the series can go on the wishlist. */}
               {manga.totalVolumes && missingVolumes.length > 0 && (
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
                     {t("wishlist.missingVolumes", {
                       count: missingVolumes.length,
                       range: formatVolumeRange(missingVolumes),

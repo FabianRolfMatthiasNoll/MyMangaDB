@@ -57,6 +57,7 @@
     "errorLoading": "Error loading",
     "retry": "Retry",
     "noResults": "No results found.",
+    "notAvailable": "Not available",
     "noMangaYet": "No manga yet"
   },
   "manga": {
@@ -251,7 +252,8 @@
   "dashboard": {
     "addManga": "Add Manga",
     "manual": "Manual",
-    "automatic": "Automatic"
+    "automatic": "Automatic",
+    "nothingHere": "Nothing here yet. Add a title from the automatic search."
   },
   "lists": {
     "myLists": "My Lists",
@@ -261,7 +263,8 @@
     "createYourFirstList": "Create Your First List",
     "editList": "Edit List",
     "listName": "List Name",
-    "deleteListConfirm": "Are you sure you want to delete this list?",
+    "deleteList": "Delete list",
+    "deleteListConfirm": "Do you really want to delete \"{{name}}\"? The list is removed, the titles stay in your collection.",
     "mangaCount": "{{count}} manga(s)",
     "noMangaInList": "No manga in this list",
     "addMangasFromDetails": "Add mangas to this list from the manga details page."

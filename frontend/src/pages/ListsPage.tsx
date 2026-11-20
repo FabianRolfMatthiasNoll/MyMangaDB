@@ -30,6 +30,8 @@ import {
 } from "../services/listService";
 import { useUser } from "../context/UserContext";
 import { useTranslation } from "react-i18next";
+import { invalidateMangaQueries } from "../services/queryInvalidation";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ListsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -41,10 +43,13 @@ const ListsPage: React.FC = () => {
     id: number;
     name: string;
   } | null>(null);
+  const [listToDelete, setListToDelete] = useState<ListWithCount | null>(null);
+  const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { isAdmin } = useUser();
+  const queryClient = useQueryClient();
 
   const fetchLists = async () => {
     try {
@@ -80,27 +85,43 @@ const ListsPage: React.FC = () => {
   };
 
   const handleSaveList = async () => {
+    setSaving(true);
     try {
-      if (editingList) {
-        await updateList(editingList.id, listName);
-      } else {
-        await createList(listName);
+      // A failed request resolves to null. Closing the dialog then would
+      // throw the typed name away without telling the user.
+      const saved = editingList
+        ? await updateList(editingList.id, listName)
+        : await createList(listName);
+
+      if (!saved) {
+        return;
       }
+
       handleCloseDialog();
+      await invalidateMangaQueries(queryClient);
       fetchLists();
     } catch (error) {
       console.error("Error saving list:", error);
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleDeleteList = async (listId: number) => {
-    if (window.confirm(t("lists.deleteListConfirm"))) {
-      try {
-        await deleteList(listId);
-        fetchLists();
-      } catch (error) {
-        console.error("Error deleting list:", error);
+  const handleDeleteList = async () => {
+    if (!listToDelete) {
+      return;
+    }
+
+    try {
+      const deleted = await deleteList(listToDelete.id);
+      if (!deleted) {
+        return;
       }
+      setListToDelete(null);
+      await invalidateMangaQueries(queryClient);
+      fetchLists();
+    } catch (error) {
+      console.error("Error deleting list:", error);
     }
   };
 
@@ -204,6 +225,7 @@ const ListsPage: React.FC = () => {
                 <Grid size={{ xs: 12, sm: 6, md: 4 }} key={list.id}>
                   <Paper
                     elevation={2}
+                    onClick={() => handleListClick(list.id)}
                     sx={{
                       p: isMobile ? 2 : 3,
                       cursor: "pointer",
@@ -220,7 +242,6 @@ const ListsPage: React.FC = () => {
                         justifyContent: "space-between",
                         alignItems: "center",
                       }}
-                      onClick={() => handleListClick(list.id)}
                     >
                       <Box>
                         <Typography
@@ -241,8 +262,7 @@ const ListsPage: React.FC = () => {
                             gap: 0.5,
                           }}
                         >
-                          {list.mangaCount} manga
-                          {list.mangaCount !== 1 ? "s" : ""}
+                          {t("lists.mangaCount", { count: list.mangaCount })}
                         </Typography>
                       </Box>
                       {isAdmin && (
@@ -267,7 +287,7 @@ const ListsPage: React.FC = () => {
                               size="small"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleDeleteList(list.id);
+                                setListToDelete(list);
                               }}
                               sx={{
                                 backgroundColor: "background.paper",
@@ -328,12 +348,41 @@ const ListsPage: React.FC = () => {
               onClick={handleSaveList}
               color="primary"
               variant="contained"
+              disabled={saving}
               sx={{
                 textTransform: "none",
                 px: 3,
               }}
             >
-              {editingList ? t("common.save") : t("common.create")}
+              {saving
+                ? t("common.saving")
+                : editingList
+                  ? t("common.save")
+                  : t("common.create")}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={listToDelete !== null}
+          onClose={() => setListToDelete(null)}
+        >
+          <DialogTitle>{t("lists.deleteList")}</DialogTitle>
+          <DialogContent>
+            <Typography>
+              {t("lists.deleteListConfirm", { name: listToDelete?.name })}
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setListToDelete(null)}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              onClick={handleDeleteList}
+              color="error"
+              variant="contained"
+            >
+              {t("common.delete")}
             </Button>
           </DialogActions>
         </Dialog>

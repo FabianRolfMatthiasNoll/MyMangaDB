@@ -17,10 +17,21 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
+vi.mock("../context/UserContext", () => ({
+  useUser: () => ({
+    user: null,
+    loading: false,
+    isAdmin: true,
+    refreshUser: vi.fn(),
+  }),
+}));
+
 vi.mock("../components/SearchBar", () => ({
-  default: ({ toggleAdvancedFilters }: { toggleAdvancedFilters: () => void }) => (
-    <button onClick={toggleAdvancedFilters}>Advanced filters</button>
-  ),
+  default: ({
+    toggleAdvancedFilters,
+  }: {
+    toggleAdvancedFilters: () => void;
+  }) => <button onClick={toggleAdvancedFilters}>Advanced filters</button>,
 }));
 
 vi.mock("../components/AdvancedFilters", () => ({
@@ -63,7 +74,9 @@ vi.mock("../components/AdvancedFilters", () => ({
 
 vi.mock("../components/MangaList", () => ({ default: () => null }));
 vi.mock("../components/AutomaticSearchModal", () => ({ default: () => null }));
-vi.mock("react-infinite-scroll-component", () => ({ default: ({ children }: { children: React.ReactNode }) => children }));
+vi.mock("react-infinite-scroll-component", () => ({
+  default: ({ children }: { children: React.ReactNode }) => children,
+}));
 
 function renderDashboard() {
   const queryClient = new QueryClient({
@@ -91,57 +104,65 @@ describe("Dashboard advanced filters", () => {
     fireEvent.click(screen.getByRole("button", { name: "Advanced filters" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Category" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith({
-          page: 1,
-          limit: 20,
-          search: "",
-          sort: "asc",
-          categories: ["manga"],
-          ratingMin: 0,
-          ratingMax: 5,
-          hidePureWishes: true,
-        }));
+    await waitFor(() =>
+      expect(getMangas).toHaveBeenLastCalledWith({
+        page: 1,
+        limit: 20,
+        search: "",
+        sort: "asc",
+        categories: ["manga"],
+        ratingMin: 0,
+        ratingMax: 5,
+        hidePureWishes: true,
+      }),
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "Reading status" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith({
-          page: 1,
-          limit: 20,
-          search: "",
-          sort: "asc",
-          categories: ["manga"],
-          readingStatuses: ["in_progress"],
-          ratingMin: 0,
-          ratingMax: 5,
-          hidePureWishes: true,
-        }));
+    await waitFor(() =>
+      expect(getMangas).toHaveBeenLastCalledWith({
+        page: 1,
+        limit: 20,
+        search: "",
+        sort: "asc",
+        categories: ["manga"],
+        readingStatuses: ["in_progress"],
+        ratingMin: 0,
+        ratingMax: 5,
+        hidePureWishes: true,
+      }),
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "Overall status" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith({
-          page: 1,
-          limit: 20,
-          search: "",
-          sort: "asc",
-          categories: ["manga"],
-          readingStatuses: ["in_progress"],
-          overallStatuses: ["ongoing"],
-          ratingMin: 0,
-          ratingMax: 5,
-          hidePureWishes: true,
-        }));
+    await waitFor(() =>
+      expect(getMangas).toHaveBeenLastCalledWith({
+        page: 1,
+        limit: 20,
+        search: "",
+        sort: "asc",
+        categories: ["manga"],
+        readingStatuses: ["in_progress"],
+        overallStatuses: ["ongoing"],
+        ratingMin: 0,
+        ratingMax: 5,
+        hidePureWishes: true,
+      }),
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "Rating" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith({
-          page: 1,
-          limit: 20,
-          search: "",
-          sort: "asc",
-          categories: ["manga"],
-          readingStatuses: ["in_progress"],
-          overallStatuses: ["ongoing"],
-          ratingMin: 4,
-          ratingMax: 5,
-          hidePureWishes: true,
-        }));
+    await waitFor(() =>
+      expect(getMangas).toHaveBeenLastCalledWith({
+        page: 1,
+        limit: 20,
+        search: "",
+        sort: "asc",
+        categories: ["manga"],
+        readingStatuses: ["in_progress"],
+        overallStatuses: ["ongoing"],
+        ratingMin: 4,
+        ratingMax: 5,
+        hidePureWishes: true,
+      }),
+    );
   });
 
   it("filters by list id instead of smuggling the list into the search", async () => {
@@ -162,7 +183,7 @@ describe("Dashboard advanced filters", () => {
         ratingMax: 5,
         listId: 7,
         hidePureWishes: true,
-      })
+      }),
     );
   });
 
@@ -183,7 +204,7 @@ describe("Dashboard advanced filters", () => {
         ratingMin: 0,
         ratingMax: 5,
         ownershipStatuses: ["wishlist"],
-      })
+      }),
     );
   });
 
@@ -195,7 +216,7 @@ describe("Dashboard advanced filters", () => {
     expect(getMangas).toHaveBeenLastCalledWith(
       expect.objectContaining({
         hidePureWishes: true,
-      })
+      }),
     );
   });
 
@@ -208,8 +229,8 @@ describe("Dashboard advanced filters", () => {
 
     await waitFor(() =>
       expect(getMangas).toHaveBeenLastCalledWith(
-        expect.objectContaining({ hidePureWishes: false })
-      )
+        expect.objectContaining({ hidePureWishes: false }),
+      ),
     );
   });
 });

@@ -1,5 +1,6 @@
 import {
   Box,
+  CircularProgress,
   CssBaseline,
   ThemeProvider,
   createTheme,
@@ -14,7 +15,7 @@ import {
   Outlet,
 } from "react-router-dom";
 import NotFound from "./pages/NotFound";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { deDE } from "@mui/material/locale";
 import Dashboard from "./pages/Dashboard";
 import MangaDetails from "./pages/MangaDetails";
@@ -33,18 +34,45 @@ import NotificationHost from "./components/NotificationHost";
 import { isAuthenticated } from "./services/auth";
 import { useUser } from "./context/UserContext";
 
+const THEME_STORAGE_KEY = "themeMode";
+
 const PrivateRoutes = () => {
   return isAuthenticated() ? <Outlet /> : <Navigate to="/login" />;
 };
 
 const AdminRoutes = () => {
   const { isAdmin, loading } = useUser();
-  if (loading) return null; // Or a loading spinner
+
+  // While the user is being checked the page would be empty. A spinner
+  // shows that something is happening.
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "60vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return isAdmin ? <Outlet /> : <Navigate to="/" />;
 };
 
 function App() {
-  const [mode, setMode] = useState<"light" | "dark">("dark");
+  // The theme is remembered, like the language. A reload should not
+  // throw the choice away.
+  const [mode, setMode] = useState<"light" | "dark">(() =>
+    localStorage.getItem(THEME_STORAGE_KEY) === "light" ? "light" : "dark",
+  );
+
+  useEffect(() => {
+    localStorage.setItem(THEME_STORAGE_KEY, mode);
+  }, [mode]);
 
   const toggleThemeMode = () => {
     setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
@@ -60,10 +88,10 @@ function App() {
               mode,
             },
           },
-          deDE
-        )
+          deDE,
+        ),
       ),
-    [mode]
+    [mode],
   );
 
   return (
