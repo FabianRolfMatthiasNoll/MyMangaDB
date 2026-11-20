@@ -112,6 +112,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
         <Box
           component={Link}
           to={`/manga/${manga.id}`}
+          state={{ from: "wishlist" }}
           sx={{ flexShrink: 0, display: "block" }}
         >
           {manga.coverImage ? (
@@ -156,6 +157,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
               variant="h6"
               component={Link}
               to={`/manga/${manga.id}`}
+              state={{ from: "wishlist" }}
               sx={{
                 color: "inherit",
                 textDecoration: "none",

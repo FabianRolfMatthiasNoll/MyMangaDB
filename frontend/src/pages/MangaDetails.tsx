@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   Container,
@@ -37,6 +37,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { invalidateMangaQueries } from "../services/queryInvalidation";
 import { useTranslation } from "react-i18next";
 import { useStatusMeta } from "../hooks/useStatusMeta";
+
+// The label of the back button, depending on where it leads.
+const BACK_LABELS: Record<string, string> = {
+  list: "common.backToList",
+  wishlist: "common.backToWishlist",
+  history: "common.back",
+  dashboard: "common.backToDashboard",
+};
 
 const MangaDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -115,14 +123,39 @@ const MangaDetails: React.FC = () => {
     };
   }, [manga?.coverImage]);
 
+  // Where does the back button lead? The wishlist and a list are known by
+  // the state they pass along, everything else goes back to the page the
+  // user came from. A manga that was opened directly - in a new tab, for
+  // example - has no page to go back to.
+  const backTarget = useMemo(() => {
+    if (location.state?.from === "list-detail" && location.state?.listId) {
+      return { path: `/lists/${location.state.listId}`, label: "list" };
+    }
+    if (location.state?.from === "wishlist") {
+      return { path: "/wishlist", label: "wishlist" };
+    }
+    if ((window.history.state?.idx ?? 0) > 0) {
+      return { path: null, label: "history" };
+    }
+    return { path: "/", label: "dashboard" };
+  }, [location.state]);
+
+  const handleBackClick = () => {
+    if (backTarget.path) {
+      navigate(backTarget.path);
+      return;
+    }
+    navigate(-1);
+  };
+
   if (loadFailed) {
     return (
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <Alert severity="error" sx={{ mb: 2 }}>
           {t("manga.loadFailed")}
         </Alert>
-        <Button startIcon={<ArrowBackIcon />} onClick={() => navigate("/")}>
-          {t("common.backToDashboard")}
+        <Button startIcon={<ArrowBackIcon />} onClick={handleBackClick}>
+          {t(BACK_LABELS[backTarget.label])}
         </Button>
       </Container>
     );
@@ -145,14 +178,6 @@ const MangaDetails: React.FC = () => {
 
   const handleToggleEditMode = () => {
     setEditMode(!editMode);
-  };
-
-  const handleBackClick = () => {
-    if (location.state?.from === "list-detail" && location.state?.listId) {
-      navigate(`/lists/${location.state.listId}`);
-    } else {
-      navigate("/");
-    }
   };
 
   const handleDeleteClick = () => {
@@ -209,9 +234,7 @@ const MangaDetails: React.FC = () => {
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
         <Button startIcon={<ArrowBackIcon />} onClick={handleBackClick}>
-          {location.state?.from === "list-detail"
-            ? t("common.backToList")
-            : t("common.backToDashboard")}
+          {t(BACK_LABELS[backTarget.label])}
         </Button>
         {isAdmin && (
           <Box>

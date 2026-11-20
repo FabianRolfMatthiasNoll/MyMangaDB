@@ -232,6 +232,7 @@ const WishlistPage: React.FC = () => {
                     key={manga.id}
                     component={Link}
                     to={`/manga/${manga.id}`}
+                    state={{ from: "wishlist" }}
                     clickable
                     variant="outlined"
                     label={`${manga.title} · ${formatRelativeDate(
