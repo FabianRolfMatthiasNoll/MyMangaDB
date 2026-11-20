@@ -13,7 +13,7 @@ All URIs are relative to _http://localhost_
 
 Export Database
 
-Export the database and images as a ZIP file. Requires an authenticated admin user. Both reading the live database file (which contains user password hashes) and downloading every stored image are inherently privileged operations. Returns: Response: A ZIP file containing the database and images. The response will have the following headers: - Content-Type: application/zip - Content-Disposition: attachment; filename&#x3D;\&quot;mangadb_export.zip\&quot;
+Export the database and images as a ZIP file. Requires an authenticated admin user. Both reading the live database file (which contains user password hashes) and downloading every stored image are inherently privileged operations. This endpoint is a plain &#x60;&#x60;def&#x60;&#x60; on purpose: zipping the database and every image is blocking work, and FastAPI runs sync endpoints in a threadpool. Declaring it &#x60;&#x60;async&#x60;&#x60; would block the event loop and stall every other request for the duration of the export. Returns: Response: A ZIP file containing the database and images. The response will have the following headers: - Content-Type: application/zip - Content-Disposition: attachment; filename&#x3D;\&quot;mangadb_export.zip\&quot;
 
 ### Example
 
@@ -72,7 +72,7 @@ This endpoint does not need any parameter.
 
 Import Database
 
-Import a database and images from a ZIP file. Requires an authenticated admin user. The handler rejects uploads that are not valid ZIP archives, exceed :data:&#x60;MAX_IMPORT_BYTES&#x60;, or contain entries whose resolved paths fall outside the extraction directory (zip-slip protection).
+Import a database and images from a ZIP file. Requires an authenticated admin user. The handler rejects uploads that are not valid ZIP archives, exceed :data:&#x60;MAX_IMPORT_BYTES&#x60;, or contain entries whose resolved paths fall outside the extraction directory (zip-slip protection). The upload is streamed to disk asynchronously; extracting it and moving the files into place is blocking work and runs in a threadpool.
 
 ### Example
 

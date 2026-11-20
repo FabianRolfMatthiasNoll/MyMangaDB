@@ -283,11 +283,11 @@ example().catch(console.error);
 
 ## getMangasApiV1MangasGetAllGet
 
-> Array&lt;Manga&gt; getMangasApiV1MangasGetAllGet(skip, limit, search, sort, categories, readingStatuses, overallStatuses, ratingMin, ratingMax, listId)
+> Array&lt;Manga&gt; getMangasApiV1MangasGetAllGet(skip, limit, search, sort, categories, readingStatuses, overallStatuses, ratingMin, ratingMax, listId, ownershipStatuses, hidePureWishes)
 
 Get mangas with server-side paging, search and sort
 
-Delivers a paginated list of mangas. Optional search (title LIKE), filters (category, status, rating, list), and sort order can be specified.
+Delivers a paginated list of mangas. Optional search (title LIKE), filters (category, status, rating, list, ownership), and sort order can be specified.
 
 ### Example
 
@@ -325,6 +325,12 @@ async function example() {
     ratingMin: 8.14,
     // number | Maximum rating (optional)
     ratingMax: 8.14,
+    // number | Filter by the id of a list (optional)
+    listId: 56,
+    // Array<string> | Filter by ownership states (owned, wishlist, ordered) (optional)
+    ownershipStatuses: ...,
+    // boolean | Leave out the titles that are only wanted. A title you already own a volume of stays in the collection. (optional)
+    hidePureWishes: true,
   } satisfies GetMangasApiV1MangasGetAllGetRequest;
 
   try {
@@ -341,18 +347,20 @@ example().catch(console.error);
 
 ### Parameters
 
-| Name                | Type            | Description                | Notes                                |
-| ------------------- | --------------- | -------------------------- | ------------------------------------ |
-| **skip**            | `number`        |                            | [Optional] [Defaults to `0`]         |
-| **limit**           | `number`        |                            | [Optional] [Defaults to `10`]        |
-| **search**          | `string`        | Search term for title      | [Optional] [Defaults to `undefined`] |
-| **sort**            | `string`        | Sort by title              | [Optional] [Defaults to `undefined`] |
-| **categories**      | `Array<string>` | Filter by categories       | [Optional]                           |
-| **readingStatuses** | `Array<string>` | Filter by reading statuses | [Optional]                           |
-| **overallStatuses** | `Array<string>` | Filter by overall statuses | [Optional]                           |
-| **ratingMin**       | `number`        | Minimum rating             | [Optional] [Defaults to `undefined`] |
-| **ratingMax**       | `number`        | Maximum rating             | [Optional] [Defaults to `undefined`] |
-| **listId**          | `number`        | Filter by the id of a list | [Optional] [Defaults to `undefined`] |
+| Name                  | Type            | Description                                                                                             | Notes                                |
+| --------------------- | --------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| **skip**              | `number`        |                                                                                                         | [Optional] [Defaults to `0`]         |
+| **limit**             | `number`        |                                                                                                         | [Optional] [Defaults to `10`]        |
+| **search**            | `string`        | Search term for title                                                                                   | [Optional] [Defaults to `undefined`] |
+| **sort**              | `string`        | Sort by title                                                                                           | [Optional] [Defaults to `undefined`] |
+| **categories**        | `Array<string>` | Filter by categories                                                                                    | [Optional]                           |
+| **readingStatuses**   | `Array<string>` | Filter by reading statuses                                                                              | [Optional]                           |
+| **overallStatuses**   | `Array<string>` | Filter by overall statuses                                                                              | [Optional]                           |
+| **ratingMin**         | `number`        | Minimum rating                                                                                          | [Optional] [Defaults to `undefined`] |
+| **ratingMax**         | `number`        | Maximum rating                                                                                          | [Optional] [Defaults to `undefined`] |
+| **listId**            | `number`        | Filter by the id of a list                                                                              | [Optional] [Defaults to `undefined`] |
+| **ownershipStatuses** | `Array<string>` | Filter by ownership states (owned, wishlist, ordered)                                                   | [Optional]                           |
+| **hidePureWishes**    | `boolean`       | Leave out the titles that are only wanted. A title you already own a volume of stays in the collection. | [Optional] [Defaults to `false`]     |
 
 ### Return type
 

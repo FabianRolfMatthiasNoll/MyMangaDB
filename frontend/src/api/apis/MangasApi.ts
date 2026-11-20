@@ -102,6 +102,10 @@ export interface GetMangasApiV1MangasGetAllGetRequest {
      * Filter by ownership states (owned, wishlist, ordered)
      */
     ownershipStatuses?: Array<string> | null;
+    /**
+     * Leave out the titles that are only wanted. A title you already own a volume of stays in the collection.
+     */
+    hidePureWishes?: boolean;
 }
 
 export interface GetMangasByAuthorApiV1MangasByAuthorAuthorIdGetRequest {
@@ -396,6 +400,10 @@ export class MangasApi extends runtime.BaseAPI {
 
         if (requestParameters['ownershipStatuses'] != null) {
             queryParameters['ownership_statuses'] = requestParameters['ownershipStatuses'];
+        }
+
+        if (requestParameters['hidePureWishes'] != null) {
+            queryParameters['hide_pure_wishes'] = requestParameters['hidePureWishes'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};

@@ -2,21 +2,25 @@
 
 ## Properties
 
-| Name            | Type                                         |
-| --------------- | -------------------------------------------- |
-| `title`         | string                                       |
-| `japaneseTitle` | string                                       |
-| `readingStatus` | [ReadingStatus](ReadingStatus.md)            |
-| `overallStatus` | [OverallStatus](OverallStatus.md)            |
-| `starRating`    | number                                       |
-| `language`      | string                                       |
-| `category`      | [Category](Category.md)                      |
-| `summary`       | string                                       |
-| `coverImage`    | string                                       |
-| `authors`       | [Array&lt;AuthorCreate&gt;](AuthorCreate.md) |
-| `genres`        | [Array&lt;GenreCreate&gt;](GenreCreate.md)   |
-| `lists`         | [Array&lt;ListCreate&gt;](ListCreate.md)     |
-| `volumes`       | [Array&lt;VolumeCreate&gt;](VolumeCreate.md) |
+| Name              | Type                                         |
+| ----------------- | -------------------------------------------- |
+| `title`           | string                                       |
+| `japaneseTitle`   | string                                       |
+| `readingStatus`   | [ReadingStatus](ReadingStatus.md)            |
+| `overallStatus`   | [OverallStatus](OverallStatus.md)            |
+| `starRating`      | number                                       |
+| `language`        | string                                       |
+| `category`        | [Category](Category.md)                      |
+| `ownershipStatus` | [OwnershipStatus](OwnershipStatus.md)        |
+| `addedAt`         | Date                                         |
+| `priority`        | boolean                                      |
+| `totalVolumes`    | number                                       |
+| `summary`         | string                                       |
+| `coverImage`      | string                                       |
+| `authors`         | [Array&lt;AuthorCreate&gt;](AuthorCreate.md) |
+| `genres`          | [Array&lt;GenreCreate&gt;](GenreCreate.md)   |
+| `lists`           | [Array&lt;ListCreate&gt;](ListCreate.md)     |
+| `volumes`         | [Array&lt;VolumeCreate&gt;](VolumeCreate.md) |
 
 ## Example
 
@@ -32,6 +36,10 @@ const example = {
   starRating: null,
   language: null,
   category: null,
+  ownershipStatus: null,
+  addedAt: null,
+  priority: null,
+  totalVolumes: null,
   summary: null,
   coverImage: null,
   authors: null,

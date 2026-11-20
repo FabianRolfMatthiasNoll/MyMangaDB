@@ -67,6 +67,13 @@ def get_mangas(
     ownership_statuses: Optional[List[str]] = Query(
         None, description="Filter by ownership states (owned, wishlist, ordered)"
     ),
+    hide_pure_wishes: bool = Query(
+        False,
+        description=(
+            "Leave out the titles that are only wanted. A title you already "
+            "own a volume of stays in the collection."
+        ),
+    ),
     db: Session = Depends(get_db),
 ):
     """
@@ -88,6 +95,7 @@ def get_mangas(
             rating_max=rating_max,
             list_id=list_id,
             ownership_statuses=ownership_statuses,
+            hide_pure_wishes=hide_pure_wishes,
         )  # Implementierung in Repository
     except HTTPException:
         raise

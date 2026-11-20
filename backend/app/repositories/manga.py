@@ -14,7 +14,7 @@ from backend.app.models import Genre as GenreModel
 from backend.app.models import List as ListModel
 from backend.app.models import Manga as MangaModel
 from backend.app.models import Volume as VolumeModel
-from backend.app.schemas import Manga, MangaCreate
+from backend.app.schemas import Manga, MangaCreate, OwnershipStatus
 
 from .base import BaseRepository, RepositoryError
 
@@ -51,6 +51,7 @@ class MangaRepository(BaseRepository):
         rating_max: Optional[float] = None,
         list_id: Optional[int] = None,
         ownership_statuses: Optional[TypedList[str]] = None,
+        hide_pure_wishes: bool = False,
     ) -> TypedList[Manga]:
         """
         Holt Mangas mit Paging.
@@ -72,6 +73,17 @@ class MangaRepository(BaseRepository):
         # Filter by ownership status (owned / wishlist / ordered)
         if ownership_statuses:
             query = query.filter(MangaModel.ownership_status.in_(ownership_statuses))
+
+        # The collection shows what is on the shelf. A title that is only
+        # wanted is not part of it - but a title you already own a volume of
+        # stays, even when the rest of the series is on the wishlist.
+        if hide_pure_wishes:
+            query = query.filter(
+                or_(
+                    MangaModel.ownership_status != OwnershipStatus.wishlist,
+                    MangaModel.volumes.any(),
+                )
+            )
 
         # Filter by category
         if categories:
