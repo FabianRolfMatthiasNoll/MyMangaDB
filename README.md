@@ -153,7 +153,7 @@ For contributors or those who prefer running without Docker.
 **Prerequisites:**
 
 - Python 3.13+
-- Node.js 20+
+- Node.js 22.12+
 - [Task](https://taskfile.dev/) (Taskfile runner)
 
 1.  **Setup Environment**

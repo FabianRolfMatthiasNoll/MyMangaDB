@@ -4,7 +4,7 @@
 # Not alpine on purpose: the musl build of rolldown (which vite 8 uses) fails
 # to resolve the source map paths and the build dies with
 # "The paths[1] argument must be of type string". The glibc build works.
-FROM node:22-slim AS build
+FROM node:24-slim AS build
 
 WORKDIR /app
 
