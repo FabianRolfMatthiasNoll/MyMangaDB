@@ -207,8 +207,12 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
                         color="secondary"
                         badgeContent={item.badge}
                         invisible={!item.badge}
+                        // The badge sits on the top right corner of the
+                        // label, so it needs room of its own - otherwise it
+                        // covers the last letter.
+                        sx={{ "& .MuiBadge-badge": { top: -2, right: -4 } }}
                       >
-                        <Typography sx={{ textAlign: "center" }}>
+                        <Typography sx={{ textAlign: "center", pr: 1 }}>
                           {item.text}
                         </Typography>
                       </Badge>
