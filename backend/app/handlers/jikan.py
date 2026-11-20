@@ -4,7 +4,7 @@ from typing import Dict, List
 import requests
 import urllib3
 
-from backend.app.handlers.base import BaseHandler
+from backend.app.handlers.base import REQUEST_TIMEOUT, BaseHandler
 from backend.app.schemas import AuthorCreate, Category, GenreCreate, MangaCreate
 
 
@@ -18,7 +18,12 @@ class JikanHandler(BaseHandler):
     def search(self, search_term: str) -> List[MangaCreate]:
         search_url = f"{self.base_url}/manga"
         params = {"q": search_term, "limit": 10}
-        response = requests.get(search_url, params=params, verify=self.verify_ssl)
+        response = requests.get(
+            search_url,
+            params=params,
+            verify=self.verify_ssl,
+            timeout=REQUEST_TIMEOUT,
+        )
         response.raise_for_status()
 
         data = response.json().get("data", [])
@@ -50,7 +55,9 @@ class JikanHandler(BaseHandler):
             pass
 
         api_url = f"{self.base_url}/manga/{manga_id}"
-        response = requests.get(api_url, verify=self.verify_ssl)
+        response = requests.get(
+            api_url, verify=self.verify_ssl, timeout=REQUEST_TIMEOUT
+        )
         response.raise_for_status()
 
         data = response.json().get("data", {})
