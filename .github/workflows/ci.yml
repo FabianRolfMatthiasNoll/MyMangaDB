@@ -2,9 +2,24 @@ name: CI
 
 on:
   push:
-    branches: ["main", "master", "completeRework"]
+    branches: ["main", "master", "completeRework", "feature/**", "bugfix/**"]
   pull_request:
-    branches: ["main", "master", "completeRework"]
+    branches: ["main", "master", "completeRework", "feature/**", "bugfix/**"]
+  # Build the images by hand, e.g. to refresh the "dev" tag from master.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # A new push to a branch makes the running build obsolete. Master is never
+  # cancelled, so the published "dev" tag always has a complete build.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 jobs:
   frontend-test:
@@ -55,3 +70,68 @@ jobs:
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/..
           pytest tests
+
+  # The development images. They are published under a "dev" tag so that a
+  # server can pull and try a build before it is released. The stable
+  # release owns the "latest" tag - the dev images never take it.
+  container-images:
+    name: ${{ matrix.name }} image
+    needs: [frontend-test, backend-test]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - name: backend
+            context: ./backend
+          - name: frontend
+            context: ./frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        # A pull request has no write access to the registry, so it does not
+        # log in.
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derive image tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.name }}
+          # "latest" belongs to the stable release. The dev images must never
+          # take that tag, so it is switched off explicitly.
+          flavor: |
+            latest=false
+          tags: |
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/master' }}
+            type=sha,prefix=dev-
+            type=ref,event=branch,prefix=dev-,enable=${{ github.ref != 'refs/heads/master' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          # A pull request only checks that the image still builds.
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}
+
+      - name: List the published tags
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "### ${{ matrix.name }} image" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.meta.outputs.tags }}" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

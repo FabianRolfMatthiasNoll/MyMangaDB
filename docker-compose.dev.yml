@@ -1,0 +1,46 @@
+# Test the development images on a server.
+#
+# These are the images the CI publishes under the "dev" tag. They are built
+# from a branch, so they may contain work that is not released yet.
+#
+#   echo "API_TOKEN=$(openssl rand -hex 32)" > .env
+#   docker compose -f docker-compose.dev.yml up -d
+#
+# The frontend is then on http://<server>:8080 and the API on port 8000.
+#
+# To try a specific build, pin the version:
+#   MYMANGADB_VERSION=dev-abc1234 docker compose -f docker-compose.dev.yml up -d
+#
+# The images live in the GitHub Container Registry. A public repository can
+# be pulled anonymously; a private one needs:
+#   echo "$GITHUB_TOKEN" | docker login ghcr.io -u <user> --password-stdin
+
+services:
+  frontend:
+    image: ghcr.io/fabianrolfmatthiasnoll/mymangadb/frontend:${MYMANGADB_VERSION:-dev}
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    environment:
+      # The frontend proxies /api to the backend, so the browser only ever
+      # talks to one origin.
+      BACKEND_URL: http://backend:8000
+    depends_on:
+      - backend
+
+  backend:
+    image: ghcr.io/fabianrolfmatthiasnoll/mymangadb/backend:${MYMANGADB_VERSION:-dev}
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    environment:
+      # Signs the session tokens; required. The backend refuses to start
+      # with a missing or publicly known key.
+      API_TOKEN: ${API_TOKEN:?set API_TOKEN in .env}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
+    volumes:
+      # The database and the images live here, so they survive a restart.
+      - database:/app/data
+
+volumes:
+  database:
