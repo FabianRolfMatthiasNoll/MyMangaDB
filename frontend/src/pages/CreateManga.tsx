@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MangaForm from "../components/MangaForm";
-import { Manga, MangaCreate, Category } from "../api/models";
+import { Manga, MangaCreate, Category, OwnershipStatus } from "../api/models";
 import { createManga } from "../services/mangaService";
 import { saveMangaCover } from "../services/imageService";
 import { useQueryClient } from "@tanstack/react-query";
@@ -68,6 +68,10 @@ const CreateManga: React.FC = () => {
         starRating: manga.starRating || null,
         language: manga.language || null,
         category: manga.category,
+        // The form knows whether the title is owned or only wanted. Without
+        // it the server would fall back to "owned" and the choice of the
+        // user would be lost.
+        ownershipStatus: manga.ownershipStatus || OwnershipStatus.Owned,
         summary: manga.summary || null,
         coverImage: coverImagePath || null,
         authors: manga.authors.map(author => ({ name: author.name })),
