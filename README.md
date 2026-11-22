@@ -27,6 +27,10 @@ MyMangaDB relies on excellent external APIs to provide accurate manga data. A sp
 
 ![Dashboard](screenshots/dashboard.png)
 
+### Wishlist
+
+![Wishlist](screenshots/wishlist.png)
+
 ### Manga Overview
 
 ![Manga Overview](screenshots/manga_overview.png)
@@ -50,6 +54,24 @@ MyMangaDB relies on excellent external APIs to provide accurate manga data. A sp
 ### Mobile View
 
 ![Mobile View](screenshots/mobile.png)
+
+## 🛒 How the wishlist works
+
+The wishlist keeps the titles you want apart from the ones you own. It is
+built around one rule: **the wanted volumes are the ones you are missing.**
+A blue square in the strip is a volume on your shelf, a grey one is a
+volume you still want.
+
+1. **Say how long the series is.** "Series length" on a wishlist card - or
+   "The series has volumes in total" on the page of a title - says how many
+   volumes the series has in total. Everything up to that number that is not
+   on your shelf is wanted.
+2. **Put a title on the wishlist.** A title you already own can be marked as
+   wanted on its own page; then the volumes it is missing are the ones you
+   want. A title you do not own yet goes there from the automatic search.
+3. **A volume arrives.** "Add volumes" puts it on your shelf. The rest of the
+   series stays on the wishlist, and the title leaves the wishlist by itself
+   when the last missing volume is there.
 
 ## 🛠️ Installation & Deployment
 

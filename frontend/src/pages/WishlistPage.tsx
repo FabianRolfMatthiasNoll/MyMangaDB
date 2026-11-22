@@ -7,6 +7,7 @@ import {
   Box,
   Button,
   Chip,
+  Collapse,
   Container,
   Grid,
   MenuItem,
@@ -18,6 +19,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { Manga } from "../api/models";
 import { getWishlistMangas } from "../services/wishlistService";
 import {
@@ -47,6 +49,9 @@ const WishlistPage: React.FC = () => {
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<SortOrder>("title");
   const [tab, setTab] = useState(0);
+  // The explanation of how the wishlist works starts folded up. The one
+  // line in front of it says the important part.
+  const [howOpen, setHowOpen] = useState(false);
 
   const {
     data: wishlist = [],
@@ -224,6 +229,34 @@ const WishlistPage: React.FC = () => {
         <Alert severity="info">{t("wishlist.empty")}</Alert>
       ) : (
         <>
+          {/* The one thing about the wishlist that is not obvious: the
+              wanted volumes are the ones that are missing. */}
+          <Box sx={{ mb: 3 }}>
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{ alignItems: "center", flexWrap: "wrap" }}
+            >
+              <InfoOutlinedIcon fontSize="small" color="info" />
+              <Typography variant="body2" color="text.secondary">
+                {t("wishlist.howItWorksSummary")}
+              </Typography>
+              <Button size="small" onClick={() => setHowOpen(!howOpen)}>
+                {howOpen ? t("common.showLess") : t("wishlist.howItWorks")}
+              </Button>
+            </Stack>
+            <Collapse in={howOpen}>
+              <Box
+                component="ul"
+                sx={{ color: "text.secondary", pl: 3, mb: 0, mt: 1 }}
+              >
+                <li>{t("wishlist.howItWorksLength")}</li>
+                <li>{t("wishlist.howItWorksReceived")}</li>
+                <li>{t("wishlist.howItWorksOwned")}</li>
+              </Box>
+            </Collapse>
+          </Box>
+
           {recent.length > 0 && (
             <Box sx={{ mb: 4 }}>
               <Typography variant="h6">
