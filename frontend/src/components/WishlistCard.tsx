@@ -29,6 +29,7 @@ import {
   removeFromWishlist,
   setOwnershipStatus,
   setPriority,
+  setSeriesLength,
 } from "../services/wishlistService";
 import { notify } from "../services/notificationService";
 import { invalidateMangaQueries } from "../services/queryInvalidation";
@@ -68,6 +69,8 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
   const [removeOpen, setRemoveOpen] = useState(false);
   const [addVolumesOpen, setAddVolumesOpen] = useState(false);
   const [volumeInput, setVolumeInput] = useState("");
+  const [lengthOpen, setLengthOpen] = useState(false);
+  const [lengthInput, setLengthInput] = useState("");
   const [busy, setBusy] = useState(false);
 
   const missing = missingVolumesOf(manga);
@@ -99,6 +102,39 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
     setVolumeInput("");
     setAddVolumesOpen(true);
     setMenuAnchor(null);
+  };
+
+  const handleOpenLength = () => {
+    setLengthInput(
+      manga.totalVolumes !== null && manga.totalVolumes !== undefined
+        ? String(manga.totalVolumes)
+        : "",
+    );
+    setLengthOpen(true);
+    setMenuAnchor(null);
+  };
+
+  // How many volumes the series has in total. The volumes that are not on
+  // the shelf are the ones that are wanted.
+  const handleSaveLength = async () => {
+    const total = Number(lengthInput.trim());
+    if (!Number.isInteger(total) || total < 0) {
+      notify(t("wishlist.noSeriesLength"), "error");
+      return;
+    }
+
+    setBusy(true);
+    try {
+      await setSeriesLength(manga, total === 0 ? null : total);
+      await refresh();
+      setLengthOpen(false);
+      notify(t("wishlist.seriesLengthSaved"), "success");
+    } catch (error) {
+      console.error("Failed to save the series length", error);
+      notify(t("wishlist.actionFailed"), "error");
+    } finally {
+      setBusy(false);
+    }
   };
 
   // Some of the wanted volumes arrived - they move into the collection, the
@@ -198,15 +234,17 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
             <Chip label={manga.language} size="small" variant="outlined" />
           )}
           {isAdmin && missing.length > 0 && (
+            <Button
+              variant="outlined"
+              size="small"
+              disabled={busy}
+              onClick={handleCompleteSeries}
+            >
+              {t("wishlist.completeSeries")}
+            </Button>
+          )}
+          {isAdmin && (
             <>
-              <Button
-                variant="outlined"
-                size="small"
-                disabled={busy}
-                onClick={handleCompleteSeries}
-              >
-                {t("wishlist.completeSeries")}
-              </Button>
               <Button
                 variant="outlined"
                 size="small"
@@ -214,6 +252,14 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
                 onClick={handleOpenAddVolumes}
               >
                 {t("wishlist.addVolumes")}
+              </Button>
+              <Button
+                variant="outlined"
+                size="small"
+                disabled={busy}
+                onClick={handleOpenLength}
+              >
+                {t("wishlist.setSeriesLength")}
               </Button>
             </>
           )}
@@ -235,11 +281,11 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
         open={Boolean(menuAnchor)}
         onClose={() => setMenuAnchor(null)}
       >
-        <MenuItem
-          onClick={handleOpenAddVolumes}
-          disabled={missing.length === 0}
-        >
+        <MenuItem onClick={handleOpenAddVolumes}>
           {t("wishlist.addVolumes")}
+        </MenuItem>
+        <MenuItem onClick={handleOpenLength}>
+          {t("wishlist.setSeriesLength")}
         </MenuItem>
         <MenuItem
           onClick={() =>
@@ -308,6 +354,45 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
             onClick={handleAddVolumes}
           >
             {t("wishlist.addVolumes")}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={lengthOpen}
+        onClose={() => setLengthOpen(false)}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle>{t("wishlist.setSeriesLengthTitle")}</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            {t("wishlist.setSeriesLengthDescription")}
+          </Typography>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="seriesLength"
+            label={t("wishlist.seriesLength")}
+            type="number"
+            fullWidth
+            variant="outlined"
+            value={lengthInput}
+            onChange={(event) => setLengthInput(event.target.value)}
+            slotProps={{ htmlInput: { min: 0 } }}
+            helperText={t("wishlist.seriesLengthHint")}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setLengthOpen(false)}>
+            {t("common.cancel")}
+          </Button>
+          <Button
+            variant="contained"
+            disabled={busy}
+            onClick={handleSaveLength}
+          >
+            {t("common.save")}
           </Button>
         </DialogActions>
       </Dialog>

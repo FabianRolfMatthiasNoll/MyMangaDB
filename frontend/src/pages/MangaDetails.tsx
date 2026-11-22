@@ -249,11 +249,10 @@ const MangaDetails: React.FC = () => {
   // volumes that are on the shelf.
   const missingVolumes = missingVolumesOf(manga);
   const totalKnown = Boolean(manga.totalVolumes);
-  const canWishlistTheRest =
-    isAdmin &&
-    totalKnown &&
-    missingVolumes.length > 0 &&
-    manga.ownershipStatus === OwnershipStatus.Owned;
+  // A title that is on the shelf can be marked as wanted. Then it shows up
+  // on the wishlist - whether or not the length of the series is known.
+  const canWishlist =
+    isAdmin && manga.ownershipStatus === OwnershipStatus.Owned;
 
   // Put the rest of the series on the wishlist. The volumes that are
   // already on the shelf stay where they are - the title keeps them and is
@@ -607,27 +606,42 @@ const MangaDetails: React.FC = () => {
               )}
 
               {/* The rest of the series can go on the wishlist. */}
-              {manga.totalVolumes && missingVolumes.length > 0 && (
+              {(totalKnown || missingVolumes.length > 0 || canWishlist) && (
                 <Box sx={{ mt: 2 }}>
-                  <Typography
-                    variant="subtitle2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    {t("wishlist.missingVolumes", {
-                      count: missingVolumes.length,
-                      range: formatVolumeRange(missingVolumes),
-                    })}
-                  </Typography>
-                  {canWishlistTheRest ? (
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={handleAddMissingToWishlist}
-                      sx={{ alignSelf: "flex-start" }}
+                  {totalKnown && missingVolumes.length > 0 && (
+                    <Typography
+                      variant="subtitle2"
+                      color="text.secondary"
+                      gutterBottom
                     >
-                      {t("wishlist.addMissingToWishlist")}
-                    </Button>
+                      {t("wishlist.missingVolumes", {
+                        count: missingVolumes.length,
+                        range: formatVolumeRange(missingVolumes),
+                      })}
+                    </Typography>
+                  )}
+                  {canWishlist ? (
+                    <Box>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={handleAddMissingToWishlist}
+                        sx={{ alignSelf: "flex-start" }}
+                      >
+                        {totalKnown
+                          ? t("wishlist.addMissingToWishlist")
+                          : t("wishlist.putOnWishlist")}
+                      </Button>
+                      {!totalKnown && (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mt: 1 }}
+                        >
+                          {t("wishlist.putOnWishlistHint")}
+                        </Typography>
+                      )}
+                    </Box>
                   ) : (
                     <Typography variant="body2" color="text.secondary">
                       {t("wishlist.missingVolumesHint")}

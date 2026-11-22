@@ -131,6 +131,23 @@ export const completeSeries = async (manga: Manga): Promise<Manga> => {
 };
 
 /**
+ * Say how many volumes the series has in total.
+ *
+ * The volumes that are not on the shelf are the ones that are wanted, so
+ * this is what makes a wishlist title show its missing volumes.
+ */
+export const setSeriesLength = async (
+  manga: Manga,
+  totalVolumes: number | null,
+): Promise<Manga> => {
+  const updated = await updateMangaDetails({ ...manga, totalVolumes });
+  if (!updated) {
+    throw new Error("The manga could not be updated");
+  }
+  return updated;
+};
+
+/**
  * Drop a title from the wishlist for good.
  *
  * Returns the deleted title, or null when the request failed.
