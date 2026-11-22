@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -18,12 +17,12 @@ import {
   TextField,
   Typography,
   alpha,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import StarIcon from "@mui/icons-material/Star";
 import { Manga, OwnershipStatus } from "../api/models";
-import { getMangaCoverImageUrl } from "../services/imageService";
 import {
   addVolumesToCollection,
   completeSeries as completeSeriesRequest,
@@ -34,7 +33,6 @@ import {
 import { notify } from "../services/notificationService";
 import { invalidateMangaQueries } from "../services/queryInvalidation";
 import { useUser } from "../context/UserContext";
-import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
 import {
   formatVolumeRange,
   missingVolumesOf,
@@ -43,6 +41,8 @@ import {
 } from "../utils/wishlist";
 import { parseVolumeString } from "../utils/volumeUtils";
 import VolumeStrip from "./VolumeStrip";
+import MangaCard from "./MangaCard";
+import MobileMangaListItem from "./MobileMangaListItem";
 
 interface WishlistCardProps {
   manga: Manga;
@@ -51,16 +51,18 @@ interface WishlistCardProps {
 /**
  * A title on the wishlist.
  *
- * It looks deliberately different from a card in the collection: a dashed
- * border and the accent colour of the wishlist, so a wanted title is never
- * mistaken for one that is already on the shelf.
+ * The card itself is the same card that the dashboard shows, so a title
+ * looks the same wherever it appears. What is wanted is only wanted: the
+ * details of the series and the actions are in the panel below it.
  */
 const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
   const { t } = useTranslation();
   const theme = useTheme();
+  // The dashboard switches to the list at the same point, so that a title
+  // looks the same on both pages.
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const queryClient = useQueryClient();
   const { isAdmin } = useUser();
-  const { getOwnershipLabel, getOwnershipColor } = useOwnershipStatus();
 
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const [removeOpen, setRemoveOpen] = useState(false);
@@ -134,174 +136,99 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
     });
 
   return (
-    <Paper
-      variant="outlined"
-      sx={{
-        p: 2,
-        borderRadius: 2,
-        borderStyle: "dashed",
-        borderWidth: 2,
-        borderColor: alpha(theme.palette.secondary.main, 0.6),
-        background: alpha(theme.palette.secondary.main, 0.04),
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        gap: 1.5,
-      }}
-    >
-      <Stack direction="row" spacing={2} sx={{ alignItems: "flex-start" }}>
-        <Box
-          component={Link}
-          to={`/manga/${manga.id}`}
-          state={{ from: "wishlist" }}
-          sx={{ flexShrink: 0, display: "block" }}
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+      {isMobile ? (
+        <MobileMangaListItem manga={manga} from="wishlist" />
+      ) : (
+        <MangaCard manga={manga} alwaysShowDetails from="wishlist" />
+      )}
+
+      <Paper
+        variant="outlined"
+        sx={{
+          p: 1.5,
+          borderRadius: 2,
+          borderStyle: "dashed",
+          borderWidth: 2,
+          borderColor: alpha(theme.palette.secondary.main, 0.6),
+          background: alpha(theme.palette.secondary.main, 0.04),
+          display: "flex",
+          flexDirection: "column",
+          gap: 1,
+        }}
+      >
+        {volumes.length > 0 && (
+          <Box>
+            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              {missing.length > 0
+                ? t("wishlist.missingVolumes", {
+                    count: missing.length,
+                    range: formatVolumeRange(missing),
+                  })
+                : t("wishlist.nothingMissing")}
+            </Typography>
+            <VolumeStrip
+              volumes={volumes}
+              // A filled square means the same thing everywhere: the volume
+              // is on the shelf. The empty ones are what is still wanted.
+              filled={new Set(owned)}
+              filledLabel={t("volume.owned")}
+              emptyLabel={t("wishlist.missing")}
+              // The card is in a grid, so a long series would need row after
+              // row of squares. The rest is behind the overflow.
+              max={12}
+            />
+          </Box>
+        )}
+
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ flexWrap: "wrap", alignItems: "center" }}
         >
-          {manga.coverImage ? (
-            <Box
-              component="img"
-              src={getMangaCoverImageUrl(manga.coverImage)}
-              alt={manga.title}
-              loading="lazy"
-              sx={{
-                width: 64,
-                height: 96,
-                objectFit: "cover",
-                borderRadius: 1,
-                opacity: 0.85,
-              }}
-            />
-          ) : (
-            <Box
-              sx={{
-                width: 64,
-                height: 96,
-                borderRadius: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                bgcolor: alpha(theme.palette.action.disabledBackground, 0.3),
-              }}
-            >
-              <Typography variant="caption" color="text.secondary">
-                {t("common.noCoverImage")}
-              </Typography>
-            </Box>
-          )}
-        </Box>
-
-        <Box sx={{ minWidth: 0, flex: 1 }}>
-          <Stack
-            direction="row"
-            sx={{ justifyContent: "space-between", alignItems: "flex-start" }}
-          >
-            <Typography
-              variant="h6"
-              component={Link}
-              to={`/manga/${manga.id}`}
-              state={{ from: "wishlist" }}
-              sx={{
-                color: "inherit",
-                textDecoration: "none",
-                display: "block",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                // Without this the ellipsis never kicks in and a long
-                // title wraps over several lines.
-                whiteSpace: "nowrap",
-              }}
-            >
-              {manga.title}
-            </Typography>
-            {isAdmin && (
-              <IconButton
-                size="small"
-                aria-label={t("wishlist.actions")}
-                disabled={busy}
-                onClick={(event) => setMenuAnchor(event.currentTarget)}
-              >
-                <MoreVertIcon fontSize="small" />
-              </IconButton>
-            )}
-          </Stack>
-          {manga.authors.length > 0 && (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {manga.authors.map((author) => author.name).join(", ")}
-            </Typography>
-          )}
-
-          <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: "wrap" }}>
+          {manga.priority && (
             <Chip
-              label={getOwnershipLabel(manga.ownershipStatus)}
+              icon={<StarIcon />}
+              label={t("wishlist.priority")}
               size="small"
-              sx={{
-                bgcolor: getOwnershipColor(manga.ownershipStatus),
-                color: "white",
-              }}
+              color="warning"
             />
-            {manga.priority && (
-              <Chip
-                icon={<StarIcon />}
-                label={t("wishlist.priority")}
+          )}
+          {manga.language && (
+            <Chip label={manga.language} size="small" variant="outlined" />
+          )}
+          {isAdmin && missing.length > 0 && (
+            <>
+              <Button
+                variant="outlined"
                 size="small"
-                color="warning"
-              />
-            )}
-            {manga.language && (
-              <Chip label={manga.language} size="small" variant="outlined" />
-            )}
-          </Stack>
-        </Box>
-      </Stack>
-
-      {volumes.length > 0 && (
-        <Box>
-          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-            {missing.length > 0
-              ? t("wishlist.missingVolumes", {
-                  count: missing.length,
-                  range: formatVolumeRange(missing),
-                })
-              : t("wishlist.nothingMissing")}
-          </Typography>
-          <VolumeStrip
-            volumes={volumes}
-            // A filled square means the same thing everywhere: the volume
-            // is on the shelf. The empty ones are what is still wanted.
-            filled={new Set(owned)}
-            filledLabel={t("volume.owned")}
-            emptyLabel={t("wishlist.missing")}
-          />
-        </Box>
-      )}
-
-      {isAdmin && missing.length > 0 && (
-        <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
-          <Button
-            variant="outlined"
-            size="small"
-            disabled={busy}
-            onClick={handleCompleteSeries}
-          >
-            {t("wishlist.completeSeries")}
-          </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            disabled={busy}
-            onClick={handleOpenAddVolumes}
-          >
-            {t("wishlist.addVolumes")}
-          </Button>
+                disabled={busy}
+                onClick={handleCompleteSeries}
+              >
+                {t("wishlist.completeSeries")}
+              </Button>
+              <Button
+                variant="outlined"
+                size="small"
+                disabled={busy}
+                onClick={handleOpenAddVolumes}
+              >
+                {t("wishlist.addVolumes")}
+              </Button>
+            </>
+          )}
+          {isAdmin && (
+            <IconButton
+              size="small"
+              aria-label={t("wishlist.actions")}
+              disabled={busy}
+              onClick={(event) => setMenuAnchor(event.currentTarget)}
+            >
+              <MoreVertIcon fontSize="small" />
+            </IconButton>
+          )}
         </Stack>
-      )}
+      </Paper>
 
       <Menu
         anchorEl={menuAnchor}
@@ -406,7 +333,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ manga }) => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Paper>
+    </Box>
   );
 };
 

@@ -140,7 +140,9 @@ const WishlistPage: React.FC = () => {
     return (
       <Grid container spacing={2}>
         {mangas.map((manga) => (
-          <Grid key={manga.id} size={{ xs: 12, sm: 6, lg: 4 }}>
+          // The same widths as the collection, so that a title has the
+          // same size on both pages.
+          <Grid key={manga.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
             <WishlistCard manga={manga} />
           </Grid>
         ))}

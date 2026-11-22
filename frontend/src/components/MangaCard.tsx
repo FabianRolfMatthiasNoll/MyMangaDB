@@ -18,9 +18,28 @@ import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
 interface MangaCardProps {
   manga: Manga;
   listId?: number;
+  /**
+   * Show the title, the authors and the status over the cover without
+   * waiting for the pointer.
+   *
+   * In the collection the covers are browsed and the details appear on
+   * hover. On the wishlist the titles are scanned, so they have to be
+   * readable right away.
+   */
+  alwaysShowDetails?: boolean;
+  /**
+   * Where the back button of the details page leads to. The dashboard has
+   * no source of its own, the wishlist has.
+   */
+  from?: string;
 }
 
-const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
+const MangaCard: React.FC<MangaCardProps> = ({
+  manga,
+  listId,
+  alwaysShowDetails = false,
+  from,
+}) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { getStatusLabel, getStatusColor } = useStatusMeta();
@@ -62,7 +81,7 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0,
+    opacity: alwaysShowDetails ? 1 : 0,
     transition: "opacity 0.3s ease",
     background: `linear-gradient(to bottom,
       ${alpha(theme.palette.background.paper, 0)} 0%,
@@ -91,7 +110,13 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga, listId }) => {
       sx={cardStyles}
       component={Link}
       to={`/manga/${manga.id}`}
-      state={listId ? { from: "list-detail", listId } : undefined}
+      state={
+        listId
+          ? { from: "list-detail", listId }
+          : from
+            ? { from }
+            : undefined
+      }
     >
       <Box sx={cardMediaWrapperStyle}>
         {manga.coverImage ? (

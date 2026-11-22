@@ -19,11 +19,17 @@ import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
 interface MobileMangaListItemProps {
   manga: Manga;
   listId?: number;
+  /**
+   * Where the back button of the details page leads to. The dashboard has
+   * no source of its own, the wishlist has.
+   */
+  from?: string;
 }
 
 const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({
   manga,
   listId,
+  from,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -96,7 +102,13 @@ const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({
         }}
         component={Link}
         to={`/manga/${manga.id}`}
-        state={listId ? { from: "list-detail", listId } : undefined}
+        state={
+          listId
+            ? { from: "list-detail", listId }
+            : from
+              ? { from }
+              : undefined
+        }
       >
         {manga.coverImage ? (
           <CardMedia
