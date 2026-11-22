@@ -30,6 +30,7 @@ import {
 } from "@mui/material";
 import { getSources, getSearchResults } from "../services/sourceService";
 import { createManga } from "../services/mangaService";
+import { ApiError } from "../services/errorService";
 import {
   Source,
   MangaCreate,
@@ -149,12 +150,20 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
       });
       // Call the callback to refresh dashboard
       onMangaAdded?.();
-    } catch {
-      setSnackbar({
-        open: true,
-        message: t("manga.addError"),
-        severity: "error",
-      });
+    } catch (error) {
+      // The request carries the message of the failure. It is shown here,
+      // inside the dialog, so the user sees one message and not two.
+      const message =
+        error instanceof ApiError && error.message
+          ? error.message
+          : t("manga.addError");
+      if (message) {
+        setSnackbar({
+          open: true,
+          message,
+          severity: "error",
+        });
+      }
     } finally {
       setCreatingManga(null);
     }

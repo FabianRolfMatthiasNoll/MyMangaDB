@@ -1,7 +1,12 @@
 import { Manga, MangaCreate } from "../api";
 import { MangasApi } from "../api/apis";
 import { configuration } from "./config";
-import { apiCallWrapper, apiCallWrapperOrThrow, handleApiError } from "./errorService";
+import {
+  ApiError,
+  apiCallWrapper,
+  apiCallWrapperOrThrow,
+  describeApiError,
+} from "./errorService";
 import { saveMangaCover } from "./imageService";
 
 const mangasApi = new MangasApi(configuration);
@@ -97,8 +102,11 @@ export const createManga = async (mangaCreate: MangaCreate) => {
   try {
     return await mangasApi.createMangaApiV1MangasCreatePost({ mangaCreate });
   } catch (error) {
-    await handleApiError(error);
-    throw error; // Re-throw so caller knows it failed
+    // The message belongs to the caller: the dialog and the page show it
+    // where the user is looking. Reporting it here as well would give the
+    // user two messages on top of each other.
+    const message = await describeApiError(error);
+    throw new ApiError(message ?? "");
   }
 };
 

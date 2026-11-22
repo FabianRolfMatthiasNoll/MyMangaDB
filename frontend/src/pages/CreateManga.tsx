@@ -12,6 +12,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MangaForm from "../components/MangaForm";
 import { Manga, MangaCreate, Category, OwnershipStatus } from "../api/models";
 import { createManga } from "../services/mangaService";
+import { ApiError } from "../services/errorService";
 import { saveMangaCover } from "../services/imageService";
 import { useQueryClient } from "@tanstack/react-query";
 import { invalidateMangaQueries } from "../services/queryInvalidation";
@@ -87,7 +88,15 @@ const CreateManga: React.FC = () => {
       }
     } catch (error) {
       console.error("Error creating manga:", error);
-      setError(t("errors.failedToCreateManga"));
+      // The request carries the message of the failure. It is shown on the
+      // page, so the user gets one message and not two.
+      const message =
+        error instanceof ApiError && error.message
+          ? error.message
+          : t("errors.failedToCreateManga");
+      if (message) {
+        setError(message);
+      }
     }
   };
 
