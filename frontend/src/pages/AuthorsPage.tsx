@@ -172,7 +172,7 @@ const AuthorsPage: React.FC = () => {
                               gap: 0.5
                             }}
                           >
-                            {author.mangaCount} manga{author.mangaCount !== 1 ? "s" : ""}
+                            {t("common.mangaCount", { count: author.mangaCount })}
                           </Typography>
                         </Box>
                       </Paper>

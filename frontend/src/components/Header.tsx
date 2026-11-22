@@ -159,7 +159,7 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
                     textDecoration: "none",
                   }}
                 >
-                  MyMangaDB
+                  {t("app.title")}
                 </Typography>
               </>
             ) : (
@@ -178,7 +178,7 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
                     textDecoration: "none",
                   }}
                 >
-                  MyMangaDB
+                  {t("app.title")}
                 </Typography>
                 {menuItems.map((item) => {
                   const isSelected = location.pathname === item.path;

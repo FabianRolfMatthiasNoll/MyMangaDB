@@ -26,14 +26,8 @@
     "backToList": "Zurück zur Liste",
     "backToWishlist": "Zurück zur Merkliste",
     "backToDashboard": "Zurück zum Dashboard",
-    "asc": "Aufsteigend",
-    "desc": "Absteigend",
-    "resetFilters": "Filter zurücksetzen",
-    "advancedFilters": "Erweiterte Filter",
-    "filterByList": "Nach Liste filtern",
     "starRating": "Sterne-Bewertung",
     "noCoverImage": "Kein Coverbild",
-    "volumes": "Bände",
     "authors": "Autoren",
     "genres": "Genres",
     "summary": "Zusammenfassung",
@@ -51,18 +45,12 @@
     "added": "Hinzugefügt",
     "searching": "Suche läuft...",
     "saving": "Wird gespeichert...",
-    "manual": "Manuell",
-    "automatic": "Automatisch",
     "unrated": "Nicht bewertet",
-    "category": "Kategorie",
-    "readingStatus": "Lesestatus",
-    "overallStatus": "Gesamtstatus",
-    "ratingRange": "Bewertungsbereich",
     "errorLoading": "Fehler beim Laden",
     "retry": "Erneut versuchen",
     "noResults": "Keine Ergebnisse gefunden.",
-    "notAvailable": "Nicht vorhanden",
-    "noMangaYet": "Noch keine Manga"
+    "mangaCount": "{{count}} Manga(s)",
+    "notAvailable": "Nicht vorhanden"
   },
   "manga": {
     "title": "Titel",
@@ -77,13 +65,11 @@
     "overallStatus": "Gesamtstatus",
     "ownershipStatus": "Besitz",
     "uploadCoverImage": "Coverbild hochladen",
-    "volumes": "Bände",
     "deleteConfirm": "Sind Sie sicher, dass Sie \"{{title}}\" löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
     "deleteTitle": "Manga löschen",
     "updatedSuccess": "Manga erfolgreich aktualisiert",
     "updateFailed": "Manga konnte nicht aktualisiert werden",
     "loadFailed": "Der Manga konnte nicht geladen werden. Möglicherweise wurde er gelöscht oder der Server ist nicht erreichbar.",
-    "deleteFailed": "Manga konnte nicht gelöscht werden",
     "addNewManga": "Neuen Manga hinzufügen",
     "searchManga": "Manga suchen",
     "noSourcesAvailable": "Keine Quellen verfügbar. Bitte überprüfen Sie Ihre Konfiguration.",
@@ -94,16 +80,13 @@
     "addedSuccess": "{{title}} erfolgreich hinzugefügt",
     "addError": "Beim Hinzufügen des Mangas ist ein Fehler aufgetreten.",
     "addToDatabase": "Zur Sammlung",
-    "addToWishlist": "Zur Merkliste",
-    "enterVolumesYouOwn": "Geben Sie die Bände ein, die Sie besitzen für {{title}}",
-    "e.gVolumes": "z.B. 1-10; 12; 15-20"
+    "addToWishlist": "Zur Merkliste"
   },
   "volume": {
     "volumesOwned": "Bände ({{count}} vorhanden)",
     "volumesOfTotal": "Bände ({{count}} von {{total}})",
     "totalVolumes": "Die Reihe hat insgesamt Bände",
     "totalVolumesHint": "Mit dieser Zahl weiß die App, welche Bände noch fehlen.",
-    "manageVolumes": "Bände verwalten",
     "noVolumesTracked": "Noch keine Bände erfasst.",
     "owned": "Vorhanden",
     "notOwned": "Nicht vorhanden",
@@ -189,7 +172,6 @@
     "completed": "Abgeschlossen",
     "onHold": "Pausiert",
     "dropped": "Abgebrochen",
-    "planToRead": "Geplant",
     "ongoing": "Laufend",
     "hiatus": "Pausiert",
     "cancelled": "Eingestellt"
@@ -199,8 +181,6 @@
     "notAllowed": "Das darfst Du nicht. Dafür wird ein Administrator benötigt.",
     "unexpected": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
     "validationFailed": "Validierung fehlgeschlagen:",
-    "failedToFetchSettings": "Einstellungen konnten nicht geladen werden",
-    "invalidUsernamePassword": "Ungültiger Benutzername oder Passwort",
     "passwordCannotBeEmpty": "Passwort darf nicht leer sein",
     "passwordUpdateSuccess": "Passwort erfolgreich aktualisiert",
     "passwordUpdateFailed": "Passwort konnte nicht aktualisiert werden. Stellen Sie sicher, dass Sie Admin sind.",
@@ -210,12 +190,10 @@
     "databaseImportedSuccess": "Datenbank erfolgreich importiert",
     "errorLoadingAuthors": "Fehler beim Laden der Autoren",
     "errorLoadingGenres": "Fehler beim Laden der Genres",
-    "errorLoadingStatistics": "Statistiken konnten nicht geladen werden",
     "listNotFound": "Liste nicht gefunden",
     "authorNotFound": "Autor nicht gefunden",
     "genreNotFound": "Genre nicht gefunden",
     "failedToCreateManga": "Manga konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
-    "searchError": "Bei der Suche ist ein Fehler aufgetreten.",
     "mangaAlreadyExists": "Dieser Titel ist bereits in Deiner Sammlung. Öffne ihn, um die fehlenden Bände auf die Merkliste zu nehmen.",
     "infoCodes": {
       "MANGA_EXISTS": "Manga existiert bereits in der Datenbank",
@@ -249,7 +227,6 @@
     "migrateSuccess": "Einstellungen aktualisiert und Daten erfolgreich migriert",
     "migrateFailed": "Einstellungen konnten nicht aktualisiert und Daten nicht migriert werden",
     "importDatabaseTitle": "Datenbank importieren",
-    "selectDatabaseFile": "Wählen Sie eine Datenbanksicherungsdatei zum Importieren...",
     "howToExport": "So exportieren Sie Ihre Liste von MyAnimeList"
   },
   "notFound": {
@@ -272,7 +249,6 @@
     "listName": "Listenname",
     "deleteList": "Liste löschen",
     "deleteListConfirm": "Möchtest Du \"{{name}}\" wirklich löschen? Die Liste wird entfernt, die Titel bleiben in Deiner Sammlung.",
-    "mangaCount": "{{count}} Manga(s)",
     "noMangaInList": "Keine Manga in dieser Liste",
     "addMangasFromDetails": "Fügen Sie Manga aus der Manga-Detailseite zu dieser Liste hinzu."
   },
@@ -314,7 +290,6 @@
     "selectFile": "Wählen Sie Ihre MyAnimeList-Exportdatei...",
     "chooseFile": "Datei auswählen",
     "selected": "Ausgewählt: {{filename}}",
-    "resultSummary": "Gesamt: {{total}} | Importiert: {{imported}} | Übersprungen: {{skipped}} | Fehlgeschlagen: {{failed}}",
-    "close": "Schließen"
+    "resultSummary": "Gesamt: {{total}} | Importiert: {{imported}} | Übersprungen: {{skipped}} | Fehlgeschlagen: {{failed}}"
   }
 }

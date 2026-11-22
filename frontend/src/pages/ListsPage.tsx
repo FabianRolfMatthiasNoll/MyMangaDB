@@ -262,7 +262,7 @@ const ListsPage: React.FC = () => {
                             gap: 0.5,
                           }}
                         >
-                          {t("lists.mangaCount", { count: list.mangaCount })}
+                          {t("common.mangaCount", { count: list.mangaCount })}
                         </Typography>
                       </Box>
                       {isAdmin && (

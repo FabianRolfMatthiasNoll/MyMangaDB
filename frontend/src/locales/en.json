@@ -26,14 +26,8 @@
     "backToList": "Back to List",
     "backToWishlist": "Back to the wishlist",
     "backToDashboard": "Back to Dashboard",
-    "asc": "Asc",
-    "desc": "Desc",
-    "resetFilters": "Reset Filters",
-    "advancedFilters": "Advanced Filters",
-    "filterByList": "Filter by List",
     "starRating": "Star Rating",
     "noCoverImage": "No Cover Image",
-    "volumes": "Volumes",
     "authors": "Authors",
     "genres": "Genres",
     "summary": "Summary",
@@ -51,18 +45,12 @@
     "added": "Added",
     "searching": "Searching...",
     "saving": "Saving...",
-    "manual": "Manual",
-    "automatic": "Automatic",
     "unrated": "Unrated",
-    "category": "Category",
-    "readingStatus": "Reading Status",
-    "overallStatus": "Overall Status",
-    "ratingRange": "Rating Range",
     "errorLoading": "Error loading",
     "retry": "Retry",
     "noResults": "No results found.",
-    "notAvailable": "Not available",
-    "noMangaYet": "No manga yet"
+    "mangaCount": "{{count}} manga(s)",
+    "notAvailable": "Not available"
   },
   "manga": {
     "title": "Title",
@@ -77,13 +65,11 @@
     "overallStatus": "Overall Status",
     "ownershipStatus": "Ownership",
     "uploadCoverImage": "Upload Cover Image",
-    "volumes": "Volumes",
     "deleteConfirm": "Are you sure you want to delete \"{{title}}\"? This action cannot be undone.",
     "deleteTitle": "Delete Manga",
     "updatedSuccess": "Manga updated successfully",
     "updateFailed": "Failed to update manga",
     "loadFailed": "Failed to load the manga. It may have been deleted or the server is unreachable.",
-    "deleteFailed": "Failed to delete manga",
     "addNewManga": "Add New Manga",
     "searchManga": "Search Manga",
     "noSourcesAvailable": "No sources are currently available. Please check your configuration.",
@@ -94,16 +80,13 @@
     "addedSuccess": "Successfully added {{title}}",
     "addError": "An error occurred while adding the manga.",
     "addToDatabase": "Add to collection",
-    "addToWishlist": "Add to wishlist",
-    "enterVolumesYouOwn": "Enter the volumes you own for {{title}}",
-    "e.gVolumes": "e.g. 1-10; 12; 15-20"
+    "addToWishlist": "Add to wishlist"
   },
   "volume": {
     "volumesOwned": "Volumes ({{count}} Owned)",
     "volumesOfTotal": "Volumes ({{count}} of {{total}})",
     "totalVolumes": "The series has volumes in total",
     "totalVolumesHint": "With this number the app knows which volumes are still missing.",
-    "manageVolumes": "Manage Volumes",
     "noVolumesTracked": "No volumes tracked yet.",
     "owned": "Owned",
     "notOwned": "Not Owned",
@@ -189,7 +172,6 @@
     "completed": "Completed",
     "onHold": "On Hold",
     "dropped": "Dropped",
-    "planToRead": "Plan to Read",
     "ongoing": "Ongoing",
     "hiatus": "Hiatus",
     "cancelled": "Cancelled"
@@ -199,8 +181,6 @@
     "notAllowed": "You are not allowed to do that. An admin is needed.",
     "unexpected": "An unexpected error occurred. Please try again later.",
     "validationFailed": "Validation failed:",
-    "failedToFetchSettings": "Failed to fetch settings",
-    "invalidUsernamePassword": "Invalid username or password",
     "passwordCannotBeEmpty": "Password cannot be empty",
     "passwordUpdateSuccess": "Password updated successfully",
     "passwordUpdateFailed": "Failed to update password. Ensure you are an admin.",
@@ -210,12 +190,10 @@
     "databaseImportedSuccess": "Database imported successfully",
     "errorLoadingAuthors": "Error loading authors",
     "errorLoadingGenres": "Error loading genres",
-    "errorLoadingStatistics": "Failed to load statistics",
     "listNotFound": "List not found",
     "authorNotFound": "Author not found",
     "genreNotFound": "Genre not found",
     "failedToCreateManga": "Failed to create manga. Please try again.",
-    "searchError": "An error occurred while searching.",
     "mangaAlreadyExists": "This title is already in your collection. Open it to put the missing volumes on the wishlist.",
     "infoCodes": {
       "MANGA_EXISTS": "Manga already exists in database",
@@ -249,7 +227,6 @@
     "migrateSuccess": "Settings updated and data migrated successfully",
     "migrateFailed": "Failed to update settings and migrate data",
     "importDatabaseTitle": "Import Database",
-    "selectDatabaseFile": "Select a database backup file to import...",
     "howToExport": "How to export your list from MyAnimeList"
   },
   "notFound": {
@@ -272,7 +249,6 @@
     "listName": "List Name",
     "deleteList": "Delete list",
     "deleteListConfirm": "Do you really want to delete \"{{name}}\"? The list is removed, the titles stay in your collection.",
-    "mangaCount": "{{count}} manga(s)",
     "noMangaInList": "No manga in this list",
     "addMangasFromDetails": "Add mangas to this list from the manga details page."
   },
@@ -314,7 +290,6 @@
     "selectFile": "Select your MyAnimeList export file...",
     "chooseFile": "Choose File",
     "selected": "Selected: {{filename}}",
-    "resultSummary": "Total: {{total}} | Imported: {{imported}} | Skipped: {{skipped}} | Failed: {{failed}}",
-    "close": "Close"
+    "resultSummary": "Total: {{total}} | Imported: {{imported}} | Skipped: {{skipped}} | Failed: {{failed}}"
   }
 }

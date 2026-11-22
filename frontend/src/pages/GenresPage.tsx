@@ -172,7 +172,7 @@ const GenresPage: React.FC = () => {
                               gap: 0.5
                             }}
                           >
-                            {genre.mangaCount} manga{genre.mangaCount !== 1 ? "s" : ""}
+                            {t("common.mangaCount", { count: genre.mangaCount })}
                           </Typography>
                         </Box>
                       </Paper>

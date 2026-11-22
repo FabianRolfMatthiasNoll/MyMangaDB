@@ -6,6 +6,10 @@ config.json
 !.env.example
 .task
 
+# The profile directory of a headless browser that takes screenshots. It is
+# temporary and it is big - it must never end up in the repository.
+.chrome-cdp*
+
 # Created by https://www.gitignore.io/api/linux,macos,python,pycharm,windows,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=linux,macos,python,pycharm,windows,visualstudiocode
 
