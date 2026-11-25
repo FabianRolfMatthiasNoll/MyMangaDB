@@ -29,7 +29,8 @@ MyMangaDB relies on excellent external APIs to provide accurate manga data. A sp
 
 ### Wishlist
 
-![Wishlist](screenshots/wishlist.png)
+![Wishlist - continue a series](screenshots/wishlist_continue.png)
+![Wishlist - new to buy](screenshots/wishlist_new_buys.png)
 
 ### Manga Overview
 
