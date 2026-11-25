@@ -187,10 +187,19 @@ For contributors or those who prefer running without Docker.
     This command creates virtual environments, installs dependencies, and generates `.env` files.
 
 2.  **Run in Development Mode**
+
     ```bash
     task dev
     ```
-    This starts both the FastAPI backend (port 8000) and Vite frontend (port 5173).
+
+    This starts both the FastAPI backend (port 1234) and Vite frontend (port 5173).
+
+    Both ports can be changed, so that a second instance can run next to an
+    already running one:
+
+    ```bash
+    BACKEND_PORT=8000 FRONTEND_PORT=5174 task dev
+    ```
 
 ### Database Migrations
 
