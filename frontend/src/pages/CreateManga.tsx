@@ -10,10 +10,12 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MangaForm from "../components/MangaForm";
-import { Manga, MangaCreate, Category } from "../api/models";
+import { Manga, MangaCreate, Category, OwnershipStatus } from "../api/models";
 import { createManga } from "../services/mangaService";
+import { ApiError } from "../services/errorService";
 import { saveMangaCover } from "../services/imageService";
 import { useQueryClient } from "@tanstack/react-query";
+import { invalidateMangaQueries } from "../services/queryInvalidation";
 import { useTranslation } from "react-i18next";
 
 const CreateManga: React.FC = () => {
@@ -67,6 +69,10 @@ const CreateManga: React.FC = () => {
         starRating: manga.starRating || null,
         language: manga.language || null,
         category: manga.category,
+        // The form knows whether the title is owned or only wanted. Without
+        // it the server would fall back to "owned" and the choice of the
+        // user would be lost.
+        ownershipStatus: manga.ownershipStatus || OwnershipStatus.Owned,
         summary: manga.summary || null,
         coverImage: coverImagePath || null,
         authors: manga.authors.map(author => ({ name: author.name })),
@@ -77,21 +83,28 @@ const CreateManga: React.FC = () => {
 
       const createdManga = await createManga(mangaCreate);
       if (createdManga) {
-        await queryClient.invalidateQueries({ queryKey: ["mangas"] });
-        await queryClient.invalidateQueries({ queryKey: ["lists"] });
+        await invalidateMangaQueries(queryClient);
         navigate(`/manga/${createdManga.id}`);
       }
     } catch (error) {
       console.error("Error creating manga:", error);
-      setError(t("errors.failedToCreateManga"));
+      // The request carries the message of the failure. It is shown on the
+      // page, so the user gets one message and not two.
+      const message =
+        error instanceof ApiError && error.message
+          ? error.message
+          : t("errors.failedToCreateManga");
+      if (message) {
+        setError(message);
+      }
     }
   };
 
   return (
     <Container maxWidth="md">
-      <Box p={3}>
+      <Box sx={{ p: 3 }}>
         <Paper elevation={0} sx={{ p: 3, backgroundColor: 'transparent' }}>
-          <Box display="flex" alignItems="center" mb={3}>
+          <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
             <IconButton
               onClick={() => navigate(-1)}
               sx={{

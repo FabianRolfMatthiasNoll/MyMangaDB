@@ -1,11 +1,12 @@
 import os
-from typing import List
+from concurrent.futures import ThreadPoolExecutor
+from typing import List, Optional
 from urllib.parse import urljoin
 
 import requests
 import urllib3
 
-from backend.app.handlers.base import BaseHandler
+from backend.app.handlers.base import REQUEST_TIMEOUT, SCRAPE_WORKERS, BaseHandler
 from backend.app.schemas import AuthorCreate, Category, GenreCreate, MangaCreate
 
 
@@ -21,31 +22,37 @@ class MangaPassionHandler(BaseHandler):
             f"{self.base_url}/editions?"
             f"search[desc]={search_term}&itemsPerPage=10&page=1"
         )
-        response = requests.get(search_url, verify=self.verify_ssl)
+        response = requests.get(
+            search_url, verify=self.verify_ssl, timeout=REQUEST_TIMEOUT
+        )
         response.raise_for_status()
 
         data = response.json()
-        results = []
+        links = []
 
         for item in data:
             title = item.get("title")
             manga_id = item.get("id")
             if title and manga_id:
-                # Scrape details for each result to populate MangaCreate
-                # Note: This is N+1 requests, but necessary for MangaPassion
-                # as search results are minimal
-                link = f"{self.base_url}/editions/{manga_id}"
-                try:
-                    manga = self.scrape(link)
-                    results.append(manga)
-                except Exception:
-                    # Skip if scraping fails for one item
-                    continue
+                links.append(f"{self.base_url}/editions/{manga_id}")
 
-        return results
+        # The search results only carry a title, so the details have to be
+        # fetched for each of them. They do not depend on each other, so
+        # they are fetched at the same time instead of one after another.
+        with ThreadPoolExecutor(max_workers=SCRAPE_WORKERS) as pool:
+            scraped = list(pool.map(self._scrape_or_none, links))
+
+        return [manga for manga in scraped if manga is not None]
+
+    def _scrape_or_none(self, url: str) -> Optional[MangaCreate]:
+        """Scrape one title, skipping it when that fails."""
+        try:
+            return self.scrape(url)
+        except Exception:
+            return None
 
     def scrape(self, url: str) -> MangaCreate:
-        response = requests.get(url, verify=self.verify_ssl)
+        response = requests.get(url, verify=self.verify_ssl, timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
 
         data = response.json()

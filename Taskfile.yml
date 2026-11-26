@@ -1,5 +1,15 @@
 version: "3"
 
+vars:
+  # The port of the backend. It is a variable so that a second instance can
+  # run next to an already running one:
+  #   BACKEND_PORT=8000 task dev
+  BACKEND_PORT:
+    sh: echo "${BACKEND_PORT:-1234}"
+  # The port of the Vite development server.
+  FRONTEND_PORT:
+    sh: echo "${FRONTEND_PORT:-5173}"
+
 tasks:
   default:
     desc: Run the development environment (backend + frontend)
@@ -16,6 +26,8 @@ tasks:
 
   setup:env:
     desc: Generate .env files with API keys
+    env:
+      BACKEND_PORT: "{{.BACKEND_PORT}}"
     cmds:
       - |
         python3 -c "
@@ -26,6 +38,7 @@ tasks:
             exit(0)
 
         key = secrets.token_urlsafe(32)
+        backend_port = os.environ.get('BACKEND_PORT', '1234')
 
         backend_content = f'''# API Security
         # Signs the session tokens (JWT). Keep this secret and never expose
@@ -44,7 +57,7 @@ tasks:
         '''
 
         frontend_content = f'''# API Configuration
-        VITE_API_URL=http://localhost:8000
+        VITE_API_URL=http://localhost:{backend_port}
         '''
 
         with open('backend/.env', 'w') as f:
@@ -68,14 +81,20 @@ tasks:
     cmds:
       - test -d .venv || python3 -m venv .venv
       - .venv/bin/pip install --upgrade pip
-      - .venv/bin/pip install -r requirements.txt
+      - .venv/bin/pip install -r requirements-dev.txt -r requirements-desktop.txt
     sources:
       - requirements.txt
+      - requirements-dev.txt
+      - requirements-desktop.txt
 
   backend:run:
     desc: Run the FastAPI backend server
+    env:
+      # The frontend is allowed to talk to the backend from its own port.
+      # The environment wins over the .env file, so the two always match.
+      FRONTEND_URL: "http://localhost:{{.FRONTEND_PORT}}"
     cmds:
-      - backend/.venv/bin/uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
+      - backend/.venv/bin/uvicorn backend.app.main:app --reload --host 0.0.0.0 --port {{.BACKEND_PORT}}
 
   backend:lint:
     desc: Run linting checks for backend (placeholder)
@@ -103,8 +122,13 @@ tasks:
   frontend:run:
     desc: Run the Vite frontend development server
     dir: frontend
+    env:
+      # The frontend has to know where the backend is.
+      VITE_API_URL: "http://localhost:{{.BACKEND_PORT}}"
     cmds:
-      - npm run dev
+      # The port is fixed: if it is taken, Vite would silently move to the
+      # next one and the browser would talk to a backend that is not there.
+      - npm run dev -- --port {{.FRONTEND_PORT}} --strictPort
 
   frontend:build:
     desc: Build the frontend for production
@@ -130,7 +154,7 @@ tasks:
       - |
         # Start backend in background and save PID
         echo "Starting backend..."
-        sh -c 'echo $$ > backend.pid; exec backend/.venv/bin/uvicorn backend.app.main:app --port 8000' > /dev/null 2>&1 &
+        sh -c 'echo $$ > backend.pid; exec backend/.venv/bin/uvicorn backend.app.main:app --port {{.BACKEND_PORT}}' > /dev/null 2>&1 &
 
         # Wait for PID file to exist
         while [ ! -f backend.pid ]; do sleep 0.1; done
@@ -147,7 +171,7 @@ tasks:
         # Generate API client
         echo "Generating API client..."
         (cd frontend && npx @openapitools/openapi-generator-cli generate \
-          -i http://localhost:8000/openapi.json \
+          -i http://localhost:{{.BACKEND_PORT}}/openapi.json \
           -g typescript-fetch \
           -o src/api \
           --additional-properties=typescriptThreePlus=true)

@@ -11,6 +11,7 @@ from backend.app.repositories.manga import MangaRepository
 from backend.app.schemas import (
     ImportResponse,
     ImportResultDetail,
+    OwnershipStatus,
     ReadingStatus,
     VolumeCreate,
 )
@@ -148,6 +149,15 @@ class MALImporter:
                         }
                         manga_create.reading_status = status_map.get(
                             my_status_elem.text, ReadingStatus.not_started
+                        )
+
+                        # "Plan to Read" means the title is wanted, not owned.
+                        # Everything else in a list has been read, so it is
+                        # part of the collection.
+                        manga_create.ownership_status = (
+                            OwnershipStatus.wishlist
+                            if my_status_elem.text == "Plan to Read"
+                            else OwnershipStatus.owned
                         )
 
                     # Volumes

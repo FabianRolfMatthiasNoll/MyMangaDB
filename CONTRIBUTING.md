@@ -4,8 +4,8 @@
 
 ### Prerequisites
 
-- **Python 3.12+** (backend)
-- **Node.js 20+** (frontend)
+- **Python 3.13+** (backend)
+- **Node.js 22.12+** (frontend)
 - **Git**
 - **Task** (task runner) — [Installation guide](https://taskfile.dev/#installation)
 
@@ -23,7 +23,18 @@ task setup
 task dev
 ```
 
-This starts both backend (http://localhost:8000) and frontend (http://localhost:5173).
+This starts both backend (http://localhost:1234) and frontend (http://localhost:5173).
+
+Both ports are variables, so a second instance can run next to an already
+running one:
+
+```bash
+BACKEND_PORT=8000 FRONTEND_PORT=5174 task dev
+```
+
+The frontend always talks to the backend of the same task, and the backend
+allows the frontend of the same task - the two are set from the same
+variables.
 
 ### Available Task Commands
 

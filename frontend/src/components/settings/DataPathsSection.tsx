@@ -67,7 +67,7 @@ const DataPathsSection: React.FC<DataPathsSectionProps> = ({
       await updateSetting(pendingChange.key, pendingChange.value, true);
       onSuccess(t("settings.migrateSuccess"));
       onSettingsUpdated();
-    } catch (err) {
+    } catch {
       onError(t("settings.migrateFailed"));
     } finally {
       setLoading(false);

@@ -3,23 +3,28 @@ import { useTranslation } from "react-i18next";
 import {
   Box,
   FormControl,
+  FormControlLabel,
   InputLabel,
   Select,
   MenuItem,
   Button,
   Slider,
   Autocomplete,
+  Switch,
   TextField,
+  Typography,
 } from "@mui/material";
 import {
   OverallStatus,
   ReadingStatus,
   Category,
   ListModel,
+  OwnershipStatus,
 } from "../api/models";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { useStatusMeta } from "../hooks/useStatusMeta";
 import { useCategoryLabel } from "../hooks/useCategoryLabel";
+import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
 
 interface AdvancedFiltersProps {
   filterCategory: string[];
@@ -30,6 +35,10 @@ interface AdvancedFiltersProps {
   setFilterOverallStatus: (status: string[]) => void;
   ratingRange: number[];
   setRatingRange: (range: number[]) => void;
+  filterOwnershipStatus: string[];
+  setFilterOwnershipStatus: (status: string[]) => void;
+  showWishlist: boolean;
+  onToggleWishlist: () => void;
   availableLists: ListModel[];
   filterList: ListModel | null;
   setFilterList: (list: ListModel | null) => void;
@@ -45,6 +54,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
   setFilterOverallStatus,
   ratingRange,
   setRatingRange,
+  filterOwnershipStatus,
+  setFilterOwnershipStatus,
+  showWishlist,
+  onToggleWishlist,
   availableLists,
   filterList,
   setFilterList,
@@ -53,6 +66,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
   const { t } = useTranslation();
   const { getStatusLabel } = useStatusMeta();
   const getCategoryLabel = useCategoryLabel();
+  const { getOwnershipLabel } = useOwnershipStatus();
 
   const handleCategoryChange = (event: SelectChangeEvent<string[]>) => {
     setFilterCategory(event.target.value as string[]);
@@ -68,9 +82,13 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
   const handleRatingRangeChange = (
     _event: Event,
-    newValue: number | number[]
+    newValue: number | number[],
   ) => {
     setRatingRange(newValue as number[]);
+  };
+
+  const handleOwnershipStatusChange = (event: SelectChangeEvent<string[]>) => {
+    setFilterOwnershipStatus(event.target.value as string[]);
   };
 
   return (
@@ -121,25 +139,71 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
         </Select>
       </FormControl>
       <FormControl variant="outlined" sx={{ mb: 2 }}>
+        <InputLabel>{t("filters.ownershipStatus")}</InputLabel>
+        <Select
+          multiple
+          value={filterOwnershipStatus}
+          onChange={handleOwnershipStatusChange}
+          label={t("filters.ownershipStatus")}
+        >
+          {Object.values(OwnershipStatus).map((value) => (
+            <MenuItem key={value} value={value}>
+              {getOwnershipLabel(value)}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControl variant="outlined" sx={{ mb: 2 }}>
         <Autocomplete
           options={availableLists}
           getOptionLabel={(option) => option.name}
           value={filterList}
           onChange={(_event, newValue) => setFilterList(newValue)}
           renderInput={(params) => (
-            <TextField {...params} label={t("filters.filterByList")} variant="outlined" />
+            <TextField
+              {...params}
+              label={t("filters.filterByList")}
+              variant="outlined"
+            />
           )}
         />
       </FormControl>
       <Box sx={{ mb: 2 }}>
-        <InputLabel>{t("filters.ratingRange")}</InputLabel>
-        <Slider
-          value={ratingRange}
-          onChange={handleRatingRangeChange}
-          valueLabelDisplay="auto"
-          min={0}
-          max={5}
+        <FormControlLabel
+          control={
+            <Switch
+              checked={showWishlist}
+              onChange={onToggleWishlist}
+              disabled={filterOwnershipStatus.length > 0}
+              slotProps={{ input: { "aria-label": t("filters.showWishlist") } }}
+            />
+          }
+          label={t("filters.showWishlist")}
         />
+        {filterOwnershipStatus.length > 0 && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: "block" }}
+          >
+            {t("filters.showWishlistHint")}
+          </Typography>
+        )}
+      </Box>
+      <Box sx={{ mb: 2 }}>
+        <FormControl variant="outlined" fullWidth>
+          <InputLabel id="rating-range-label">
+            {t("filters.ratingRange")}
+          </InputLabel>
+          <Slider
+            value={ratingRange}
+            onChange={handleRatingRangeChange}
+            valueLabelDisplay="auto"
+            min={0}
+            max={5}
+            aria-labelledby="rating-range-label"
+          />
+        </FormControl>
       </Box>
       <Button variant="contained" onClick={resetFilters}>
         {t("filters.resetFilters")}

@@ -1,0 +1,9 @@
+# The dependencies of the desktop app (run.py). The server does not need
+# them - they would only make the Docker image bigger.
+
+-r requirements.txt
+
+pywebview
+qtpy
+PyQt5
+PyQtWebEngine

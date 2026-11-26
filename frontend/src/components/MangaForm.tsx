@@ -11,15 +11,18 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 import { Author, Genre, Manga, ListModel, Category } from "../api/models";
-import { OverallStatus, ReadingStatus } from "../api/models";
+import { OverallStatus, OwnershipStatus, ReadingStatus } from "../api/models";
 import { getAuthors } from "../services/authorService";
 import { getGenres } from "../services/genreService";
 import { getAllLists } from "../services/listService";
 import { useStatusMeta } from "../hooks/useStatusMeta";
 import { useCategoryLabel } from "../hooks/useCategoryLabel";
+import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 
@@ -37,7 +40,7 @@ const VisuallyHiddenInput = styled("input")({
 
 interface MangaFormProps {
   manga: Manga;
-  onSave: (manga: Manga, coverImage?: File) => void;
+  onSave: (manga: Manga, coverImage?: File) => void | Promise<void>;
   onCancel: () => void;
   initialLists?: number[];
 }
@@ -51,13 +54,21 @@ const MangaForm: React.FC<MangaFormProps> = ({
   const { t } = useTranslation();
   const { getStatusLabel } = useStatusMeta();
   const getCategoryLabel = useCategoryLabel();
-  const [editableManga, setEditableManga] = useState<Manga>(manga);
+  const { getOwnershipLabel } = useOwnershipStatus();
+  // A title without an ownership status belongs in the collection - that is
+  // also what the server does with it. The value is set here and not only in
+  // the display, so that the form shows what is actually saved.
+  const [editableManga, setEditableManga] = useState<Manga>({
+    ...manga,
+    ownershipStatus: manga.ownershipStatus ?? OwnershipStatus.Owned,
+  });
   const [availableAuthors, setAvailableAuthors] = useState<Author[]>([]);
   const [availableGenres, setAvailableGenres] = useState<Genre[]>([]);
   const [availableLists, setAvailableLists] = useState<ListModel[]>([]);
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [selectedLists, setSelectedLists] = useState<ListModel[]>(manga.lists);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -88,6 +99,9 @@ const MangaForm: React.FC<MangaFormProps> = ({
       );
       setSelectedLists(preselected);
     }
+    // The selection is only filled once - it should not be refilled when the
+    // user removes a list.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [availableLists, initialLists]);
 
   const handleChange = (field: keyof Manga, value: Manga[keyof Manga]) => {
@@ -128,12 +142,25 @@ const MangaForm: React.FC<MangaFormProps> = ({
     setSelectedLists(lists);
   };
 
-  const handleSave = () => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (saving) {
+      return;
+    }
+
     const mangaToSave = {
       ...editableManga,
       lists: selectedLists,
     };
-    onSave(mangaToSave, coverImage || undefined);
+
+    // The save can take a moment - a cover upload for example. The button
+    // shows that something is happening, so that the form is not sent twice.
+    setSaving(true);
+    try {
+      await onSave(mangaToSave, coverImage || undefined);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleAuthorsChange = (_: unknown, newValue: (Author | string)[]) => {
@@ -175,7 +202,13 @@ const MangaForm: React.FC<MangaFormProps> = ({
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    // A real form, so that the browser checks the required title and the
+    // Enter key saves instead of doing nothing.
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+    >
       <TextField
         label={t("manga.title")}
         value={editableManga.title}
@@ -207,12 +240,12 @@ const MangaForm: React.FC<MangaFormProps> = ({
             fullWidth
           />
         )}
-        renderTags={(tagValue, getTagProps) =>
+        renderValue={(tagValue, getItemProps) =>
           tagValue.map((option, index) => (
             <Chip
-              label={option.name}
-              {...getTagProps({ index })}
-              key={option.id}
+              label={typeof option === "string" ? option : option.name}
+              {...getItemProps({ index })}
+              key={typeof option === "string" ? option : option.id}
             />
           ))
         }
@@ -235,12 +268,12 @@ const MangaForm: React.FC<MangaFormProps> = ({
             fullWidth
           />
         )}
-        renderTags={(tagValue, getTagProps) =>
+        renderValue={(tagValue, getItemProps) =>
           tagValue.map((option, index) => (
             <Chip
-              label={option.name}
-              {...getTagProps({ index })}
-              key={option.id}
+              label={typeof option === "string" ? option : option.name}
+              {...getItemProps({ index })}
+              key={typeof option === "string" ? option : option.id}
             />
           ))
         }
@@ -263,12 +296,12 @@ const MangaForm: React.FC<MangaFormProps> = ({
             fullWidth
           />
         )}
-        renderTags={(tagValue, getTagProps) =>
+        renderValue={(tagValue, getItemProps) =>
           tagValue.map((option, index) => (
             <Chip
-              label={option.name}
-              {...getTagProps({ index })}
-              key={option.id || index}
+              label={typeof option === "string" ? option : option.name}
+              {...getItemProps({ index })}
+              key={typeof option === "string" ? option : option.id || index}
             />
           ))
         }
@@ -301,6 +334,28 @@ const MangaForm: React.FC<MangaFormProps> = ({
           ))}
         </Select>
       </FormControl>
+      <Box>
+        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+          {t("manga.ownershipStatus")}
+        </Typography>
+        {/* A toggle group instead of a dropdown: there are only three
+            choices and the current one should stay visible. */}
+        <ToggleButtonGroup
+          exclusive
+          fullWidth
+          size="small"
+          value={editableManga.ownershipStatus}
+          onChange={(_event, value) =>
+            value && handleChange("ownershipStatus", value)
+          }
+        >
+          {Object.values(OwnershipStatus).map((value) => (
+            <ToggleButton key={value} value={value}>
+              {getOwnershipLabel(value)}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </Box>
       <FormControl fullWidth>
         <InputLabel>{t("manga.readingStatus")}</InputLabel>
         <Select
@@ -366,10 +421,11 @@ const MangaForm: React.FC<MangaFormProps> = ({
         )}
       </Box>
       <Box sx={{ display: "flex", gap: 2 }}>
-        <Button variant="contained" onClick={handleSave}>
-          {t("common.save")}
+        <Button type="submit" variant="contained" disabled={saving}>
+          {saving ? t("common.saving") : t("common.save")}
         </Button>
-        <Button variant="outlined" onClick={onCancel}>
+        {/* Without the type the button would submit the form. */}
+        <Button type="button" variant="outlined" onClick={onCancel}>
           {t("common.cancel")}
         </Button>
       </Box>

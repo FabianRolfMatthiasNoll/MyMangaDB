@@ -1,23 +1,47 @@
 import { Manga, MangaCreate } from "../api";
 import { MangasApi } from "../api/apis";
 import { configuration } from "./config";
-import { apiCallWrapper, apiCallWrapperOrThrow, handleApiError } from "./errorService";
+import {
+  ApiError,
+  apiCallWrapper,
+  apiCallWrapperOrThrow,
+  describeApiError,
+} from "./errorService";
 import { saveMangaCover } from "./imageService";
 
 const mangasApi = new MangasApi(configuration);
 
-export const getMangas = async (
-  page: number,
-  limit: number,
-  search?: string,
-  sort?: string,
-  categories?: string[],
-  readingStatuses?: string[],
-  overallStatuses?: string[],
-  ratingMin?: number,
-  ratingMax?: number,
-  listId?: number,
-) =>
+/** The filters and paging the manga collection can be queried with. */
+export interface MangaQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sort?: string;
+  categories?: string[];
+  readingStatuses?: string[];
+  overallStatuses?: string[];
+  ratingMin?: number;
+  ratingMax?: number;
+  listId?: number;
+  ownershipStatuses?: string[];
+  /** Leave out the titles that are only wanted. */
+  hidePureWishes?: boolean;
+}
+
+export const getMangas = async ({
+  page = 1,
+  limit = 20,
+  search,
+  sort,
+  categories,
+  readingStatuses,
+  overallStatuses,
+  ratingMin,
+  ratingMax,
+  listId,
+  ownershipStatuses,
+  hidePureWishes,
+}: MangaQuery = {}) =>
   apiCallWrapperOrThrow(() =>
     mangasApi.getMangasApiV1MangasGetAllGet({
       skip: (page - 1) * limit,
@@ -30,6 +54,8 @@ export const getMangas = async (
       ratingMin: ratingMin !== undefined ? ratingMin : undefined,
       ratingMax: ratingMax !== undefined ? ratingMax : undefined,
       listId: listId !== undefined ? listId : undefined,
+      ownershipStatuses: ownershipStatuses?.length ? ownershipStatuses : undefined,
+      hidePureWishes: hidePureWishes !== undefined ? hidePureWishes : undefined,
     })
   );
 
@@ -76,8 +102,11 @@ export const createManga = async (mangaCreate: MangaCreate) => {
   try {
     return await mangasApi.createMangaApiV1MangasCreatePost({ mangaCreate });
   } catch (error) {
-    await handleApiError(error);
-    throw error; // Re-throw so caller knows it failed
+    // The message belongs to the caller: the dialog and the page show it
+    // where the user is looking. Reporting it here as well would give the
+    // user two messages on top of each other.
+    const message = await describeApiError(error);
+    throw new ApiError(message ?? "");
   }
 };
 

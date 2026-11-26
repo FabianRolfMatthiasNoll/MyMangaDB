@@ -15,6 +15,98 @@ import {
 import { getStatistics } from "../services/statisticsService";
 import { Statistics, StatisticCount } from "../api/models";
 import { useTranslation } from "react-i18next";
+import { useStatusMeta } from "../hooks/useStatusMeta";
+import { useCategoryLabel } from "../hooks/useCategoryLabel";
+
+const StatCard = ({ title, value }: { title: string; value: number }) => (
+  <Paper sx={{ p: 3, textAlign: "center", height: "100%" }}>
+    <Typography variant="h4" color="primary">
+      {value}
+    </Typography>
+    <Typography variant="subtitle1" color="text.secondary">
+      {title}
+    </Typography>
+  </Paper>
+);
+
+/**
+ * How the label of a distribution entry is rendered.
+ *
+ * The backend sends the raw enum values for the status and category
+ * distributions ("not_started"), but real names for the author and genre
+ * distributions. The names must not be touched - capitalising them turns
+ * "hiromu arakawa" into "Hiromu Arakawa".
+ */
+type LabelKind = "readingStatus" | "overallStatus" | "category" | "name";
+
+const DistributionList = ({
+  title,
+  data,
+  labelKind,
+  isRating = false,
+}: {
+  title: string;
+  data: StatisticCount[];
+  labelKind: LabelKind;
+  isRating?: boolean;
+}) => {
+  const { t } = useTranslation();
+  const { getStatusLabel } = useStatusMeta();
+  const getCategoryLabel = useCategoryLabel();
+
+  const renderLabel = (label: string) => {
+    if (labelKind === "readingStatus" || labelKind === "overallStatus") {
+      return getStatusLabel(label);
+    }
+    if (labelKind === "category") {
+      return getCategoryLabel(label);
+    }
+    return label;
+  };
+
+  return (
+    <Paper sx={{ p: 3, height: "100%" }}>
+      <Typography variant="h6" gutterBottom>
+        {title}
+      </Typography>
+      <Divider sx={{ mb: 2 }} />
+      <List dense>
+        {data.map((item, index) => (
+          <ListItem key={index}>
+            <ListItemText
+              primary={
+                isRating ? (
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    {item.label === "Unrated" ? (
+                      <Typography variant="body2">
+                        {t("common.unrated")}
+                      </Typography>
+                    ) : (
+                      <>
+                        <Rating
+                          value={Number(item.label)}
+                          readOnly
+                          size="small"
+                          precision={0.5}
+                        />
+                        <Typography variant="body2" sx={{ ml: 1 }}>
+                          ({item.label})
+                        </Typography>
+                      </>
+                    )}
+                  </Box>
+                ) : (
+                  renderLabel(item.label)
+                )
+              }
+            />
+            <Typography variant="body2">{item.count}</Typography>
+          </ListItem>
+        ))}
+      </List>
+    </Paper>
+  );
+};
 
 const StatisticsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -38,10 +130,12 @@ const StatisticsPage: React.FC = () => {
   if (loading) {
     return (
       <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="80vh"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "80vh",
+        }}
       >
         <CircularProgress />
       </Box>
@@ -56,129 +150,88 @@ const StatisticsPage: React.FC = () => {
     );
   }
 
-  const formatLabel = (label: string) => {
-    // Replace underscores with spaces and capitalize each word
-    return label
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
-
-  const StatCard = ({ title, value }: { title: string; value: number }) => (
-    <Paper sx={{ p: 3, textAlign: "center", height: "100%" }}>
-      <Typography variant="h4" color="primary">
-        {value}
-      </Typography>
-      <Typography variant="subtitle1" color="text.secondary">
-        {title}
-      </Typography>
-    </Paper>
-  );
-
-  const DistributionList = ({
-    title,
-    data,
-    isRating = false,
-  }: {
-    title: string;
-    data: StatisticCount[];
-    isRating?: boolean;
-  }) => (
-    <Paper sx={{ p: 3, height: "100%" }}>
-      <Typography variant="h6" gutterBottom>
-        {title}
-      </Typography>
-      <Divider sx={{ mb: 2 }} />
-      <List dense>
-        {data.map((item, index) => (
-          <ListItem key={index}>
-            <ListItemText
-              primary={
-                isRating ? (
-                  <Box display="flex" alignItems="center">
-                    {item.label === "Unrated" ? (
-                      <Typography variant="body2">{t("common.unrated")}</Typography>
-                    ) : (
-                      <>
-                        <Rating
-                          value={Number(item.label)}
-                          readOnly
-                          size="small"
-                          precision={0.5}
-                        />
-                        <Typography variant="body2" sx={{ ml: 1 }}>
-                          ({item.label})
-                        </Typography>
-                      </>
-                    )}
-                  </Box>
-                ) : (
-                  formatLabel(item.label)
-                )
-              }
-            />
-            <Typography variant="body2">{item.count}</Typography>
-          </ListItem>
-        ))}
-      </List>
-    </Paper>
-  );
-
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
-        {t("settings.title")}
+        {t("statistics.title")}
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <StatCard title={t("manga.title")} value={stats.totalMangas} />
+          <StatCard
+            title={t("statistics.totalMangas")}
+            value={stats.totalMangas}
+          />
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <StatCard title={t("common.volumes")} value={stats.totalVolumes} />
+          <StatCard
+            title={t("statistics.totalVolumes")}
+            value={stats.totalVolumes}
+          />
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <StatCard title={t("common.authors")} value={stats.totalAuthors} />
+          <StatCard
+            title={t("statistics.totalAuthors")}
+            value={stats.totalAuthors}
+          />
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <StatCard title={t("common.genres")} value={stats.totalGenres} />
+          <StatCard
+            title={t("statistics.totalGenres")}
+            value={stats.totalGenres}
+          />
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <StatCard title={t("common.lists")} value={stats.totalLists} />
+          <StatCard
+            title={t("statistics.totalLists")}
+            value={stats.totalLists}
+          />
         </Grid>
       </Grid>
 
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6 }}>
           <DistributionList
-            title={t("manga.readingStatus")}
+            title={t("statistics.readingStatus")}
             data={stats.readingStatusDistribution}
+            labelKind="readingStatus"
           />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
           <DistributionList
-            title={t("manga.overallStatus")}
+            title={t("statistics.overallStatus")}
             data={stats.overallStatusDistribution}
+            labelKind="overallStatus"
           />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
           <DistributionList
-            title={t("manga.category")}
+            title={t("statistics.category")}
             data={stats.categoryDistribution}
+            labelKind="category"
           />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
           <DistributionList
-            title={t("common.starRating")}
+            title={t("statistics.rating")}
             data={stats.ratingDistribution}
+            labelKind="name"
             isRating
           />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
-          <DistributionList title={t("common.genres")} data={stats.topGenres} />
+          <DistributionList
+            title={t("statistics.topGenres")}
+            data={stats.topGenres}
+            labelKind="name"
+          />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
-          <DistributionList title={t("common.authors")} data={stats.topAuthors} />
+          <DistributionList
+            title={t("statistics.topAuthors")}
+            data={stats.topAuthors}
+            labelKind="name"
+          />
         </Grid>
       </Grid>
     </Container>

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
+  ButtonGroup,
   Dialog,
   DialogActions,
   DialogContent,
@@ -24,10 +25,18 @@ import {
   CircularProgress,
   InputAdornment,
   IconButton,
+  Stack,
+  alpha,
 } from "@mui/material";
 import { getSources, getSearchResults } from "../services/sourceService";
 import { createManga } from "../services/mangaService";
-import { Source, MangaCreate, VolumeCreate } from "../api/models";
+import { ApiError } from "../services/errorService";
+import {
+  Source,
+  MangaCreate,
+  OwnershipStatus,
+  VolumeCreate,
+} from "../api/models";
 import { parseVolumeString } from "../utils/volumeUtils";
 import { HighlightOff } from "@mui/icons-material";
 
@@ -50,10 +59,13 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
   const [noSourcesAvailable, setNoSourcesAvailable] = useState<boolean>(false);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [creatingManga, setCreatingManga] = useState<string | null>(null); // Store manga title being created
+  // The titles that were added during this search. Their buttons are
+  // disabled, so nothing is added twice.
+  const [addedTitles, setAddedTitles] = useState<string[]>([]);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
-    severity: "success" | "error";
+    severity: "success" | "error" | "info";
   }>({ open: false, message: "", severity: "success" });
 
   // Volume Dialog State
@@ -95,17 +107,18 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
       try {
         const results = await getSearchResults(
           searchQuery,
-          selectedSource.name
+          selectedSource.name,
         );
         setSearchResults(results);
         if (results.length === 0) {
           setSnackbar({
             open: true,
             message: t("common.noResults"),
-            severity: "error",
+            // An empty result is not an error - the search worked.
+            severity: "info",
           });
         }
-      } catch (error) {
+      } catch {
         setSnackbar({
           open: true,
           message: t("common.errorLoading"),
@@ -127,6 +140,9 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
     setCreatingManga(manga.title);
     try {
       await createManga(manga);
+      // The title is in the collection now. The button stays, so the same
+      // title could be added a second time.
+      setAddedTitles((previous) => [...previous, manga.title]);
       setSnackbar({
         open: true,
         message: t("manga.addedSuccess", { title: manga.title }),
@@ -135,11 +151,19 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
       // Call the callback to refresh dashboard
       onMangaAdded?.();
     } catch (error) {
-      setSnackbar({
-        open: true,
-        message: t("manga.addError"),
-        severity: "error",
-      });
+      // The request carries the message of the failure. It is shown here,
+      // inside the dialog, so the user sees one message and not two.
+      const message =
+        error instanceof ApiError && error.message
+          ? error.message
+          : t("manga.addError");
+      if (message) {
+        setSnackbar({
+          open: true,
+          message,
+          severity: "error",
+        });
+      }
     } finally {
       setCreatingManga(null);
     }
@@ -233,10 +257,9 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
           sx={{
             width: isMobile ? "100%" : 151,
             height: isMobile ? 200 : "auto",
+            bgcolor: alpha(theme.palette.action.disabledBackground, 0.3),
           }}
-          image={
-            manga.coverImage || "/static/images/cards/contemplative-reptile.jpg"
-          }
+          image={manga.coverImage || ""}
           alt={manga.title}
         />
         <CardContent sx={{ flex: "1 1 auto" }}>
@@ -270,29 +293,60 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
           >
             {manga.summary}
           </Typography>
-          <Button
-            variant="contained"
-            onClick={() => handleCreateManga(manga)}
-            disabled={creatingManga === manga.title}
-            sx={{ mt: 1, mr: 1 }}
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ mt: 1, alignItems: "center", flexWrap: "wrap", rowGap: 1 }}
           >
-            {creatingManga === manga.title ? (
-              <>
-                <CircularProgress size={20} sx={{ mr: 1 }} color="inherit" />
-                {t("common.adding")}
-              </>
-            ) : (
-              t("manga.addToDatabase")
-            )}
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => handleOpenVolumeDialog(manga)}
-            disabled={creatingManga === manga.title}
-            sx={{ mt: 1 }}
-          >
-            {t("common.addWithVolumes")}
-          </Button>
+            <ButtonGroup variant="outlined">
+              <Button
+                onClick={() => handleCreateManga(manga)}
+                disabled={
+                  creatingManga === manga.title ||
+                  addedTitles.includes(manga.title)
+                }
+              >
+                {creatingManga === manga.title ? (
+                  <>
+                    <CircularProgress
+                      size={20}
+                      sx={{ mr: 1 }}
+                      color="inherit"
+                    />
+                    {t("common.adding")}
+                  </>
+                ) : addedTitles.includes(manga.title) ? (
+                  t("common.added")
+                ) : (
+                  t("manga.addToDatabase")
+                )}
+              </Button>
+              <Button
+                onClick={() =>
+                  handleCreateManga({
+                    ...manga,
+                    ownershipStatus: OwnershipStatus.Wishlist,
+                  })
+                }
+                disabled={
+                  creatingManga === manga.title ||
+                  addedTitles.includes(manga.title)
+                }
+              >
+                {t("manga.addToWishlist")}
+              </Button>
+            </ButtonGroup>
+            <Button
+              variant="outlined"
+              onClick={() => handleOpenVolumeDialog(manga)}
+              disabled={
+                creatingManga === manga.title ||
+                addedTitles.includes(manga.title)
+              }
+            >
+              {t("common.addWithVolumes")}
+            </Button>
+          </Stack>
         </CardContent>
       </Card>
     ));
@@ -330,12 +384,13 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
               disabled={isSearching}
               slotProps={{
                 input: {
-                  endAdornment: <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setSearchQuery("")}>
-                      <HighlightOff />
-                    </IconButton>
-                  </InputAdornment>,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setSearchQuery("")}>
+                        <HighlightOff />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
                 },
               }}
             />
@@ -375,7 +430,7 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
             </Button>
           </Box>
           {searchResults.length > 0 && (
-            <Box mt={2}>
+            <Box sx={{ mt: 2 }}>
               <Typography variant="h6">{t("manga.searchResults")}</Typography>
               <Box>{renderSearchResults()}</Box>
             </Box>
@@ -423,7 +478,9 @@ const AutomaticSearchModal: React.FC<AutomaticSearchModalProps> = ({
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setVolumeDialogOpen(false)}>{t("common.cancel")}</Button>
+          <Button onClick={() => setVolumeDialogOpen(false)}>
+            {t("common.cancel")}
+          </Button>
           <Button onClick={handleConfirmVolumeAdd} variant="contained">
             {t("manga.addToDatabase")}
           </Button>

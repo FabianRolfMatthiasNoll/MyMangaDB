@@ -17,10 +17,21 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
+vi.mock("../context/UserContext", () => ({
+  useUser: () => ({
+    user: null,
+    loading: false,
+    isAdmin: true,
+    refreshUser: vi.fn(),
+  }),
+}));
+
 vi.mock("../components/SearchBar", () => ({
-  default: ({ toggleAdvancedFilters }: { toggleAdvancedFilters: () => void }) => (
-    <button onClick={toggleAdvancedFilters}>Advanced filters</button>
-  ),
+  default: ({
+    toggleAdvancedFilters,
+  }: {
+    toggleAdvancedFilters: () => void;
+  }) => <button onClick={toggleAdvancedFilters}>Advanced filters</button>,
 }));
 
 vi.mock("../components/AdvancedFilters", () => ({
@@ -30,12 +41,16 @@ vi.mock("../components/AdvancedFilters", () => ({
     setFilterOverallStatus,
     setRatingRange,
     setFilterList,
+    setFilterOwnershipStatus,
+    onToggleWishlist,
   }: {
     setFilterCategory: (value: string[]) => void;
     setFilterReadingStatus: (value: string[]) => void;
     setFilterOverallStatus: (value: string[]) => void;
     setRatingRange: (value: number[]) => void;
     setFilterList: (value: { id: number; name: string } | null) => void;
+    setFilterOwnershipStatus: (value: string[]) => void;
+    onToggleWishlist: () => void;
   }) => (
     <>
       <button onClick={() => setFilterCategory(["manga"])}>Category</button>
@@ -49,13 +64,19 @@ vi.mock("../components/AdvancedFilters", () => ({
       <button onClick={() => setFilterList({ id: 7, name: "Shelf" })}>
         List
       </button>
+      <button onClick={() => setFilterOwnershipStatus(["wishlist"])}>
+        Ownership
+      </button>
+      <button onClick={onToggleWishlist}>Toggle wishlist</button>
     </>
   ),
 }));
 
 vi.mock("../components/MangaList", () => ({ default: () => null }));
 vi.mock("../components/AutomaticSearchModal", () => ({ default: () => null }));
-vi.mock("react-infinite-scroll-component", () => ({ default: ({ children }: { children: React.ReactNode }) => children }));
+vi.mock("react-infinite-scroll-component", () => ({
+  default: ({ children }: { children: React.ReactNode }) => children,
+}));
 
 function renderDashboard() {
   const queryClient = new QueryClient({
@@ -83,16 +104,65 @@ describe("Dashboard advanced filters", () => {
     fireEvent.click(screen.getByRole("button", { name: "Advanced filters" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Category" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], undefined, undefined, 0, 5, undefined));
+    await waitFor(() =>
+      expect(getMangas).toHaveBeenLastCalledWith({
+        page: 1,
+        limit: 20,
+        search: "",
+        sort: "asc",
+        categories: ["manga"],
+        ratingMin: 0,
+        ratingMax: 5,
+        hidePureWishes: true,
+      }),
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "Reading status" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], ["in_progress"], undefined, 0, 5, undefined));
+    await waitFor(() =>
+      expect(getMangas).toHaveBeenLastCalledWith({
+        page: 1,
+        limit: 20,
+        search: "",
+        sort: "asc",
+        categories: ["manga"],
+        readingStatuses: ["in_progress"],
+        ratingMin: 0,
+        ratingMax: 5,
+        hidePureWishes: true,
+      }),
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "Overall status" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], ["in_progress"], ["ongoing"], 0, 5, undefined));
+    await waitFor(() =>
+      expect(getMangas).toHaveBeenLastCalledWith({
+        page: 1,
+        limit: 20,
+        search: "",
+        sort: "asc",
+        categories: ["manga"],
+        readingStatuses: ["in_progress"],
+        overallStatuses: ["ongoing"],
+        ratingMin: 0,
+        ratingMax: 5,
+        hidePureWishes: true,
+      }),
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "Rating" }));
-    await waitFor(() => expect(getMangas).toHaveBeenLastCalledWith(1, 20, "", "asc", ["manga"], ["in_progress"], ["ongoing"], 4, 5, undefined));
+    await waitFor(() =>
+      expect(getMangas).toHaveBeenLastCalledWith({
+        page: 1,
+        limit: 20,
+        search: "",
+        sort: "asc",
+        categories: ["manga"],
+        readingStatuses: ["in_progress"],
+        overallStatuses: ["ongoing"],
+        ratingMin: 4,
+        ratingMax: 5,
+        hidePureWishes: true,
+      }),
+    );
   });
 
   it("filters by list id instead of smuggling the list into the search", async () => {
@@ -104,18 +174,63 @@ describe("Dashboard advanced filters", () => {
     fireEvent.click(screen.getByRole("button", { name: "List" }));
 
     await waitFor(() =>
+      expect(getMangas).toHaveBeenLastCalledWith({
+        page: 1,
+        limit: 20,
+        search: "",
+        sort: "asc",
+        ratingMin: 0,
+        ratingMax: 5,
+        listId: 7,
+        hidePureWishes: true,
+      }),
+    );
+  });
+
+  it("filters by ownership status", async () => {
+    renderDashboard();
+
+    await waitFor(() => expect(getMangas).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole("button", { name: "Advanced filters" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Ownership" }));
+
+    await waitFor(() =>
+      expect(getMangas).toHaveBeenLastCalledWith({
+        page: 1,
+        limit: 20,
+        search: "",
+        sort: "asc",
+        ratingMin: 0,
+        ratingMax: 5,
+        ownershipStatuses: ["wishlist"],
+      }),
+    );
+  });
+
+  it("keeps the wishlist out of the collection by default", async () => {
+    renderDashboard();
+
+    await waitFor(() => expect(getMangas).toHaveBeenCalled());
+
+    expect(getMangas).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        hidePureWishes: true,
+      }),
+    );
+  });
+
+  it("shows the wishlist in the collection when it is switched on", async () => {
+    renderDashboard();
+
+    await waitFor(() => expect(getMangas).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole("button", { name: "Advanced filters" }));
+    fireEvent.click(screen.getByRole("button", { name: "Toggle wishlist" }));
+
+    await waitFor(() =>
       expect(getMangas).toHaveBeenLastCalledWith(
-        1,
-        20,
-        "",
-        "asc",
-        undefined,
-        undefined,
-        undefined,
-        0,
-        5,
-        7
-      )
+        expect.objectContaining({ hidePureWishes: false }),
+      ),
     );
   });
 });

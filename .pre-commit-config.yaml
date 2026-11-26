@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -8,22 +8,25 @@ repos:
       - id: check-toml
       - id: check-added-large-files
       - id: check-json
+        # The tsconfig files are JSON with comments. The TypeScript compiler
+        # accepts that, a JSON parser does not.
+        exclude: ^frontend/tsconfig(\.node)?\.json$
       - id: check-merge-conflict
 
   - repo: https://github.com/psf/black
-    rev: 24.2.0
+    rev: 26.10.1
     hooks:
       - id: black
         language_version: python3
 
   - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+    rev: 9.0.2
     hooks:
       - id: isort
         args: ["--profile", "black"]
 
   - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
+    rev: 7.5.0
     hooks:
       - id: flake8
         args: ["--max-line-length=88", "--extend-ignore=E203"]
@@ -33,6 +36,9 @@ repos:
     hooks:
       - id: prettier
         types_or: [json, yaml, markdown]
+        # The changelog is written by semantic-release. Formatting it would
+        # only be undone by the next release.
+        exclude: ^CHANGELOG\.md$
         # Pin the node version. Without this, nodeenv resolves the latest
         # release, which is currently a nightly whose version string it cannot
         # parse ("27.0.0-alpha.0.1.1") - the hook then fails to install.
@@ -42,9 +48,18 @@ repos:
     hooks:
       - id: eslint-frontend
         name: ESLint (Frontend)
-        entry: npx eslint
-        language: node
-        language_version: "22.14.0"
+        # The eslint of the frontend, so the hook uses the version and the
+        # plugins from frontend/package.json. The node language cannot be used
+        # here: pre-commit installs it from a package.json in the repository
+        # root, which this project does not have.
+        entry: >-
+          bash -c 'if [ ! -x frontend/node_modules/.bin/eslint ]; then
+          echo "eslint is not installed - run npm ci in frontend/" >&2;
+          exit 0; fi;
+          frontend/node_modules/.bin/eslint "$@"' _
+        language: system
         files: frontend/src/.*\.[jt]sx?$
         pass_filenames: true
-        types: [javascript, jsx, ts, tsx]
+        # "types" is an and-list: a file has to have every one of those tags.
+        # "types_or" is the list of file types the hook is interested in.
+        types_or: [javascript, jsx, ts, tsx]

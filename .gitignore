@@ -6,6 +6,10 @@ config.json
 !.env.example
 .task
 
+# The profile directory of a headless browser that takes screenshots. It is
+# temporary and it is big - it must never end up in the repository.
+.chrome-cdp*
+
 # Created by https://www.gitignore.io/api/linux,macos,python,pycharm,windows,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=linux,macos,python,pycharm,windows,visualstudiocode
 
@@ -315,3 +319,9 @@ yarn-error.log*
 *.swp
 *.swo
 .DS_Store
+
+# Local GitHub issue drafts - these are working notes, the issues themselves
+# live on GitHub.
+ISSUES.md
+issues.md
+/0[0-9]-*.md

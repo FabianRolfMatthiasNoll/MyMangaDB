@@ -7,7 +7,9 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import LanguageIcon from "@mui/icons-material/Language";
 import {
   AppBar,
+  Badge,
   Box,
+  Button,
   IconButton,
   Menu,
   MenuItem,
@@ -17,7 +19,9 @@ import {
   useMediaQuery,
   Tooltip,
 } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import { logout } from "../services/auth";
+import { getWishlistMangas } from "../services/wishlistService";
 import { useUser } from "../context/UserContext";
 import { useTranslation } from "react-i18next";
 
@@ -28,14 +32,25 @@ interface NavBarProps {
 const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
   const theme = useTheme();
   const location = useLocation();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // The desktop navigation needs about 1000 pixels for its seven entries.
+  // Below that the labels are squeezed into the fixed-height app bar, so
+  // the drawer takes over earlier than on a phone.
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [langAnchorEl, setLangAnchorEl] = useState<null | HTMLElement>(null);
   const { isAdmin } = useUser();
   const { t, i18n } = useTranslation();
 
+  // The wishlist is shared with the wishlist page, so this is served from
+  // the cache once it has been loaded there.
+  const { data: wishlist = [] } = useQuery({
+    queryKey: ["wishlist"],
+    queryFn: getWishlistMangas,
+  });
+
   const menuItems = [
     { text: t("nav.dashboard"), path: "/" },
+    { text: t("nav.wishlist"), path: "/wishlist", badge: wishlist.length },
     { text: t("nav.lists"), path: "/lists" },
     { text: t("nav.authors"), path: "/authors" },
     { text: t("nav.genres"), path: "/genres" },
@@ -86,7 +101,13 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
           selected={location.pathname === item.path}
           onClick={handleMenuClose}
         >
-          {item.text}
+          <Badge
+            color="secondary"
+            badgeContent={item.badge}
+            invisible={!item.badge}
+          >
+            {item.text}
+          </Badge>
         </MenuItem>
       ))}
       <MenuItem onClick={handleLogout}>{t("nav.logout")}</MenuItem>
@@ -119,13 +140,15 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
                 <IconButton
                   edge="start"
                   color="inherit"
-                  aria-label="menu"
+                  aria-label={t("nav.menu")}
                   onClick={handleMenuOpen}
                 >
                   <MenuIcon />
                 </IconButton>
                 <Typography
                   variant="h6"
+                  component={Link}
+                  to="/"
                   sx={{
                     mr: 2,
                     display: { xs: "flex", md: "flex" },
@@ -136,13 +159,15 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
                     textDecoration: "none",
                   }}
                 >
-                  MyMangaDB
+                  {t("app.title")}
                 </Typography>
               </>
             ) : (
               <>
                 <Typography
                   variant="h6"
+                  component={Link}
+                  to="/"
                   sx={{
                     mr: 2,
                     display: { xs: "flex", md: "flex" },
@@ -153,41 +178,58 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
                     textDecoration: "none",
                   }}
                 >
-                  MyMangaDB
+                  {t("app.title")}
                 </Typography>
-                {menuItems.map((item) => (
-                  <MenuItem
-                    key={item.text}
-                    component={Link}
-                    to={item.path}
-                    selected={location.pathname === item.path}
-                    sx={{
-                      borderRadius: 2,
-                      "&.Mui-selected": {
-                        backgroundColor:
-                          theme.palette.mode === "dark"
-                            ? theme.palette.primary.dark
-                            : theme.palette.primary.light,
-                        color: theme.palette.primary.contrastText,
-                      },
-                      "&.Mui-selected:hover": {
-                        backgroundColor:
-                          theme.palette.mode === "dark"
-                            ? theme.palette.primary.dark
-                            : theme.palette.primary.light,
-                      },
-                      "&:hover": {
-                        backgroundColor:
-                          theme.palette.mode === "dark"
-                            ? theme.palette.primary.main
-                            : theme.palette.primary.light,
-                        color: theme.palette.primary.contrastText,
-                      },
-                    }}
-                  >
-                    <Typography textAlign="center">{item.text}</Typography>
-                  </MenuItem>
-                ))}
+                {menuItems.map((item) => {
+                  const isSelected = location.pathname === item.path;
+                  return (
+                    <Button
+                      key={item.text}
+                      component={Link}
+                      to={item.path}
+                      color="inherit"
+                      sx={{
+                        borderRadius: 2,
+                        // A button shouts its label in capital letters, a
+                        // menu item does not. The navigation is a list of
+                        // words, not a call to action.
+                        textTransform: "none",
+                        ...(isSelected && {
+                          backgroundColor:
+                            theme.palette.mode === "dark"
+                              ? theme.palette.primary.dark
+                              : theme.palette.primary.light,
+                          color: theme.palette.primary.contrastText,
+                        }),
+                        "&:hover": {
+                          backgroundColor:
+                            theme.palette.mode === "dark"
+                              ? theme.palette.primary.main
+                              : theme.palette.primary.light,
+                          color: theme.palette.primary.contrastText,
+                        },
+                      }}
+                    >
+                      <Badge
+                        color="secondary"
+                        // Three digits do not fit into the small badge
+                        // circle - they would spill over the label.
+                        badgeContent={
+                          item.badge && item.badge > 99 ? "99+" : item.badge
+                        }
+                        invisible={!item.badge}
+                        // The badge sits on the top right corner of the
+                        // label, so it needs room of its own - otherwise it
+                        // covers the last letter.
+                        sx={{ "& .MuiBadge-badge": { top: -2, right: -4 } }}
+                      >
+                        <Typography sx={{ textAlign: "center", pr: 1 }}>
+                          {item.text}
+                        </Typography>
+                      </Badge>
+                    </Button>
+                  );
+                })}
               </>
             )}
           </Box>
@@ -229,16 +271,36 @@ const Header: React.FC<NavBarProps> = ({ toggleThemeMode }) => {
                 {t("language.de")}
               </MenuItem>
             </Menu>
-            <IconButton onClick={toggleThemeMode} sx={{ alignSelf: "center" }}>
-              {theme.palette.mode === "dark" ? (
-                <LightModeIcon />
-              ) : (
-                <DarkModeRoundedIcon />
-              )}
-            </IconButton>
+            <Tooltip
+              title={
+                theme.palette.mode === "dark"
+                  ? t("nav.lightMode")
+                  : t("nav.darkMode")
+              }
+            >
+              <IconButton
+                onClick={toggleThemeMode}
+                aria-label={
+                  theme.palette.mode === "dark"
+                    ? t("nav.lightMode")
+                    : t("nav.darkMode")
+                }
+                sx={{ alignSelf: "center" }}
+              >
+                {theme.palette.mode === "dark" ? (
+                  <LightModeIcon />
+                ) : (
+                  <DarkModeRoundedIcon />
+                )}
+              </IconButton>
+            </Tooltip>
             {!isMobile && (
               <Tooltip title={t("nav.logout")}>
-                <IconButton onClick={handleLogout} sx={{ alignSelf: "center" }}>
+                <IconButton
+                  onClick={handleLogout}
+                  aria-label={t("nav.logout")}
+                  sx={{ alignSelf: "center" }}
+                >
                   <LogoutIcon />
                 </IconButton>
               </Tooltip>

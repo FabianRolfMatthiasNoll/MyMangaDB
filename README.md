@@ -6,6 +6,7 @@
 
 - **Automatic Metadata Fetching**: Simply enter a title, and MyMangaDB fetches all the details.
 - **Collection Management**: Track what you own, what you've read, and what you plan to buy.
+- **Wishlist**: Keep the titles you want apart from the ones you own, with a dedicated tab that shows which volumes of a series you are still missing.
 - **Statistics**: Visualize your collection with detailed charts and breakdowns of volumes, authors, genres, and more.
 - **Import from MyAnimeList**: Easily migrate your existing collection by importing your MyAnimeList export file.
 - **Role-Based Access Control (RBAC)**: Secure your database with Admin and Guest roles.
@@ -25,6 +26,11 @@ MyMangaDB relies on excellent external APIs to provide accurate manga data. A sp
 ### Dashboard
 
 ![Dashboard](screenshots/dashboard.png)
+
+### Wishlist
+
+![Wishlist - continue a series](screenshots/wishlist_continue.png)
+![Wishlist - new to buy](screenshots/wishlist_new_buys.png)
 
 ### Manga Overview
 
@@ -49,6 +55,24 @@ MyMangaDB relies on excellent external APIs to provide accurate manga data. A sp
 ### Mobile View
 
 ![Mobile View](screenshots/mobile.png)
+
+## 🛒 How the wishlist works
+
+The wishlist keeps the titles you want apart from the ones you own. It is
+built around one rule: **the wanted volumes are the ones you are missing.**
+A blue square in the strip is a volume on your shelf, a grey one is a
+volume you still want.
+
+1. **Say how long the series is.** "Series length" on a wishlist card - or
+   "The series has volumes in total" on the page of a title - says how many
+   volumes the series has in total. Everything up to that number that is not
+   on your shelf is wanted.
+2. **Put a title on the wishlist.** A title you already own can be marked as
+   wanted on its own page; then the volumes it is missing are the ones you
+   want. A title you do not own yet goes there from the automatic search.
+3. **A volume arrives.** "Add volumes" puts it on your shelf. The rest of the
+   series stays on the wishlist, and the title leaves the wishlist by itself
+   when the last missing volume is there.
 
 ## 🛠️ Installation & Deployment
 
@@ -103,6 +127,40 @@ first start and stores it next to the database
 local installations secure out of the box. Set `API_TOKEN` explicitly if you
 run several instances or want the sessions to survive a reinstall.
 
+### Trying a development build
+
+Every push to a branch publishes the container images to the GitHub Container
+Registry under a **dev** tag, so a build can be tried on a server before it
+is released. The images are **never** published as `latest` - that tag
+belongs to the stable release.
+
+| Tag            | Points at                                                      |
+| -------------- | -------------------------------------------------------------- |
+| `dev`          | The newest development build of `master`.                      |
+| `dev-<sha>`    | One specific build. Use this to pin a server to a known state. |
+| `dev-<branch>` | The newest build of a branch, e.g. `dev-feature-_87_wishlist`. |
+
+To try one on a server:
+
+```bash
+echo "API_TOKEN=$(openssl rand -hex 32)" > .env
+docker compose -f docker-compose.dev.yml up -d
+```
+
+The frontend is then on `http://<server>:8080` and the API on port `8000`.
+Pin a specific build with `MYMANGADB_VERSION=dev-<sha>`.
+
+The images are in the GitHub Container Registry. A public repository can be
+pulled anonymously; a private one needs a token:
+
+```bash
+echo "$GITHUB_TOKEN" | docker login ghcr.io -u <user> --password-stdin
+```
+
+> The dev images are built from a branch, so they may contain work that is
+> not released yet. The database is migrated automatically on startup - the
+> same migrations a release would run.
+
 ### Local Home use
 
 Just download the binaries from the latest release and use them. Available for linux and windows.
@@ -117,8 +175,8 @@ For contributors or those who prefer running without Docker.
 
 **Prerequisites:**
 
-- Python 3.12+
-- Node.js 20+
+- Python 3.13+
+- Node.js 22.12+
 - [Task](https://taskfile.dev/) (Taskfile runner)
 
 1.  **Setup Environment**
@@ -130,10 +188,41 @@ For contributors or those who prefer running without Docker.
     This command creates virtual environments, installs dependencies, and generates `.env` files.
 
 2.  **Run in Development Mode**
+
     ```bash
     task dev
     ```
-    This starts both the FastAPI backend (port 8000) and Vite frontend (port 5173).
+
+    This starts both the FastAPI backend (port 1234) and Vite frontend (port 5173).
+
+    Both ports can be changed, so that a second instance can run next to an
+    already running one:
+
+    ```bash
+    BACKEND_PORT=8000 FRONTEND_PORT=5174 task dev
+    ```
+
+### Database Migrations
+
+The database schema is managed with [Alembic](https://alembic.sqlalchemy.org/). The
+migrations run automatically when the backend starts, so an existing installation
+upgrades itself in place - no data is lost and the database never has to be reset.
+
+To work on the schema directly:
+
+```bash
+cd backend
+
+# Apply every pending migration
+alembic upgrade head
+
+# Create a migration for a model change
+alembic revision --autogenerate -m "describe the change"
+```
+
+A database that was created before Alembic was introduced has no version table. It is
+detected on startup, marked as the baseline and then upgraded with the migrations that
+came after it.
 
 ## 🔐 Authentication
 

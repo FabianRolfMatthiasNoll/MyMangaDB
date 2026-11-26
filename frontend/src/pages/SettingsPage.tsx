@@ -21,30 +21,32 @@ const SettingsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchSettings();
-  }, []);
-
   const fetchSettings = async () => {
     try {
       setLoading(true);
       const data = await getSettings();
       setSettings(data);
       setError(null);
-    } catch (err) {
+    } catch {
       setError("Failed to fetch settings");
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
   if (loading && !settings) {
     return (
       <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="80vh"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "80vh",
+        }}
       >
         <CircularProgress />
       </Box>
@@ -53,7 +55,7 @@ const SettingsPage: React.FC = () => {
 
   return (
     <Container maxWidth="md">
-      <Box py={4}>
+      <Box sx={{ py: 4 }}>
         <Typography variant="h4" gutterBottom>
           {t("settings.title")}
         </Typography>

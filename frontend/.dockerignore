@@ -1,0 +1,18 @@
+# The dependencies are installed with `npm ci` in the build stage.
+node_modules
+
+# Build output and caches.
+dist
+coverage
+.vite
+*.tsbuildinfo
+
+# Local configuration.
+.env
+.env.*
+
+# Tooling.
+.git
+.github
+Dockerfile
+.dockerignore

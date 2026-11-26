@@ -62,6 +62,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   );
 };
 
+// The hook belongs next to the provider it reads - splitting them would only
+// spread the context over two files.
+// eslint-disable-next-line react-refresh/only-export-components
 export const useUser = (): UserContextType => {
   const context = useContext(UserContext);
   if (context === undefined) {

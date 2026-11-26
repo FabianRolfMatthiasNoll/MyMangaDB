@@ -33,7 +33,7 @@ const LoginPage: React.FC = () => {
       await login({ username, password });
       await refreshUser();
       navigate("/");
-    } catch (err) {
+    } catch {
       setError(t("auth.loginError"));
     } finally {
       setLoading(false);

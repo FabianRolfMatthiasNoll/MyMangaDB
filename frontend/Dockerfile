@@ -1,10 +1,17 @@
-# Build stage
-FROM node:22-alpine AS build
+# syntax=docker/dockerfile:1
+
+# Build stage.
+# Not alpine on purpose: the musl build of rolldown (which vite 8 uses) fails
+# to resolve the source map paths and the build dies with
+# "The paths[1] argument must be of type string". The glibc build works.
+FROM node:24-slim AS build
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+# `npm ci` installs exactly the locked versions, and the cache mount keeps
+# the downloaded packages between builds.
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 COPY . .
 

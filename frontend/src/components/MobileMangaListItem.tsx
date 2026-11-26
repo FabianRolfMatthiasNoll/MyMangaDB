@@ -9,21 +9,38 @@ import {
   alpha,
   Chip,
 } from "@mui/material";
-import { Manga } from "../api/models";
+import { Manga, OwnershipStatus } from "../api/models";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { fetchMangaCoverImageAsBlobUrl } from "../services/imageService";
 import { useStatusMeta } from "../hooks/useStatusMeta";
+import { useOwnershipStatus } from "../hooks/useOwnershipStatus";
 
 interface MobileMangaListItemProps {
   manga: Manga;
   listId?: number;
+  /**
+   * Where the back button of the details page leads to. The dashboard has
+   * no source of its own, the wishlist has.
+   */
+  from?: string;
 }
 
-const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId }) => {
+const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({
+  manga,
+  listId,
+  from,
+}) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const { getStatusLabel, getStatusColor } = useStatusMeta();
+  const { getOwnershipLabel, getOwnershipColor } = useOwnershipStatus();
   const [imageUrl, setImageUrl] = useState("");
   const imageUrlRef = useRef("");
+
+  // A title that is only wanted is drawn differently, so it is never
+  // mistaken for one that is already on the shelf.
+  const isWishlist = manga.ownershipStatus === OwnershipStatus.Wishlist;
 
   useEffect(() => {
     if (!manga.coverImage) {
@@ -65,9 +82,14 @@ const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId
         sx={{
           width: "100%",
           display: "flex",
-          height: 120,
+          // A fixed height clips the chips when they wrap onto a second
+          // row.
+          minHeight: 120,
           borderRadius: 2,
           overflow: "hidden",
+          border: isWishlist
+            ? `2px dashed ${theme.palette.secondary.main}`
+            : "2px solid transparent",
           transition: "transform 0.2s ease, box-shadow 0.2s ease",
           "&:hover": {
             transform: "translateY(-2px)",
@@ -80,27 +102,55 @@ const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId
         }}
         component={Link}
         to={`/manga/${manga.id}`}
-        state={listId ? { from: 'list-detail', listId } : undefined}
+        state={
+          listId
+            ? { from: "list-detail", listId }
+            : from
+              ? { from }
+              : undefined
+        }
       >
-        <CardMedia
-          component="img"
-          image={imageUrl}
-          alt="manga cover"
-          sx={{
-            width: 80,
-            height: 120,
-            objectFit: "cover",
-          }}
-        />
+        {manga.coverImage ? (
+          <CardMedia
+            component="img"
+            image={imageUrl}
+            alt={manga.title}
+            sx={{
+              width: 80,
+              height: 120,
+              objectFit: "cover",
+            }}
+          />
+        ) : (
+          // A title without a cover would otherwise show the browser's
+          // broken image icon.
+          <Box
+            sx={{
+              width: 80,
+              height: 120,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              p: 1,
+              textAlign: "center",
+              bgcolor: alpha(theme.palette.action.disabledBackground, 0.3),
+            }}
+          >
+            <Typography variant="caption" color="text.secondary">
+              {t("common.noCoverImage")}
+            </Typography>
+          </Box>
+        )}
         <Box
           sx={{
             display: "flex",
             flexDirection: "column",
             flex: 1,
             p: 1.5,
-            background: theme.palette.mode === "dark"
-              ? alpha(theme.palette.background.paper, 0.8)
-              : alpha(theme.palette.background.paper, 0.9),
+            background:
+              theme.palette.mode === "dark"
+                ? alpha(theme.palette.background.paper, 0.8)
+                : alpha(theme.palette.background.paper, 0.9),
           }}
         >
           <Typography
@@ -131,6 +181,18 @@ const MobileMangaListItem: React.FC<MobileMangaListItemProps> = ({ manga, listId
             {manga.authors.map((author) => author.name).join(", ")}
           </Typography>
           <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
+            {manga.ownershipStatus === OwnershipStatus.Wishlist && (
+              <Chip
+                label={getOwnershipLabel(manga.ownershipStatus)}
+                size="small"
+                sx={{
+                  bgcolor: getOwnershipColor(manga.ownershipStatus),
+                  color: "white",
+                  fontSize: "0.75rem",
+                  height: 20,
+                }}
+              />
+            )}
             {manga.readingStatus && (
               <Chip
                 label={getStatusLabel(manga.readingStatus)}

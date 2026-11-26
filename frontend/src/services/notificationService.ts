@@ -3,11 +3,20 @@ export type NotificationSeverity = "success" | "error" | "warning" | "info";
 export interface Notification {
   message: string;
   severity: NotificationSeverity;
+  /**
+   * Identifies the notification. Two messages with the same text are still
+   * two messages, and the host needs a way to tell them apart.
+   */
+  id: number;
 }
 
 type Listener = (notification: Notification) => void;
 
 const listeners = new Set<Listener>();
+
+// Counts the notifications that were published, so that every one of them
+// gets its own identity.
+let nextId = 0;
 
 /**
  * Subscribe to notifications.
@@ -31,7 +40,9 @@ export const subscribeToNotifications = (listener: Listener): (() => void) => {
  */
 export const notify = (
   message: string,
-  severity: NotificationSeverity = "info"
+  severity: NotificationSeverity = "info",
 ): void => {
-  listeners.forEach((listener) => listener({ message, severity }));
+  listeners.forEach((listener) =>
+    listener({ message, severity, id: nextId++ }),
+  );
 };
